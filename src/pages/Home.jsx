@@ -2430,30 +2430,34 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                         {fleetData
                 .filter(v => showroomFilter === 'all' || v.categoryKey === showroomFilter)
                 .slice(0, 6)
-                .map(vehicle => (
-                <div
-                  key={vehicle.id}
-                  style={{ width: "100%", display: "flex", flexDirection: "column" }}
-                  className="showroom-card-wrapper"
-                >
-                  <VehicleCard
-                    name={vehicle.name}
-                    category={vehicle.category}
-                    image={vehicle.image}
-                    price={vehicle.price}
-                    period={vehicle.period}
-                    passengerCapacity={vehicle.passengerCapacity}
-                    luggageCapacity={vehicle.luggageCapacity}
-                    transmission={vehicle.transmission}
-                    ac={vehicle.ac}
-                    rating={vehicle.rating}
-                    badgeText={vehicle.badgeText}
-                    onReserve={scrollToEnquiry}
-                    onExplore={() => onViewVehicleDetail && onViewVehicleDetail(vehicle)}
-                  />
-                </div>
-              ))}
-          </div>
+                .map(vehicle => {
+                  const localTariff = pricingService.getLocalTariff(vehicle.id) || {};
+                  const priceStr = localTariff.eight_hours_eighty_km ? pricingService.formatPrice(localTariff.eight_hours_eighty_km).replace('₹', '').trim() : 'Price on Request';
+                  return (
+                  <div
+                    key={vehicle.id}
+                    style={{ width: "100%", display: "flex", flexDirection: "column" }}
+                    className="showroom-card-wrapper"
+                  >
+                    <VehicleCard
+                      name={vehicle.name}
+                      category={vehicle.category}
+                      image={vehicle.image}
+                      price={priceStr}
+                      period="8h / 80km"
+                      passengerCapacity={vehicle.passengerCapacity}
+                      luggageCapacity={vehicle.luggageCapacity}
+                      transmission={vehicle.transmission}
+                      ac={vehicle.ac}
+                      rating={vehicle.rating}
+                      badgeText={vehicle.badgeText}
+                      onReserve={scrollToEnquiry}
+                      onExplore={() => onViewVehicleDetail && onViewVehicleDetail(vehicle)}
+                    />
+                  </div>
+                );
+                })}
+            </div>
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
               <button
                 onClick={() => onNavigate && onNavigate('fleets')}
