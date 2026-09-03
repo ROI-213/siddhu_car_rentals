@@ -314,27 +314,27 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
 
                           {/* 4h / 40km */}
                           <td style={{ padding: '16px 14px', fontWeight: '700', color: 'var(--color-slate-900)' }}>
-                            {vehicle.tariffs.halfDay}
+                            {halfDayStr}
                           </td>
 
                           {/* 8h / 80km */}
                           <td style={{ padding: '16px 14px', fontWeight: '800', color: '#0284C7', fontSize: '0.98rem' }}>
-                            {vehicle.tariffs.fullDay}
+                            {fullDayStr}
                           </td>
 
                           {/* Extra Hr / Km */}
                           <td style={{ padding: '16px 14px', fontSize: '0.82rem', color: 'var(--color-slate-600)' }}>
-                            {vehicle.tariffs.extraHrKm}
+                            {extraHrKmStr}
                           </td>
 
                           {/* Airport Flat */}
                           <td style={{ padding: '16px 14px', fontWeight: '700', color: '#10B981' }}>
-                            {vehicle.tariffs.airportFlat}
+                            {airportStr}
                           </td>
 
                           {/* Outstation Rate */}
                           <td style={{ padding: '16px 14px', fontWeight: '700', color: '#D97706' }}>
-                            {vehicle.tariffs.outstationRate}
+                            {outstationStr}
                           </td>
 
                           {/* Action Button */}
@@ -456,11 +456,11 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
                           <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: 'rgba(255,255,255,0.7)', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.03)', marginBottom: '20px' }}>
                             <div>
                               <div style={{ fontSize: '0.7rem', color: 'var(--color-slate-500)', textTransform: 'uppercase', fontWeight: '600' }}>Local Flat (8h/80km)</div>
-                              <div style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--color-slate-900)' }}>{vehicle.tariffs.fullDay}</div>
+                              <div style={{ fontSize: '1.2rem', fontWeight: '800', color: 'var(--color-slate-900)' }}>{fullDayStr}</div>
                             </div>
                             <div style={{ textAlign: 'right' }}>
                               <div style={{ fontSize: '0.7rem', color: 'var(--color-slate-500)', textTransform: 'uppercase', fontWeight: '600' }}>Outstation Rate</div>
-                              <div style={{ fontSize: '1.2rem', fontWeight: '800', color: theme.accent }}>{vehicle.tariffs.outstationRate}</div>
+                              <div style={{ fontSize: '1.2rem', fontWeight: '800', color: theme.accent }}>{outstationStr}</div>
                             </div>
                           </div>
                         </div>
