@@ -276,11 +276,11 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
                       const theme = getTheme(vehicle.categoryKey, vehicle.name);
                   const localTariff = pricingService.getLocalTariff(vehicle.id) || {};
                   const outstationTariff = pricingService.getOutstationTariff(vehicle.id) || {};
-                  const halfDayStr = localTariff["4hrs_40km"] ? pricingService.formatCurrency(localTariff["4hrs_40km"]) : "Not Available";
-                  const fullDayStr = localTariff["8hrs_80km"] ? pricingService.formatCurrency(localTariff["8hrs_80km"]) : "Not Available";
-                  const extraHrKmStr = (localTariff.extra_hr && localTariff.extra_km) ? `${pricingService.formatCurrency(localTariff.extra_hr)}/hr | ${pricingService.formatCurrency(localTariff.extra_km)}/km` : "N/A";
-                  const airportStr = localTariff.airport_pickup_drop ? pricingService.formatCurrency(localTariff.airport_pickup_drop) : "N/A";
-                  const outstationStr = outstationTariff.rate_per_km ? `${pricingService.formatCurrency(outstationTariff.rate_per_km)}/km` : "Price on Request";
+                  const halfDayStr = localTariff["4hrs_40km"] ? pricingService.formatPrice(localTariff["4hrs_40km"]) : "Not Available";
+                  const fullDayStr = localTariff["8hrs_80km"] ? pricingService.formatPrice(localTariff["8hrs_80km"]) : "Not Available";
+                  const extraHrKmStr = (localTariff.extra_hr && localTariff.extra_km) ? `${pricingService.formatPrice(localTariff.extra_hr)}/hr | ${pricingService.formatPrice(localTariff.extra_km)}/km` : "N/A";
+                  const airportStr = localTariff.airport_pickup_drop ? pricingService.formatPrice(localTariff.airport_pickup_drop) : "N/A";
+                  const outstationStr = outstationTariff.rate_per_km ? `${pricingService.formatPrice(outstationTariff.rate_per_km)}/km` : "Price on Request";
 
                       return (
                         <tr
@@ -374,11 +374,11 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
                 const theme = getTheme(vehicle.categoryKey, vehicle.name);
                   const localTariff = pricingService.getLocalTariff(vehicle.id) || {};
                   const outstationTariff = pricingService.getOutstationTariff(vehicle.id) || {};
-                  const halfDayStr = localTariff["4hrs_40km"] ? pricingService.formatCurrency(localTariff["4hrs_40km"]) : "Not Available";
-                  const fullDayStr = localTariff["8hrs_80km"] ? pricingService.formatCurrency(localTariff["8hrs_80km"]) : "Not Available";
-                  const extraHrKmStr = (localTariff.extra_hr && localTariff.extra_km) ? `${pricingService.formatCurrency(localTariff.extra_hr)}/hr | ${pricingService.formatCurrency(localTariff.extra_km)}/km` : "N/A";
-                  const airportStr = localTariff.airport_pickup_drop ? pricingService.formatCurrency(localTariff.airport_pickup_drop) : "N/A";
-                  const outstationStr = outstationTariff.rate_per_km ? `${pricingService.formatCurrency(outstationTariff.rate_per_km)}/km` : "Price on Request";
+                  const halfDayStr = localTariff["4hrs_40km"] ? pricingService.formatPrice(localTariff["4hrs_40km"]) : "Not Available";
+                  const fullDayStr = localTariff["8hrs_80km"] ? pricingService.formatPrice(localTariff["8hrs_80km"]) : "Not Available";
+                  const extraHrKmStr = (localTariff.extra_hr && localTariff.extra_km) ? `${pricingService.formatPrice(localTariff.extra_hr)}/hr | ${pricingService.formatPrice(localTariff.extra_km)}/km` : "N/A";
+                  const airportStr = localTariff.airport_pickup_drop ? pricingService.formatPrice(localTariff.airport_pickup_drop) : "N/A";
+                  const outstationStr = outstationTariff.rate_per_km ? `${pricingService.formatPrice(outstationTariff.rate_per_km)}/km` : "Price on Request";
 
                 return (
                   <GlassCard
