@@ -11,19 +11,12 @@ import { PremiumButton } from '../components/common/PremiumButton';
 import { SectionHeader } from '../components/common/SectionHeader';
 
 export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) => {
-  if (!vehicle) return null;
-
-  // Image gallery array
-  const galleryImages = (vehicle.gallery && vehicle.gallery.length > 0)
+  // ALL hooks must be called before any conditional returns
+  const galleryImages = vehicle && vehicle.gallery && vehicle.gallery.length > 0
     ? vehicle.gallery
-    : [
-        vehicle.image,
-        '/images/fleet/dzire_fleet.jpg',
-        '/images/fleet/etios_fleet.jpg',
-        '/images/fleet/ertiga_fleet.jpg'
-      ];
+    : vehicle ? [vehicle.image] : [];
 
-  const [activeImage, setActiveImage] = useState(galleryImages[0]);
+  const [activeImage, setActiveImage] = useState(galleryImages[0] || null);
   const localTariff = vehicle ? (pricingService.getLocalTariff(vehicle.id) || {}) : {};
   const outstationTariff = vehicle ? (pricingService.getOutstationTariff(vehicle.id) || {}) : {};
   const halfDayStr = localTariff.four_hours_forty_km ? pricingService.formatPrice(localTariff.four_hours_forty_km) : "Not Available";
@@ -31,6 +24,9 @@ export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) =>
   const extraHrKmStr = (localTariff.extra_hour && localTariff.extra_km) ? `${pricingService.formatPrice(localTariff.extra_hour)}/hr | ${pricingService.formatPrice(localTariff.extra_km)}/km` : "N/A";
   const airportStr = localTariff.airport_transfer ? pricingService.formatPrice(localTariff.airport_transfer) : "N/A";
   const outstationStr = outstationTariff.rate_per_km ? `${pricingService.formatPrice(outstationTariff.rate_per_km)}/km` : "Price on Request";
+
+  // Guard AFTER all hooks (React rules of hooks)
+  if (!vehicle) return null;
 
   return (
     <div style={{ overflowX: 'hidden' }}>
