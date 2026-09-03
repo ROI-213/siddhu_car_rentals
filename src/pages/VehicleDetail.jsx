@@ -287,7 +287,7 @@ export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) =>
                 <div style={{ fontSize: '0.8rem', color: 'var(--color-charcoal-500)' }}>4 Hours / 40 Kms included</div>
               </div>
               <div style={{ fontWeight: '700', fontSize: '1.1rem', color: 'var(--color-charcoal-900)' }}>
-                {vehicle.tariffs?.halfDay || `₹${vehicle.price * 2}`}
+                {halfDayStr}
               </div>
             </div>
 
@@ -297,7 +297,7 @@ export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) =>
                 <div style={{ fontSize: '0.8rem', color: 'var(--color-charcoal-500)' }}>8 Hours / 80 Kms included</div>
               </div>
               <div style={{ fontWeight: '700', fontSize: '1.1rem', color: 'var(--accent-gold-primary)' }}>
-                {vehicle.tariffs?.fullDay || `₹${vehicle.price * 4}`}
+                {fullDayStr}
               </div>
             </div>
 
@@ -307,7 +307,7 @@ export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) =>
                 <div style={{ fontSize: '0.8rem', color: 'var(--color-charcoal-500)' }}>Flat rate pick or drop</div>
               </div>
               <div style={{ fontWeight: '700', fontSize: '1.1rem', color: 'var(--color-charcoal-900)' }}>
-                {vehicle.tariffs?.airportFlat || '₹3,800'}
+                {airportStr}
               </div>
             </div>
 
@@ -317,7 +317,7 @@ export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) =>
                 <div style={{ fontSize: '0.8rem', color: 'var(--color-charcoal-500)' }}>Per kilometer rate (Min 250km/day)</div>
               </div>
               <div style={{ fontWeight: '700', fontSize: '1.1rem', color: 'var(--color-charcoal-900)' }}>
-                {vehicle.tariffs?.outstationRate || '₹24/km'}
+                {outstationStr}
               </div>
             </div>
           </GlassCard>

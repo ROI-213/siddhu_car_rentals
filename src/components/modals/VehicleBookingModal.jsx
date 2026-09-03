@@ -1,3 +1,4 @@
+import { pricingService } from '../../services/pricingService';
 import React, { useState } from 'react';
 import { X, CheckCircle2, Phone, Calendar, Clock, MapPin, User, ChevronRight, ShieldCheck, Star } from 'lucide-react';
 import { Input } from '../common/Input';
@@ -82,7 +83,7 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose }) => {
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase' }}>Hourly Package</div>
               <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#FFFFFF', fontFamily: 'var(--font-ui)' }}>
-                ₹{vehicle.price}<span style={{ fontSize: '0.85rem', fontWeight: '400', color: '#C5A059' }}>/hr</span>
+                ₹{priceStr.replace("₹", "")}<span style={{ fontSize: '0.85rem', fontWeight: '400', color: '#C5A059' }}>/hr</span>
               </div>
             </div>
           </div>
@@ -127,7 +128,7 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose }) => {
                   label="Select Tariff Package"
                   icon={Clock}
                   options={[
-                    { value: '8h', label: `Local Full Day — 8 Hours / 80 Kms (₹${vehicle.price * 4 || '8,800'})` },
+                    { value: '8h', label: `Local Full Day — 8 Hours / 80 Kms (₹${priceStr})` },
                     { value: '4h', label: `Local Half Day — 4 Hours / 40 Kms` },
                     { value: 'airport', label: `Kempegowda Airport Flat VIP Transfer` },
                     { value: 'outstation', label: `Outstation Long Distance Journey` }
