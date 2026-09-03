@@ -1,0 +1,25 @@
+/* Siddhu Car Rentals — Master Stylesheet */
+@import './styles/tokens.css';
+@import './styles/glassmorphism.css';
+@import './styles/typography.css';
+@import './styles/components.css';
+@import './styles/utilities.css';
+
+/* Global Reset & Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: clip;
+  background-color: var(--bg-foundation);
+  color: var(--color-charcoal-700);
+}

@@ -1,0 +1,79 @@
+/* Siddhu Car Rentals — Refined Editorial Typography System */
+
+body {
+  font-family: var(--font-ui);
+  color: var(--color-slate-700);
+  background-color: var(--bg-foundation);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, .editorial-heading {
+  font-family: var(--font-editorial);
+  color: var(--color-slate-900);
+  font-weight: var(--weight-bold);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.text-display {
+  font-size: clamp(2.5rem, 5vw, 3.75rem);
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.text-h1 {
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
+  letter-spacing: -0.025em;
+}
+
+.text-h2 {
+  font-size: clamp(1.5rem, 2.2vw, 2.15rem);
+  letter-spacing: -0.02em;
+}
+
+.text-h3 {
+  font-size: clamp(1.2rem, 1.6vw, 1.5rem);
+  font-family: var(--font-ui);
+  font-weight: var(--weight-semibold);
+}
+
+.text-h4 {
+  font-size: 1.15rem;
+  font-family: var(--font-ui);
+  font-weight: var(--weight-semibold);
+}
+
+.text-subtitle {
+  font-size: 1.0625rem;
+  color: var(--color-slate-600);
+  font-weight: var(--weight-regular);
+}
+
+.text-body {
+  font-size: 1rem;
+  color: var(--color-slate-700);
+}
+
+.text-small {
+  font-size: 0.875rem;
+  color: var(--color-slate-600);
+}
+
+.text-caption {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: var(--weight-semibold);
+  color: var(--color-slate-500);
+}
+
+/* Section-Specific Accent Colors */
+.text-sky-accent { color: var(--accent-sky-primary); }
+.text-royal-accent { color: var(--accent-royal-primary); }
+.text-mint-accent { color: var(--accent-mint-primary); }
+.text-coral-accent { color: var(--accent-coral-primary); }
+.text-indigo-accent { color: var(--accent-indigo-primary); }
+.text-gold-accent { color: var(--accent-gold-primary); }

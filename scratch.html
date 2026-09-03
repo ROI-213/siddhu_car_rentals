@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { background: #eee; display: flex; gap: 20px; padding: 50px; }
+  .card { width: 350px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .img-box { position: relative; height: 200px; background: url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=800') center/cover; }
+  
+  .v-cutout { position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; }
+  .v-cutout::before, .v-cutout::after {
+    content: ''; position: absolute; bottom: 0; width: 51%; height: 100px;
+    background: #fff; border-top: 2px solid #C4A15A;
+  }
+  .v-cutout::before { left: 0; transform-origin: bottom right; transform: skewY(12deg); }
+  .v-cutout::after { right: 0; transform-origin: bottom left; transform: skewY(-12deg); }
+
+  .hex-icon {
+    position: absolute; bottom: 10px; left: 20px; z-index: 10;
+    width: 46px; height: 52px; background: #2A1F1A;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; align-items: center; justify-content: center; color: #C4A15A;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="img-box">
+      <div class="v-cutout"></div>
+      <div class="hex-icon">&#9992;</div>
+    </div>
+    <div style="padding: 20px;">
+      <h3>AIRPORT TRANSFER</h3>
+    </div>
+  </div>
+</body>
+</html>

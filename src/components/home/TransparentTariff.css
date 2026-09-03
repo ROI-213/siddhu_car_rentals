@@ -1,0 +1,162 @@
+.tariff-section {
+  padding: 100px 24px;
+  background-color: #FAFAFA; /* Warm white / very light grey */
+  color: #0F172A;
+}
+
+.tariff-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.tariff-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.tariff-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px 0;
+  color: #0F172A;
+}
+
+.tariff-subtitle {
+  color: #64748B;
+}
+
+.tariff-desc {
+  font-size: 1.1rem;
+  color: #475569;
+}
+
+.tariff-table-wrapper {
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  border: 1px solid #E2E8F0;
+}
+
+.tariff-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.tariff-table th {
+  background: #F1F5F9;
+  padding: 20px 24px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #E2E8F0;
+}
+
+.tariff-row {
+  border-bottom: 1px solid #F1F5F9;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.tariff-row:last-child {
+  border-bottom: none;
+}
+
+.tariff-table td {
+  padding: 20px 24px;
+  font-size: 0.95rem;
+  color: #334155;
+  font-weight: 500;
+}
+
+.vehicle-name {
+  font-weight: 700 !important;
+  color: #0F172A !important;
+}
+
+.tariff-row.illuminated {
+  background: #F8FAFC;
+  transform: scale(1.01);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  border-radius: 8px;
+}
+
+/* Mobile Cards */
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+  .mobile-only {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .tariff-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    cursor: pointer;
+  }
+  
+  .t-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .t-card-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #0F172A;
+  }
+  
+  .t-card-base {
+    font-weight: 700;
+    color: #D4AF37;
+  }
+  
+  .t-card-details {
+    overflow: hidden;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #F1F5F9;
+  }
+  
+  .t-detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    color: #475569;
+  }
+  
+  .t-detail-row span:last-child {
+    font-weight: 600;
+    color: #0F172A;
+  }
+  
+  .t-card-book {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    background: #0F172A;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}

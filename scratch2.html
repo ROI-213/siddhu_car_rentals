@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { background: #FCFBF8; display: flex; gap: 20px; padding: 50px; }
+  .card { width: 350px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; }
+  .img-box { position: relative; height: 220px; background: url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=800') center/cover; }
+  
+  .os-chevron-overlay {
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 45px; overflow: hidden; pointer-events: none;
+  }
+  .os-chevron-overlay::before, .os-chevron-overlay::after {
+    content: ''; position: absolute; bottom: -30px; width: 55%; height: 50px;
+    background: #fff; border-top: 2px solid #C4A15A;
+  }
+  .os-chevron-overlay::before { left: -5%; transform: rotate(8deg); }
+  .os-chevron-overlay::after { right: -5%; transform: rotate(-8deg); }
+
+  .os-hex-icon {
+    position: absolute; bottom: 15px; left: 30px; z-index: 10;
+    width: 48px; height: 54px; background: #2C1E16;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; align-items: center; justify-content: center; color: #C4A15A;
+  }
+  
+  .content { padding: 40px 30px 25px 30px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="img-box">
+      <div class="os-chevron-overlay"></div>
+      <div class="os-hex-icon">&#9992;</div>
+    </div>
+    <div class="content">
+      <h3>AIRPORT TRANSFER</h3>
+    </div>
+  </div>
+</body>
+</html>

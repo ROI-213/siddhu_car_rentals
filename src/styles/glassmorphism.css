@@ -1,0 +1,111 @@
+/* Siddhu Car Rentals — Architectural Light Glassmorphism System */
+
+.glass-panel {
+  background: var(--glass-bg-primary);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass-light);
+  box-shadow: var(--shadow-glass);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-smooth);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.04);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition-smooth);
+}
+
+.glass-card-interactive {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.04);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-smooth);
+  cursor: pointer;
+}
+
+.glass-card-interactive:hover {
+  background: #FFFFFF;
+  border-color: var(--accent-sky-border);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.08);
+}
+
+.glass-glowing-border {
+  position: relative;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius-xl);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.06);
+}
+
+.glass-glowing-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1), var(--accent-sky-primary), rgba(255, 255, 255, 0.6));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+  border-radius: var(--radius-pill);
+}
+
+.glass-dark-card {
+  background: linear-gradient(135deg, #0B0F19 0%, #151D2A 50%, #0B0F19 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 25px 60px -15px rgba(11, 15, 25, 0.5), 0 0 0 1px rgba(197, 160, 89, 0.3);
+  border-radius: var(--radius-xl, 24px);
+  position: relative;
+  overflow: hidden;
+  color: #FFFFFF;
+}
+
+.glass-nav {
+  background: rgba(250, 249, 246, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-glass-subtle);
+  border-radius: var(--radius-md);
+  color: var(--color-slate-900);
+  transition: var(--transition-fast);
+}
+
+.glass-input:focus {
+  outline: none;
+  background: #FFFFFF;
+  border-color: var(--accent-sky-primary);
+  box-shadow: 0 0 0 3px var(--accent-sky-soft);
+}
