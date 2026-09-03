@@ -24,6 +24,13 @@ export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) =>
       ];
 
   const [activeImage, setActiveImage] = useState(galleryImages[0]);
+  const localTariff = vehicle ? (pricingService.getLocalTariff(vehicle.id) || {}) : {};
+  const outstationTariff = vehicle ? (pricingService.getOutstationTariff(vehicle.id) || {}) : {};
+  const halfDayStr = localTariff.four_hours_forty_km ? pricingService.formatPrice(localTariff.four_hours_forty_km) : "Not Available";
+  const fullDayStr = localTariff.eight_hours_eighty_km ? pricingService.formatPrice(localTariff.eight_hours_eighty_km) : "Not Available";
+  const extraHrKmStr = (localTariff.extra_hour && localTariff.extra_km) ? `${pricingService.formatPrice(localTariff.extra_hour)}/hr | ${pricingService.formatPrice(localTariff.extra_km)}/km` : "N/A";
+  const airportStr = localTariff.airport_transfer ? pricingService.formatPrice(localTariff.airport_transfer) : "N/A";
+  const outstationStr = outstationTariff.rate_per_km ? `${pricingService.formatPrice(outstationTariff.rate_per_km)}/km` : "Price on Request";
 
   return (
     <div style={{ overflowX: 'hidden' }}>

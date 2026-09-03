@@ -7,6 +7,8 @@ import { Badge } from '../common/Badge';
 
 export const VehicleBookingModal = ({ vehicle, isOpen, onClose }) => {
   const [submitted, setSubmitted] = useState(false);
+  const localTariff = vehicle ? (pricingService.getLocalTariff(vehicle.id) || {}) : {};
+  const priceStr = localTariff.eight_hours_eighty_km ? pricingService.formatPrice(localTariff.eight_hours_eighty_km) : 'Price on Request';
 
   if (!isOpen || !vehicle) return null;
 
