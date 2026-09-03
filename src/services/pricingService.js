@@ -5,8 +5,8 @@ export const FLEET_TARIFF_MAPPING = {
   "mercedes-s-class": "Merc \"S\" Class / BMW 7\" / Audi A8 latest model",
   "bmw-7-series": "Merc \"S\" Class / BMW 7\" / Audi A8 latest model",
   "mercedes-e-class": "Merc \"E\" Class / BMW 5\" / Audi A6",
-  "vellfire": "Toyota Vellfire Executive Lounge",
-  "toyota-vellfire": "Toyota Vellfire Executive Lounge",
+  "vellfire": "Toyota Vellfie",
+  "toyota-vellfire": "Toyota Vellfie",
   "innova-hycross": "Innova Hycross",
   "innova-crysta": "Innova Crysta",
   "kia-carens": "Innova,Ertiga,Kia Carnes",
@@ -16,7 +16,7 @@ export const FLEET_TARIFF_MAPPING = {
   "urbania": "Urbania 16+1",
   "audi-q7": "AUDI Q7",
   "honda-accord": "Camry / Accord / Fortuner latest model",
-  "toyota-commuter": "Toyota Commuter VIP Lounge",
+  "toyota-commuter": "Toyato Commuter",
   "luxury-mini-bus": "Mini Bus 21 Seater AC",
   "luxury-large-bus": "Bus 45 Seater AC"
 };
