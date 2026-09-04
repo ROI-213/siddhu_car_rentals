@@ -15,6 +15,8 @@ export const FLEET_TARIFF_MAPPING = {
   "traveller": "Tempo Traveller A/C",
   "urbania": "Urbania 16+1",
   "audi-q7": "AUDI Q7",
+  "toyota-fortuner": "Camry / Accord / Fortuner latest model",
+  "fortuner": "Camry / Accord / Fortuner latest model",
   "honda-accord": "Camry / Accord / Fortuner latest model",
   "toyota-commuter": "Toyato Commuter",
   "luxury-mini-bus": "Mini Bus 21 Seater AC",

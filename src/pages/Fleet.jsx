@@ -161,9 +161,9 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
                   className="form-control"
                   style={{ padding: '8px 12px', fontSize: '0.88rem' }}
                 >
-                  <option value="all">All Vehicle Categories (10)</option>
+                  <option value="all">All Vehicle Categories ({fleetData.length})</option>
                   <option value="luxury">Mercedes-Benz & Luxury Sedans</option>
-                  <option value="suv">Luxury SUVs (Audi Q7)</option>
+                  <option value="suv">Luxury SUVs (Fortuner & Audi Q7)</option>
                   <option value="mpv">Executive MPVs (Vellfire & Innova)</option>
                   <option value="coach">VIP Vans & Coaches</option>
                 </select>

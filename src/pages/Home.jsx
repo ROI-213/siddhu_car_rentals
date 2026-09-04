@@ -120,7 +120,8 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
     { id: 'bmw_730ld', name: 'BMW 730Ld xDrive', subtitle: 'Ultra VIP Flagship Sedan', seats: '4+1 Seats', bags: '3 Bags', img: '/images/bmw_front.jpg', priceTag: 'Ultra VIP' },
     { id: 'vellfire', name: 'Toyota Vellfire Executive Lounge', subtitle: 'Supreme VIP Luxury MPV', seats: '6+1 Seats', bags: '4 Bags', img: '/images/vellfire_front.jpg', priceTag: 'Supreme VIP' },
     { id: 'mercedes_e', name: 'Mercedes-Benz E-Class', subtitle: 'Luxury Executive Sedan', seats: '4+1 Seats', bags: '3 Bags', img: '/images/eclass_front.jpg', priceTag: 'Executive VIP' },
-    { id: 'audi_q7', name: 'Audi Q7 Quattro SUV', subtitle: 'Executive Luxury 7-Seater', seats: '6+1 Seats', bags: '4 Bags', img: '/images/audi_q7_side.png', priceTag: 'Luxury SUV' },
+    { id: 'audi_q7', name: 'Audi Q7 Quattro SUV', subtitle: 'Executive Luxury 7-Seater', seats: '6+1 Seats', bags: '4 Bags', img: '/images/audi_q7_front.jpg', priceTag: 'Luxury SUV' },
+    { id: 'toyota_fortuner', name: 'Toyota Fortuner 4x4 SUV', subtitle: 'Executive Luxury 7-Seater', seats: '6+1 Seats', bags: '4 Bags', img: '/images/fortuner_front.jpg', priceTag: 'Executive SUV' },
     { id: 'honda_accord', name: 'Honda Accord Executive', subtitle: 'Executive Luxury Sedan', seats: '4+1 Seats', bags: '3 Bags', img: '/images/accord_front.jpg', priceTag: 'Executive Sedan' },
     { id: 'innova_crysta', name: 'Toyota Innova Crysta VIP', subtitle: 'Executive Captain MPV', seats: '6+1 Seats', bags: '5 Bags', img: '/images/crysta_front.png', priceTag: 'VIP MPV' },
     { id: 'innova_hycross', name: 'Toyota Innova Hycross Hybrid', subtitle: 'Hybrid Luxury MPV', seats: '6+1 Seats', bags: '5 Bags', img: '/images/hycross_front.jpg', priceTag: 'Hybrid MPV' },
@@ -2429,7 +2430,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             >
                         {fleetData
                 .filter(v => showroomFilter === 'all' || v.categoryKey === showroomFilter)
-                .slice(0, 6)
+                .slice(0, 8)
                 .map(vehicle => {
                   const localTariff = pricingService.getLocalTariff(vehicle.id) || {};
                   const priceStr = localTariff.eight_hours_eighty_km ? pricingService.formatPrice(localTariff.eight_hours_eighty_km).replace('₹', '').trim() : 'Price on Request';

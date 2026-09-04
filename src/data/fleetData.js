@@ -136,8 +136,10 @@ export const fleetData = [
     "modelYear": "2024–2025 Executive Edition",
     "category": "Executive Luxury SUVs",
     "categoryKey": "suv",
-    "image": "/images/audi_q7_side.png",
+    "image": "/images/audi_q7_front.jpg",
     "gallery": [
+      "/images/audi_q7_front.jpg",
+      "/images/audi_q7_rear.png",
       "/images/audi_q7_side.png",
       "/images/fleet/audi_q7_interior.png",
       "/images/fleet/audi_q7_cockpit.png",
@@ -151,8 +153,8 @@ export const fleetData = [
     "fuelType": "Diesel Turbo",
     "ac": "4-Zone Deluxe AC",
     "badgeText": "Luxury SUV",
-    "regPlate": "KA Commercial VIP",
-    "description": "Bangalore's premier luxury 7-seater SUV with plush beige leather interior, captain seating, panoramic glass roof, and Quattro all-wheel drive. Perfect for VIP family tours, scenic outstation retreats, and corporate airport transit.",
+    "regPlate": "KA 51 MJ 8118",
+    "description": "Bangalore's premier luxury 7-seater SUV (KA 51 MJ 8118) with plush beige leather interior, captain seating, panoramic glass roof, and Quattro all-wheel drive. Perfect for VIP family tours, scenic outstation retreats, and corporate airport transit.",
     "amenities": [
       "Beige Leather Interior",
       "Panoramic Glass Sunroof",
@@ -160,6 +162,38 @@ export const fleetData = [
       "Quattro AWD",
       "Uniformed Chauffeur",
       "Dual USB Fast Charging"
+    ]
+  },
+  {
+    "id": "toyota-fortuner",
+    "name": "Toyota Fortuner 4x4 Luxury SUV",
+    "modelYear": "2024–2025 Executive Edition",
+    "category": "Executive Luxury SUVs",
+    "categoryKey": "suv",
+    "image": "/images/fortuner_front.jpg",
+    "gallery": [
+      "/images/fortuner_front.jpg",
+      "/images/fleet/fortuner_rear.png",
+      "/images/fleet/fortuner_side.png",
+      "/images/fleet/fortuner_cockpit.png"
+    ],
+    "rating": 4.9,
+    "passengerCapacity": 6,
+    "seatCategory": "5-7",
+    "luggageCapacity": 4,
+    "transmission": "Automatic 4x4 / Manual",
+    "fuelType": "Diesel Turbo (2.8L)",
+    "ac": "Dual Front & Rear Climate Control",
+    "badgeText": "Executive SUV",
+    "regPlate": "KA Commercial VIP",
+    "description": "Siddhu Car Rentals' premium white Toyota Fortuner 2.8L (KA Commercial VIP). Built for commanding road presence, executive comfort, and legendary reliability with plush beige leather interior, advanced touchscreen infotainment, dual-zone climate control, and experienced highway chauffeurs. Ideal for corporate VIP disposals, airport transfers, luxury wedding escorts, and outstation trips to Coorg, Kabini, Chikmagalur, and Ooty.",
+    "amenities": [
+      "Plush Beige Leather Seating",
+      "Touchscreen Infotainment Console",
+      "Dual Front & Rear Climate AC",
+      "Commanding 4x4 High Stance",
+      "Uniformed Professional Chauffeur",
+      "Ample Boot Space for 4+ Bags"
     ]
   },
   {
