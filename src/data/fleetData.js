@@ -414,5 +414,215 @@ export const fleetData = [
       "Onboard Guide Seat",
       "Uniformed Chauffeur"
     ]
+  },
+  {
+    "id": "innova",
+    "name": "Toyota Innova (Classic VIP)",
+    "modelYear": "2024–2025 Executive Fleet",
+    "category": "Executive MPVs",
+    "categoryKey": "mpv",
+    "image": "/images/fleet/innova_white_front.jpg",
+    "gallery": [
+      "/images/fleet/innova_white_front.jpg",
+      "/images/fleet/innova_white_interior.jpg"
+    ],
+    "rating": 4.9,
+    "passengerCapacity": 7,
+    "seatCategory": "5-7",
+    "luggageCapacity": 4,
+    "transmission": "Manual / Automatic",
+    "fuelType": "Diesel Turbo",
+    "ac": "Dual-Zone Climate AC",
+    "badgeText": "Family & Corporate Favorite",
+    "regPlate": "SIDDHU CAR RENTALS",
+    "description": "Pristine white Toyota Innova in immaculate showroom condition with clean 'SIDDHU CAR RENTALS' commercial plate. Featuring spacious 7-passenger seating, comfortable dual-tone interior, dual-zone AC, and professional uniformed chauffeurs for airport transit, corporate disposals, and family getaways.",
+    "amenities": [
+      "7-Passenger Seating",
+      "Dual AC Vents",
+      "Spacious Boot Space",
+      "Uniformed Chauffeur",
+      "Mineral Water & Tissue",
+      "GPS Tracking"
+    ]
+  },
+  {
+    "id": "maruti-ertiga",
+    "name": "Maruti Suzuki Ertiga Smart Hybrid",
+    "modelYear": "2024–2025 Executive Edition",
+    "category": "Executive MPVs",
+    "categoryKey": "mpv",
+    "image": "/images/fleet/ertiga_white_front.jpg",
+    "gallery": [
+      "/images/fleet/ertiga_white_front.jpg",
+      "/images/fleet/ertiga_white_interior.jpg"
+    ],
+    "rating": 4.8,
+    "passengerCapacity": 6,
+    "seatCategory": "5-7",
+    "luggageCapacity": 3,
+    "transmission": "Automatic / Manual",
+    "fuelType": "Smart Hybrid Petrol",
+    "ac": "Automatic Climate Control",
+    "badgeText": "City & Outstation Value",
+    "regPlate": "SIDDHU CAR RENTALS",
+    "description": "Pristine white Maruti Suzuki Ertiga Smart Hybrid with 'SIDDHU CAR RENTALS' commercial plate. Ideal for budget-conscious corporate transfers, airport transfers, and family excursions with high fuel efficiency, comfortable seating, and polite uniformed chauffeurs.",
+    "amenities": [
+      "Comfortable 6-Passenger Seating",
+      "Roof-Mounted AC Vents",
+      "Smooth Hybrid Comfort",
+      "Uniformed Chauffeur",
+      "Clean Sanitized Cabin",
+      "Flight Arrival Tracking"
+    ]
+  },
+  {
+    "id": "kia-carens",
+    "name": "Kia Carens Luxury Plus",
+    "modelYear": "2024–2025 Luxury Plus Edition",
+    "category": "Executive MPVs",
+    "categoryKey": "mpv",
+    "image": "/images/fleet/kia_carens_white_front.jpg",
+    "gallery": [
+      "/images/fleet/kia_carens_white_front.jpg",
+      "/images/fleet/kia_carens_white_interior.jpg"
+    ],
+    "rating": 4.9,
+    "passengerCapacity": 6,
+    "seatCategory": "5-7",
+    "luggageCapacity": 4,
+    "transmission": "Smartstream 7DCT Automatic",
+    "fuelType": "Turbo Petrol / Diesel",
+    "ac": "Multi-Zone Climate Control",
+    "badgeText": "Modern Executive",
+    "regPlate": "SIDDHU CAR RENTALS",
+    "description": "Showroom-fresh white Kia Carens Luxury Plus featuring comfortable ventilated leather seats, ambient cockpit lighting, and digital infotainment. Premium chauffeur-driven experience with 'SIDDHU CAR RENTALS' registration for corporate delegates, VIP airport runs, and family tours.",
+    "amenities": [
+      "Ventilated Luxury Captain Seats",
+      "Digital Cockpit Display",
+      "Multi-Zone Roof AC",
+      "USB Type-C Fast Chargers",
+      "Uniformed Chauffeur",
+      "Executive Privacy Blinds"
+    ]
+  },
+  {
+    "id": "toyota-camry",
+    "name": "Toyota Camry Hybrid Luxury Sedan",
+    "modelYear": "2024–2025 Self-Charging Hybrid",
+    "category": "Executive Luxury Sedans",
+    "categoryKey": "luxury",
+    "image": "/images/fleet/camry_hybrid_white_front.jpg",
+    "gallery": [
+      "/images/fleet/camry_hybrid_white_front.jpg",
+      "/images/fleet/camry_hybrid_white_interior.jpg"
+    ],
+    "rating": 4.9,
+    "passengerCapacity": 4,
+    "seatCategory": "3-4",
+    "luggageCapacity": 3,
+    "transmission": "e-CVT Automatic",
+    "fuelType": "Self-Charging Electric Hybrid",
+    "ac": "3-Zone Independent Climate Control",
+    "badgeText": "C-Suite Executive",
+    "regPlate": "SIDDHU CAR RENTALS",
+    "description": "Flagship white Toyota Camry Hybrid sedan in immaculate pearl finish with 'SIDDHU CAR RENTALS' plate. Featuring executive rear reclining seats, touchscreen rear center armrest console, whisper-quiet hybrid drive, and experienced English-speaking chauffeurs for C-suite airport transfers and diplomatic delegates.",
+    "amenities": [
+      "Rear Reclining Executive Seats",
+      "Rear Armrest Digital Touch Console",
+      "Whisper-Quiet Electric Hybrid Ride",
+      "Acoustic Noise-Reduction Glass",
+      "English-Speaking Uniformed Chauffeur",
+      "Complimentary Bottled Water"
+    ]
+  },
+  {
+    "id": "bmw-5-series",
+    "name": "BMW 5 Series Luxury Line",
+    "modelYear": "2024–2025 Executive Luxury",
+    "category": "Luxury Executive Sedans",
+    "categoryKey": "luxury",
+    "image": "/images/fleet/bmw_5_series_white_front.jpg",
+    "gallery": [
+      "/images/fleet/bmw_5_series_white_front.jpg",
+      "/images/fleet/bmw_5_series_white_interior.jpg"
+    ],
+    "rating": 5.0,
+    "passengerCapacity": 4,
+    "seatCategory": "3-4",
+    "luggageCapacity": 3,
+    "transmission": "8-Speed Steptronic Sport Automatic",
+    "fuelType": "TwinPower Turbo Petrol/Diesel",
+    "ac": "4-Zone Automatic Climate Control",
+    "badgeText": "German Executive",
+    "regPlate": "SIDDHU CAR RENTALS",
+    "description": "Pristine white BMW 5 Series Luxury Line sedan with 'SIDDHU CAR RENTALS' branding. Packed with rich cognac leather sport seats, dual digital cockpit, Harman Kardon surround audio, and executive chauffeur service for high-profile business visits, tech summits, and airport VIP transits.",
+    "amenities": [
+      "Cognac Nappa Leather Upholstery",
+      "BMW Curved Display & Live Cockpit",
+      "Harman Kardon Premium Sound",
+      "Ambient Lighting with Dynamic Colors",
+      "White-Glove Uniformed Chauffeur",
+      "Flight Arrival Placard Escort"
+    ]
+  },
+  {
+    "id": "audi-a6",
+    "name": "Audi A6 Technology Edition",
+    "modelYear": "2024–2025 Technology Luxury",
+    "category": "Luxury Executive Sedans",
+    "categoryKey": "luxury",
+    "image": "/images/eclass_front.jpg",
+    "gallery": [
+      "/images/eclass_front.jpg",
+      "/images/fleet/audi_q7_interior.png"
+    ],
+    "rating": 4.9,
+    "passengerCapacity": 4,
+    "seatCategory": "3-4",
+    "luggageCapacity": 3,
+    "transmission": "7-Speed S-Tronic Automatic",
+    "fuelType": "TFSI Turbo Petrol with Mild Hybrid",
+    "ac": "4-Zone Deluxe Automatic AC",
+    "badgeText": "Executive Elegance",
+    "regPlate": "SIDDHU CAR RENTALS",
+    "description": "Pristine white Audi A6 luxury sedan featuring dual MMI touch response screens, virtual cockpit plus, matrix LED illumination, and acoustic sound insulation. Chauffeur-driven with verified English-speaking drivers for board meetings and VIP airport runs in Bengaluru.",
+    "amenities": [
+      "Dual Touchscreen MMI Navigation",
+      "Audi Virtual Cockpit Plus",
+      "Panoramic Sunroof & Ambient Light",
+      "4-Zone Independent Climate Control",
+      "Uniformed Executive Chauffeur",
+      "Complimentary Refreshments"
+    ]
+  },
+  {
+    "id": "audi-a8",
+    "name": "Audi A8L Quattro VIP Flagship",
+    "modelYear": "2024–2025 Long Wheelbase Flagship",
+    "category": "Ultra Luxury VIP Sedans",
+    "categoryKey": "luxury",
+    "image": "/images/sclass_front.png",
+    "gallery": [
+      "/images/sclass_front.png",
+      "/images/fleet/mercedes_s_class_interior.jpg"
+    ],
+    "rating": 5.0,
+    "passengerCapacity": 4,
+    "seatCategory": "3-4",
+    "luggageCapacity": 4,
+    "transmission": "8-Speed Tiptronic Quattro AWD",
+    "fuelType": "3.0L TFSI Turbo Mild Hybrid",
+    "ac": "4-Zone Luxury Climate with Ioniser",
+    "badgeText": "Ultra VIP Flagship",
+    "regPlate": "SIDDHU CAR RENTALS",
+    "description": "The pinnacle of German luxury — Audi A8L Quattro Long Wheelbase in pristine white with 'SIDDHU CAR RENTALS' plates. Features rear executive lounge with relaxation seats, Valcona leather, Bang & Olufsen 3D sound, predictive active air suspension, and executive chauffeur service for celebrity and VVIP transport in Bengaluru.",
+    "amenities": [
+      "Long Wheelbase Executive Rear Lounge",
+      "Bang & Olufsen 3D Advanced Sound",
+      "Predictive Active Air Suspension",
+      "Quattro All-Wheel Drive Comfort",
+      "White-Glove Uniformed Chauffeur",
+      "Flight Gate Arrival VIP Escort"
+    ]
   }
 ];
