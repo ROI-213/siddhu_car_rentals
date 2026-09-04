@@ -227,9 +227,11 @@ export const VehicleCard = ({
               <span>View Specs</span>
             </button>
 
-            {/* Primary CTA: Book This Vehicle */}
-            <button
-              onClick={onReserve}
+            {/* Primary CTA: Book This Vehicle via WhatsApp */}
+            <a
+              href={`https://wa.me/917625059665?text=${encodeURIComponent(`Hello Siddhu Car Rentals, I would like to book the ${name} (${price ? `₹${price}/${period}` : 'Price on Request'}). Please share availability and booking details.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -244,7 +246,8 @@ export const VehicleCard = ({
                 fontWeight: '800',
                 cursor: 'pointer',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                transition: 'all 0.25s ease'
+                transition: 'all 0.25s ease',
+                textDecoration: 'none'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = accent.btnHover;
@@ -259,7 +262,7 @@ export const VehicleCard = ({
             >
               <span>Book Now</span>
               <ChevronRight size={14} />
-            </button>
+            </a>
           </div>
         </div>
       </div>

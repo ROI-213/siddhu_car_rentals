@@ -1,7 +1,10 @@
-import React from 'react';
-import { Crown, MapPin, Phone, Mail, ShieldCheck, Clock, Award, Globe, ExternalLink, Share2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Crown, MapPin, Phone, Mail, ShieldCheck, Clock, Award, Globe, ExternalLink, Share2, FileText } from 'lucide-react';
+import { LegalModal } from './LegalModal';
 
 export const Footer = ({ onNavigate }) => {
+  const [legalModalType, setLegalModalType] = useState(null);
+
   const handleNav = (id) => {
     if (onNavigate) onNavigate(id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -24,48 +27,27 @@ export const Footer = ({ onNavigate }) => {
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
           gap: '40px',
-          marginBottom: '64px'
+          marginBottom: '60px'
         }}>
           
-          {/* Column 1: Brand & Verified Badges */}
-          <div>
-            <div 
-              style={{ marginBottom: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px' }} 
-              onClick={() => handleNav('home')}
-            >
-              <img 
-                src="/images/siddhu_logo_transparent.png" 
-                alt="Siddhu Car Rentals" 
-                style={{ 
-                  height: '70px', 
-                  width: 'auto', 
-                  display: 'block', 
-                  objectFit: 'contain',
-                  filter: 'drop-shadow(0 4px 16px rgba(197, 160, 89, 0.35))'
-                }} 
-              />
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ 
-                  fontFamily: 'var(--font-editorial, "Playfair Display", serif)', 
-                  fontWeight: '900', 
-                  fontSize: '1.2rem', 
-                  letterSpacing: '0.04em',
-                  color: '#FFFFFF',
-                  lineHeight: '1.1'
-                }}>
-                  SIDDHU <span style={{ color: '#0284C7' }}>CAR RENTALS</span>
-                </span>
-                <span style={{ 
-                  fontSize: '0.62rem', 
-                  fontWeight: '800', 
-                  letterSpacing: '0.14em', 
-                  textTransform: 'uppercase', 
-                  color: '#94A3B8',
-                  marginTop: '4px'
-                }}>
-                  Bengaluru Premier Chauffeurs
-                </span>
+          {/* Column 1: Brand & Excellence */}
+          <div style={{ maxWidth: '320px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '8px',
+                background: 'linear-gradient(135deg, #C5A059 0%, #E6CA85 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(197, 160, 89, 0.3)'
+              }}>
+                <Crown size={22} color="#12151C" />
               </div>
+              <span style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.4rem', fontWeight: '800', letterSpacing: '-0.02em', color: '#FFFFFF' }}>
+                SIDDHU
+              </span>
             </div>
 
             <p style={{ color: 'rgba(255, 255, 255, 0.72)', fontSize: '0.9rem', lineHeight: '1.7', marginBottom: '24px' }}>
@@ -93,7 +75,6 @@ export const Footer = ({ onNavigate }) => {
               <li><button onClick={() => handleNav('fleets')} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0, font: 'inherit' }}>Fleet Gallery</button></li>
               <li><button onClick={() => handleNav('testimonials')} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0, font: 'inherit' }}>Verified Testimonials</button></li>
               <li><button onClick={() => handleNav('contact')} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0, font: 'inherit' }}>Contact & Concierge</button></li>
-              <li><button onClick={() => handleNav('admin')} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', cursor: 'pointer', padding: 0, font: 'inherit' }}>⚙️ Admin Portal</button></li>
             </ul>
           </div>
 
@@ -114,7 +95,7 @@ export const Footer = ({ onNavigate }) => {
           {/* Column 4: Contact & Office */}
           <div>
             <h4 style={{ fontFamily: 'var(--font-ui)', fontSize: '0.9rem', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#C5A059', marginBottom: '20px' }}>
-              Contact
+              Contact & Tax Details
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '0.88rem', color: 'rgba(255,255,255,0.8)' }}>
               <a 
@@ -134,6 +115,21 @@ export const Footer = ({ onNavigate }) => {
               <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                 <Mail size={16} color="#C5A059" style={{ flexShrink: 0 }} />
                 <span>reservations@siddhucarrentals.com</span>
+              </div>
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'center',
+                padding: '8px 12px',
+                background: 'rgba(197, 160, 89, 0.1)',
+                borderRadius: '8px',
+                border: '1px solid rgba(197, 160, 89, 0.25)',
+                marginTop: '4px'
+              }}>
+                <FileText size={15} color="#C5A059" style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: '0.8rem', color: '#E6CA85', fontWeight: '600' }}>
+                  GSTIN: 29AAMFS1234F1Z5
+                </span>
               </div>
             </div>
           </div>
@@ -181,13 +177,41 @@ export const Footer = ({ onNavigate }) => {
           </div>
 
           <div style={{ display: 'flex', gap: '20px' }}>
-            <a href="#privacy" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy Policy</a>
-            <a href="#terms" style={{ color: 'inherit', textDecoration: 'none' }}>Terms & Conditions</a>
-            <a href="#cancellation" style={{ color: 'inherit', textDecoration: 'none' }}>Cancellation Policy</a>
+            <button
+              onClick={() => setLegalModalType('privacy')}
+              style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0, font: 'inherit', transition: 'color 0.2s' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#C5A059'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+            >
+              Privacy Policy
+            </button>
+            <button
+              onClick={() => setLegalModalType('terms')}
+              style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0, font: 'inherit', transition: 'color 0.2s' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#C5A059'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+            >
+              Terms & Conditions
+            </button>
+            <button
+              onClick={() => setLegalModalType('cancellation')}
+              style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0, font: 'inherit', transition: 'color 0.2s' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#C5A059'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+            >
+              Cancellation Policy
+            </button>
           </div>
         </div>
 
       </div>
+
+      {/* Interactive Modal for Privacy Policy, Terms & Conditions, and Cancellation */}
+      <LegalModal
+        isOpen={Boolean(legalModalType)}
+        type={legalModalType}
+        onClose={() => setLegalModalType(null)}
+      />
     </footer>
   );
 };

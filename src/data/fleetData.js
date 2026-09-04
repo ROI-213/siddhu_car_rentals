@@ -43,7 +43,7 @@ export const fleetData = [
       "/images/fleet/mercedes_e_class_cockpit.png",
       "/images/fleet/mercedes_e_class_rear_cabin.png",
       "/images/fleet/mercedes_e_class_front_cabin.png",
-      "/images/fleet/mercedes_e_class_wedding.jpg"
+      "/images/eclass_rear_seats.png"
     ],
     "rating": 4.9,
     "passengerCapacity": 4,

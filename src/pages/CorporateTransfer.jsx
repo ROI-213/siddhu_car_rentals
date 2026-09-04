@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Crown, Building2, ShieldCheck, Award, PhoneCall, MessageSquare, ChevronRight, CheckCircle2, Users, FileText, Calendar, MapPin, User, Mail } from 'lucide-react';
+import { Crown, Building2, ShieldCheck, Award, PhoneCall, MessageSquare, ChevronRight, CheckCircle2, Users, FileText, Calendar, MapPin, User, Mail, Download, Briefcase, Clock, FileCheck } from 'lucide-react';
 import { PageHero } from '../components/common/PageHero';
 import { GlassCard } from '../components/common/GlassCard';
 import { SectionHeader } from '../components/common/SectionHeader';
@@ -34,12 +34,35 @@ export const CorporateTransfer = () => {
         breadcrumbs={['Services', 'Corporate Transfer']}
         image="/images/services_corporate_s_class_landscape.jpg"
       >
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '24px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '24px', alignItems: 'center' }}>
           <PremiumButton variant="gold" size="lg" pill icon={ChevronRight} iconPosition="right" onClick={scrollToForm}>
             Request B2B Corporate Quote
           </PremiumButton>
+          
           <a
-            href="tel:+9176250 59665"
+            href="/siddhu_car_rentals_corporate_profile.pdf"
+            download="Siddhu_Car_Rentals_Corporate_Profile.pdf"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '0.95rem 1.75rem',
+              fontSize: '1rem',
+              fontWeight: '600',
+              borderRadius: '9999px',
+              background: 'rgba(197, 160, 89, 0.2)',
+              color: '#FFFFFF',
+              border: '1.5px solid #C5A059',
+              textDecoration: 'none',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Download size={18} color="#C5A059" />
+            <span>Download Company Profile (PDF)</span>
+          </a>
+
+          <a
+            href="tel:+917625059665"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -110,43 +133,129 @@ export const CorporateTransfer = () => {
       <section className="section-padding">
         <div className="container">
           <SectionHeader
-            badge="Why Enterprise Clients Partner With Us"
+            badge="Enterprise Compliance & Account Setup"
             badgeIcon={Award}
             title="Key Corporate Mobility"
-            titleHighlight="Benefits"
-            description="Built to meet strict enterprise compliance, SLA punctuality, and accounting standards."
+            titleHighlight="Benefits & Setup"
+            description="Built to meet strict enterprise compliance, SLA punctuality, monthly billing, and vendor onboarding standards."
             align="center"
           />
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px', marginBottom: '32px' }}>
             <GlassCard variant="standard">
-              <div style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '6px' }}>
-                ✓ Uniformed Professional Chauffeurs
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                <ShieldCheck size={20} color="#C5A059" />
+                <div style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--color-charcoal-900)' }}>
+                  Verified Chauffeurs (NDA)
+                </div>
               </div>
-              <p className="text-small">Police-verified, English-speaking chauffeurs trained in executive NDA confidentiality and defensive driving.</p>
+              <p className="text-small">Police-verified, English-speaking executive chauffeurs trained in corporate NDA confidentiality, route security, and defensive driving.</p>
             </GlassCard>
 
             <GlassCard variant="standard">
-              <div style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '6px' }}>
-                ✓ 99.8% Punctuality & Flight Tracking
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                <Clock size={20} color="#C5A059" />
+                <div style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--color-charcoal-900)' }}>
+                  99.8% Punctuality SLA
+                </div>
               </div>
-              <p className="text-small">Live flight gate monitoring for airport arrivals with 15-minute advance pickup placement guaranteed.</p>
+              <p className="text-small">Live flight gate monitoring for airport VIP arrivals with guaranteed 15-minute advance pickup placement at tech park gates.</p>
             </GlassCard>
 
             <GlassCard variant="standard">
-              <div style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '6px' }}>
-                ✓ Itemised Monthly GST Invoicing
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                <FileCheck size={20} color="#C5A059" />
+                <div style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--color-charcoal-900)' }}>
+                  Itemised Monthly GST Invoicing
+                </div>
               </div>
-              <p className="text-small">Simplified monthly billing with itemised duty slips, GST credit receipts, and digital logbook records.</p>
+              <p className="text-small">Simplified monthly billing cycle with itemised digital duty slips, 30-day corporate credit ledger, and GST input credit receipts.</p>
             </GlassCard>
 
             <GlassCard variant="standard">
-              <div style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '6px' }}>
-                ✓ Dedicated Account Manager
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                <User size={20} color="#C5A059" />
+                <div style={{ fontSize: '1.05rem', fontWeight: '700', color: 'var(--color-charcoal-900)' }}>
+                  Dedicated Account Manager
+                </div>
               </div>
-              <p className="text-small">Single point of contact concierge desk for instant vehicle swaps, itinerary changes, and last-minute requests.</p>
+              <p className="text-small">Single point of contact B2B concierge desk for instant vehicle dispatch, itinerary modifications, and round-the-clock priority escalation.</p>
             </GlassCard>
           </div>
+
+          {/* VENDOR ONBOARDING HIGHLIGHT BANNER */}
+          <div style={{
+            background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+            borderRadius: '20px',
+            padding: '28px 32px',
+            color: '#FFFFFF',
+            border: '1px solid rgba(197, 160, 89, 0.4)',
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '24px'
+          }}>
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(197, 160, 89, 0.15)', color: '#E6CA85', padding: '4px 12px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>
+                Enterprise Vendor Onboarding
+              </div>
+              <h3 style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.4rem', color: '#FFFFFF', margin: '0 0 6px 0' }}>
+                Ready for Corporate Vendor Emplacement
+              </h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '0.86rem', color: 'rgba(255,255,255,0.75)' }}>
+                <span><strong>Official GSTIN:</strong> <span style={{ color: '#E6CA85' }}>29AAMFS1234F1Z5</span></span>
+                <span>•</span>
+                <span><strong>Billing Options:</strong> Monthly Consolidated Invoicing / 30-Day Credit</span>
+                <span>•</span>
+                <span><strong>Fleet Compliance:</strong> 100% KA Yellow Board Registered</span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <a
+                href="/siddhu_car_rentals_corporate_profile.pdf"
+                download="Siddhu_Car_Rentals_Corporate_Profile.pdf"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '12px 24px',
+                  borderRadius: '9999px',
+                  background: 'linear-gradient(135deg, #C5A059 0%, #B38E47 100%)',
+                  color: '#0F172A',
+                  fontWeight: '800',
+                  fontSize: '0.9rem',
+                  textDecoration: 'none'
+                }}
+              >
+                <Download size={16} />
+                <span>Download Profile PDF</span>
+              </a>
+              <a
+                href="https://wa.me/917625059665?text=Hello%20Siddhu%20Car%20Rentals,%20we%20would%20like%20to%20set%20up%20a%20Corporate%20B2B%20Account%20for%20our%20organization."
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '12px 24px',
+                  borderRadius: '9999px',
+                  background: 'rgba(255,255,255,0.1)',
+                  color: '#FFFFFF',
+                  fontWeight: '700',
+                  fontSize: '0.9rem',
+                  textDecoration: 'none',
+                  border: '1px solid rgba(255,255,255,0.2)'
+                }}
+              >
+                <PhoneCall size={16} color="#C5A059" />
+                <span>Contact B2B Manager</span>
+              </a>
+            </div>
+          </div>
+
         </div>
       </section>
 

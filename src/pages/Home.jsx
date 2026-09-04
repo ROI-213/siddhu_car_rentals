@@ -242,7 +242,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
       {/* ========================================================================= */}
       {/* 2. SIDDHU CAR RENTALS — ADVANCED INTERACTIVE JOURNEY PLANNER             */}
       {/* ========================================================================= */}
-      <section id="quick-enquiry" className="journey-planner-section">
+      <section id="journey-planner" className="journey-planner-section">
         {/* Soft Ambient Light Glows */}
         <div className="planner-ambient-canvas">
   <div className="planner-landscape-bg"></div>
