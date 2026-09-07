@@ -2626,11 +2626,11 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
           {/* Horizontal Scrolling Ribbon */}
           <div className="dest-scroll-ribbon">
             {[
-              { name: 'Chikmagalur', desc: 'Coffee Estates & Peaks', dist: '240 km', img: '/images/destinations/chikmagalur.jpg', bg: '#F0F9FF', rate: '₹24/km', fare: '~₹5,760' },
-              { name: 'Ooty', desc: 'Botanical Valleys & Lakes', dist: '270 km', img: '/images/destinations/ooty.jpg', bg: '#F5F3FF', rate: '₹24/km', fare: '~₹6,480' },
-              { name: 'Hampi', desc: 'UNESCO Stone Heritage', dist: '340 km', img: '/images/destinations/hampi.jpg', bg: '#FDFBF7', rate: '₹24/km', fare: '~₹8,160' },
-              { name: 'Mysuru', desc: 'Palaces & Silk Heritage', dist: '140 km', img: '/images/destinations/mysuru.jpg', bg: '#FFF7ED', rate: '₹24/km', fare: '~₹3,360' },
-              { name: 'Coorg', desc: 'Misty Coffee Valleys', dist: '260 km', img: '/images/destinations/coorg.jpg', bg: '#F0FDF4', rate: '₹24/km', fare: '~₹6,240' }
+              { name: 'Chikmagalur', desc: 'Coffee Estates & Peaks', dist: '240 km', img: '/images/destinations/chikmagalur.jpg', bg: '#F0F9FF', rate: 'From ₹15/km', fare: '300 km/day min' },
+              { name: 'Ooty', desc: 'Botanical Valleys & Lakes', dist: '270 km', img: '/images/destinations/ooty.jpg', bg: '#F5F3FF', rate: 'From ₹15/km', fare: '300 km/day min' },
+              { name: 'Hampi', desc: 'UNESCO Stone Heritage', dist: '340 km', img: '/images/destinations/hampi.jpg', bg: '#FDFBF7', rate: 'From ₹15/km', fare: '300 km/day min' },
+              { name: 'Mysuru', desc: 'Palaces & Silk Heritage', dist: '140 km', img: '/images/destinations/mysuru.jpg', bg: '#FFF7ED', rate: 'From ₹15/km', fare: '300 km/day min' },
+              { name: 'Coorg', desc: 'Misty Coffee Valleys', dist: '260 km', img: '/images/destinations/coorg.jpg', bg: '#F0FDF4', rate: 'From ₹15/km', fare: '300 km/day min' }
             ].map((d, index) => (
               <div
                 key={index}
@@ -2649,11 +2649,11 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                   <p style={{ margin: '0 0 12px 0', fontSize: '0.78rem', color: 'var(--color-slate-600)' }}>{d.desc}</p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
                     <div>
-                      <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-500)', fontWeight: '700' }}>Starting Rate</div>
+                      <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-500)', fontWeight: '700' }}>Sedan Starting</div>
                       <div style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--color-slate-900)' }}>{d.rate}</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-500)', fontWeight: '700' }}>One-Way Est.</div>
+                      <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-500)', fontWeight: '700' }}>Tariff Rule</div>
                       <div style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--accent-sky-primary)' }}>{d.fare}</div>
                     </div>
                   </div>

@@ -222,46 +222,61 @@ export const Outstation = ({ onEnquireClick }) => {
             badgeIcon={Award}
             title="Outstation Fleet Per-Km Tariff"
             titleHighlight="Breakdown"
-            description="Daily minimum 250 Kms applies. Night driver allowance included transparently."
+            description="Daily minimum 300 Kms applies (400 Kms for 45/49 seater luxury buses). Garage to garage billing with zero hidden charges."
             align="center"
           />
 
-          <GlassCard variant="standard" style={{ maxWidth: '840px', margin: '0 auto', padding: '0', overflow: 'hidden' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', background: '#12151C', color: '#C5A059', padding: '14px 20px', fontWeight: '700', fontSize: '0.82rem', textTransform: 'uppercase' }}>
+          <GlassCard variant="standard" style={{ maxWidth: '880px', margin: '0 auto', padding: '0', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr 1.1fr', background: '#12151C', color: '#C5A059', padding: '14px 20px', fontWeight: '700', fontSize: '0.82rem', textTransform: 'uppercase' }}>
               <div>Vehicle Model & Class</div>
+              <div>Min. Kms / Day</div>
               <div>Per Km Rate</div>
               <div>Driver Night Allowance</div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', padding: '16px 20px', borderBottom: '1px solid rgba(0,0,0,0.06)', fontSize: '0.88rem' }}>
-              <div style={{ fontWeight: '700' }}>Toyota Innova Crysta VIP (7-Seater)</div>
-              <div style={{ color: 'var(--accent-gold-primary)', fontWeight: '700' }}>{pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23} / km</div>
-              <div>₹500 / night</div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', padding: '16px 20px', borderBottom: '1px solid rgba(0,0,0,0.06)', fontSize: '0.88rem', background: 'rgba(197,160,89,0.05)' }}>
-              <div style={{ fontWeight: '700' }}>BMW 5 Series Executive Sedan</div>
-              <div style={{ color: 'var(--accent-gold-primary)', fontWeight: '700' }}>₹75 / km</div>
-              <div>₹600 / night</div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', padding: '16px 20px', borderBottom: '1px solid rgba(0,0,0,0.06)', fontSize: '0.88rem' }}>
-              <div style={{ fontWeight: '700' }}>Toyota Fortuner Legender 4x4 SUV</div>
-              <div style={{ color: 'var(--accent-gold-primary)', fontWeight: '700' }}>₹80 / km</div>
-              <div>₹600 / night</div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', padding: '16px 20px', borderBottom: '1px solid rgba(0,0,0,0.06)', fontSize: '0.88rem', background: 'rgba(197,160,89,0.05)' }}>
-              <div style={{ fontWeight: '700' }}>Mercedes-Benz S-Class VIP</div>
-              <div style={{ color: 'var(--accent-gold-primary)', fontWeight: '700' }}>₹120 / km</div>
-              <div>₹800 / night</div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr', padding: '16px 20px', fontSize: '0.88rem' }}>
-              <div style={{ fontWeight: '700' }}>Force Urbania VIP 12-Seater Van</div>
-              <div style={{ color: 'var(--accent-gold-primary)', fontWeight: '700' }}>₹45 / km</div>
-              <div>₹600 / night</div>
-            </div>
+            {[
+              { id: 'sedan-dzire', name: "Sedan (Dzire / Etios / Amaze)" },
+              { id: 'innova', name: "Innova / Ertiga / Kia Carens" },
+              { id: 'innova-crysta', name: "Toyota Innova Crysta VIP (7-Seater)" },
+              { id: 'innova-hycross', name: "Toyota Innova Hycross Hybrid" },
+              { id: 'toyota-fortuner', name: "Toyota Fortuner (Latest Model)" },
+              { id: 'toyota-camry', name: "Toyota Camry Hybrid / Accord" },
+              { id: 'bmw-5-series', name: "BMW 5 Series / Merc E-Class / Audi A6" },
+              { id: 'mercedes-s-class', name: "Mercedes S-Class / BMW 7 / Audi A8 (Latest)" },
+              { id: 'toyota-vellfire', name: "Toyota Vellfire Executive Lounge" },
+              { id: 'tempo-traveller', name: "Tempo Traveller A/C (12-Seater)" },
+              { id: 'urbania', name: "Force Urbania Luxury Van (16+1)" },
+              { id: 'mini-bus-21', name: "Mini Bus 21 Seater A/C" },
+              { id: 'mini-bus-25', name: "Mini Bus 25 Seater A/C" },
+              { id: 'bus-32', name: "32 Seater A/C Bus" },
+              { id: 'bus-45', name: "45 Seater A/C Luxury Bus" },
+              { id: 'bus-49', name: "49 Seater A/C Luxury Bus" }
+            ].map((v, idx) => {
+              const tariff = pricingService.getOutstationTariff(v.id);
+              return (
+                <div
+                  key={v.id}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1.4fr 1fr 1fr 1.1fr',
+                    padding: '14px 20px',
+                    borderBottom: '1px solid rgba(0,0,0,0.06)',
+                    fontSize: '0.88rem',
+                    background: idx % 2 === 1 ? 'rgba(197,160,89,0.04)' : 'transparent',
+                    alignItems: 'center'
+                  }}
+                >
+                  <div style={{ fontWeight: '700', color: 'var(--color-charcoal-900)' }}>{v.name}</div>
+                  <div style={{ color: 'var(--color-charcoal-600)' }}>{tariff?.minimum_km_per_day ? `${tariff.minimum_km_per_day} km/day` : '300 km/day'}</div>
+                  <div style={{ color: 'var(--accent-gold-primary)', fontWeight: '700' }}>
+                    {tariff?.rate_per_km ? `₹${tariff.rate_per_km} / km` : 'On Request'}
+                  </div>
+                  <div style={{ color: 'var(--color-charcoal-700)' }}>
+                    {tariff?.driver_allowance ? `₹${tariff.driver_allowance} / day` : 'On Request'}
+                  </div>
+                </div>
+              );
+            })}
           </GlassCard>
         </div>
       </section>
