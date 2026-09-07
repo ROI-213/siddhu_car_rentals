@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export const Input = ({
   label,
@@ -6,19 +6,41 @@ export const Input = ({
   type = 'text',
   options = null,
   placeholder = '',
-  value = '',
+  value,
+  defaultValue,
   onChange,
   required = false,
   className = '',
-  style = {}
+  style = {},
+  ...restProps
 }) => {
   const [isFocused, setIsFocused] = useState(false);
+  const isControlled = value !== undefined;
+  const [internalValue, setInternalValue] = useState(defaultValue ?? '');
+
+  useEffect(() => {
+    if (!isControlled && defaultValue !== undefined) {
+      setInternalValue(defaultValue);
+    }
+  }, [defaultValue, isControlled]);
+
+  const currentValue = isControlled ? (value ?? '') : internalValue;
+
+  const handleChange = (e) => {
+    if (!isControlled) {
+      setInternalValue(e.target.value);
+    }
+    if (onChange) {
+      onChange(e);
+    }
+  };
 
   // Label floats up if input is focused, has a value, has a placeholder, or is a select/date/time/textarea type
+  const hasContent = currentValue !== undefined && currentValue !== null && currentValue.toString().length > 0;
   const shouldFloat =
     isFocused ||
-    (value && value.toString().length > 0) ||
-    placeholder ||
+    hasContent ||
+    Boolean(placeholder) ||
     type === 'date' ||
     type === 'time' ||
     options !== null;
@@ -71,8 +93,8 @@ export const Input = ({
 
       {options ? (
         <select
-          value={value}
-          onChange={onChange}
+          value={currentValue}
+          onChange={handleChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           required={required}
@@ -92,6 +114,7 @@ export const Input = ({
             transition: 'all 0.2s ease',
             outline: 'none'
           }}
+          {...restProps}
         >
           {options.map((opt, idx) => (
             <option key={idx} value={opt.value} style={{ color: '#0F172A', background: '#FFFFFF' }}>
@@ -101,8 +124,8 @@ export const Input = ({
         </select>
       ) : type === 'textarea' ? (
         <textarea
-          value={value}
-          onChange={onChange}
+          value={currentValue}
+          onChange={handleChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
@@ -123,12 +146,13 @@ export const Input = ({
             transition: 'all 0.2s ease',
             outline: 'none'
           }}
+          {...restProps}
         />
       ) : (
         <input
           type={type}
-          value={value}
-          onChange={onChange}
+          value={currentValue}
+          onChange={handleChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
@@ -147,6 +171,7 @@ export const Input = ({
             transition: 'all 0.2s ease',
             outline: 'none'
           }}
+          {...restProps}
         />
       )}
     </div>

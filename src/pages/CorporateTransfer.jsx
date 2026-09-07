@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Crown, Building2, ShieldCheck, Award, PhoneCall, MessageSquare, ChevronRight, CheckCircle2, Users, FileText, Calendar, MapPin, User, Mail, Download, Briefcase, Clock, FileCheck } from 'lucide-react';
+import { Crown, Building2, ShieldCheck, Award, PhoneCall, MessageSquare, ChevronRight, CheckCircle2, Users, FileText, Calendar, MapPin, User, Mail, Download, Briefcase, Clock, FileCheck, Copy, Check } from 'lucide-react';
 import { PageHero } from '../components/common/PageHero';
 import { GlassCard } from '../components/common/GlassCard';
 import { SectionHeader } from '../components/common/SectionHeader';
@@ -9,11 +9,35 @@ import { Input } from '../components/common/Input';
 
 export const CorporateTransfer = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [copiedGstin, setCopiedGstin] = useState(false);
+  const [formData, setFormData] = useState({
+    companyName: '',
+    contactPerson: '',
+    phone: '',
+    email: '',
+    delegates: '1-5',
+    location: '',
+    startDate: '',
+    serviceType: 'airport_corpo',
+    notes: ''
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const copyGstin = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText('29AAMFS1234F1Z5');
+      setCopiedGstin(true);
+      setTimeout(() => setCopiedGstin(false), 2500);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setFormSubmitted(true);
-    setTimeout(() => setFormSubmitted(false), 7000);
   };
 
   const scrollToForm = () => {
@@ -203,8 +227,33 @@ export const CorporateTransfer = () => {
               <h3 style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.4rem', color: '#FFFFFF', margin: '0 0 6px 0' }}>
                 Ready for Corporate Vendor Emplacement
               </h3>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', fontSize: '0.86rem', color: 'rgba(255,255,255,0.75)' }}>
-                <span><strong>Official GSTIN:</strong> <span style={{ color: '#E6CA85' }}>29AAMFS1234F1Z5</span></span>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center', fontSize: '0.86rem', color: 'rgba(255,255,255,0.75)' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <strong>Official GSTIN:</strong>
+                  <span style={{ color: '#E6CA85', fontWeight: '700', fontFamily: 'monospace', fontSize: '0.92rem', letterSpacing: '0.04em' }}>29AAMFS1234F1Z5</span>
+                  <button
+                    type="button"
+                    onClick={copyGstin}
+                    style={{
+                      background: copiedGstin ? 'rgba(37, 211, 102, 0.2)' : 'rgba(255,255,255,0.1)',
+                      border: copiedGstin ? '1px solid #25D366' : '1px solid rgba(255,255,255,0.2)',
+                      borderRadius: '6px',
+                      padding: '2px 8px',
+                      color: copiedGstin ? '#25D366' : '#FFFFFF',
+                      fontSize: '0.72rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      transition: 'all 0.2s ease'
+                    }}
+                    title="Copy GSTIN"
+                  >
+                    {copiedGstin ? <Check size={12} /> : <Copy size={12} />}
+                    <span>{copiedGstin ? 'Copied' : 'Copy'}</span>
+                  </button>
+                </span>
                 <span>•</span>
                 <span><strong>Billing Options:</strong> Monthly Consolidated Invoicing / 30-Day Credit</span>
                 <span>•</span>
@@ -274,27 +323,132 @@ export const CorporateTransfer = () => {
           <GlassCard variant="glowing" style={{ padding: '36px', maxWidth: '840px', margin: '0 auto' }}>
             
             {formSubmitted ? (
-              <div style={{ textAlign: 'center', padding: '40px 20px', background: 'rgba(37, 211, 102, 0.08)', borderRadius: '16px', border: '1px solid rgba(37, 211, 102, 0.3)' }}>
+              <div style={{ textAlign: 'center', padding: '40px 24px', background: 'rgba(37, 211, 102, 0.08)', borderRadius: '16px', border: '1px solid rgba(37, 211, 102, 0.3)' }}>
                 <CheckCircle2 size={54} color="#128C7E" style={{ margin: '0 auto 16px auto' }} />
                 <h3 className="text-h2" style={{ color: '#128C7E', marginBottom: '8px' }}>Corporate Request Received!</h3>
-                <p className="text-body" style={{ maxWidth: '520px', margin: '0 auto' }}>
-                  Thank you for your interest. Our Corporate Accounts Director will contact your office within 2 hours to present customized B2B tariff options.
+                <p className="text-body" style={{ maxWidth: '540px', margin: '0 auto 24px auto', lineHeight: '1.6' }}>
+                  Thank you for your interest. We have received the mobility requirements for <strong>{formData.companyName || 'your enterprise'}</strong>. Our Corporate Accounts Director will connect with <strong>{formData.contactPerson || 'you'}</strong> within 2 hours with customized monthly B2B tariff options.
                 </p>
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', justifyContent: 'center' }}>
+                  <a
+                    href={`https://wa.me/917625059665?text=${encodeURIComponent(
+                      `*Corporate B2B Account Enquiry - Siddhu Car Rentals*\n\n` +
+                      `• *Company:* ${formData.companyName || 'N/A'}\n` +
+                      `• *Contact Person:* ${formData.contactPerson || 'N/A'}\n` +
+                      `• *Phone:* ${formData.phone || 'N/A'}\n` +
+                      `• *Email:* ${formData.email || 'N/A'}\n` +
+                      `• *Delegates / Size:* ${formData.delegates || '1-5'}\n` +
+                      `• *Office / Pickup:* ${formData.location || 'N/A'}\n` +
+                      `• *Expected Start Date:* ${formData.startDate || 'Immediate'}\n` +
+                      `• *Requirement:* ${formData.serviceType || 'Corporate Fleet'}\n` +
+                      `• *Notes:* ${formData.notes || 'None'}\n\n` +
+                      `Please share your corporate contract proposal.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '12px 24px',
+                      borderRadius: '9999px',
+                      background: '#25D366',
+                      color: '#FFFFFF',
+                      fontWeight: '700',
+                      fontSize: '0.92rem',
+                      textDecoration: 'none',
+                      boxShadow: '0 4px 14px rgba(37, 211, 102, 0.3)'
+                    }}
+                  >
+                    <MessageSquare size={18} />
+                    <span>Send Directly via WhatsApp</span>
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormSubmitted(false);
+                      setFormData({
+                        companyName: '',
+                        contactPerson: '',
+                        phone: '',
+                        email: '',
+                        delegates: '1-5',
+                        location: '',
+                        startDate: '',
+                        serviceType: 'airport_corpo',
+                        notes: ''
+                      });
+                    }}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '12px 24px',
+                      borderRadius: '9999px',
+                      background: '#FFFFFF',
+                      color: 'var(--color-charcoal-800)',
+                      fontWeight: '600',
+                      fontSize: '0.92rem',
+                      border: '1px solid rgba(0,0,0,0.12)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <span>Submit Another Request</span>
+                  </button>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
-                  <Input label="Company / Enterprise Name" icon={Building2} placeholder="e.g. Accenture / Infosys / Startup" required />
-                  <Input label="Contact Person Name" icon={User} placeholder="e.g. Priya Sundaram (HR / Admin)" required />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
-                  <Input label="Corporate Phone Number" icon={PhoneCall} placeholder="+91 76250 59665" required />
-                  <Input label="Official Corporate Email" icon={Mail} type="email" placeholder="priya@company.com" required />
+                  <Input
+                    name="companyName"
+                    value={formData.companyName}
+                    onChange={handleInputChange}
+                    label="Company / Enterprise Name"
+                    icon={Building2}
+                    placeholder="e.g. Accenture / Infosys / Startup"
+                    required
+                  />
+                  <Input
+                    name="contactPerson"
+                    value={formData.contactPerson}
+                    onChange={handleInputChange}
+                    label="Contact Person Name"
+                    icon={User}
+                    placeholder="e.g. Priya Sundaram (HR / Admin)"
+                    required
+                  />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
                   <Input
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    label="Corporate Phone Number"
+                    icon={PhoneCall}
+                    placeholder="+91 76250 59665"
+                    required
+                  />
+                  <Input
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    label="Official Corporate Email"
+                    icon={Mail}
+                    type="email"
+                    placeholder="priya@company.com"
+                    required
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+                  <Input
+                    name="delegates"
+                    value={formData.delegates}
+                    onChange={handleInputChange}
                     label="Number of Employees / Delegates"
                     icon={Users}
                     options={[
@@ -304,12 +458,31 @@ export const CorporateTransfer = () => {
                       { value: '50+', label: '50+ Monthly Enterprise Contract' }
                     ]}
                   />
-                  <Input label="Primary Office / Pickup Location" icon={MapPin} placeholder="e.g. Manyata Tech Park, Outer Ring Road" required />
+                  <Input
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    label="Primary Office / Pickup Location"
+                    icon={MapPin}
+                    placeholder="e.g. Manyata Tech Park, Outer Ring Road"
+                    required
+                  />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
-                  <Input label="Expected Start Date" type="date" icon={Calendar} required />
                   <Input
+                    name="startDate"
+                    value={formData.startDate}
+                    onChange={handleInputChange}
+                    label="Expected Start Date"
+                    type="date"
+                    icon={Calendar}
+                    required
+                  />
+                  <Input
+                    name="serviceType"
+                    value={formData.serviceType}
+                    onChange={handleInputChange}
                     label="Primary Service Requirement"
                     icon={Crown}
                     options={[
@@ -321,7 +494,14 @@ export const CorporateTransfer = () => {
                   />
                 </div>
 
-                <Input label="Vehicle Requirement & Special Notes" icon={FileText} placeholder="e.g. 2 Mercedes S-Class + 4 Innova Crystas required for 3 days summit..." />
+                <Input
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleInputChange}
+                  label="Vehicle Requirement & Special Notes"
+                  icon={FileText}
+                  placeholder="e.g. 2 Mercedes S-Class + 4 Innova Crystas required for 3 days summit..."
+                />
 
                 <PremiumButton variant="gold" size="lg" fullWidth pill icon={ChevronRight} iconPosition="right" style={{ marginTop: '12px' }}>
                   Request Corporate B2B Quote
