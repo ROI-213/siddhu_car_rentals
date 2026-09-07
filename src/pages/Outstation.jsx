@@ -34,9 +34,9 @@ export const Outstation = ({ onEnquireClick }) => {
     { name: 'Chikmagalur', distance: '240 Kms', time: '5.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/chikmagalur.jpg', highlight: 'Mullayanagiri Peak & Tea Estates' },
     { name: 'Ooty & Nilgiris', distance: '270 Kms', time: '6.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/ooty.jpg', highlight: 'Pine Forests & Botanical Gardens' },
     { name: 'Hampi Heritage', distance: '340 Kms', time: '6.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/hampi.jpg', highlight: 'UNESCO Stone Chariots & Ruins' },
-    { name: 'Wayanad Rainforest', distance: '280 Kms', time: '6.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/coorg.jpg', highlight: 'Wild Sanctuaries & Tea Valleys' },
-    { name: 'Sakleshpur Hills', distance: '220 Kms', time: '4.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/chikmagalur.jpg', highlight: 'Star Fort & Spice Plantations' },
-    { name: 'Chennai Coastal ECR', distance: '350 Kms', time: '6.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/mysuru.jpg', highlight: 'Interstate Business & Marina Beach' }
+    { name: 'Wayanad Rainforest', distance: '280 Kms', time: '6.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/wayanad.jpg', highlight: 'Wild Sanctuaries & Tea Valleys' },
+    { name: 'Sakleshpur Hills', distance: '220 Kms', time: '4.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/sakleshpur.jpg', highlight: 'Star Fort & Spice Plantations' },
+    { name: 'Chennai Coastal ECR', distance: '350 Kms', time: '6.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/chennai_ecr.jpg', highlight: 'Interstate Business & Marina Beach' }
   ];
 
   return (

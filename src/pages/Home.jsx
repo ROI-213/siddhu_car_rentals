@@ -2630,7 +2630,10 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
               { name: 'Ooty', desc: 'Botanical Valleys & Lakes', dist: '270 km', img: '/images/destinations/ooty.jpg', bg: '#F5F3FF', rate: 'From ₹15/km', fare: '300 km/day min' },
               { name: 'Hampi', desc: 'UNESCO Stone Heritage', dist: '340 km', img: '/images/destinations/hampi.jpg', bg: '#FDFBF7', rate: 'From ₹15/km', fare: '300 km/day min' },
               { name: 'Mysuru', desc: 'Palaces & Silk Heritage', dist: '140 km', img: '/images/destinations/mysuru.jpg', bg: '#FFF7ED', rate: 'From ₹15/km', fare: '300 km/day min' },
-              { name: 'Coorg', desc: 'Misty Coffee Valleys', dist: '260 km', img: '/images/destinations/coorg.jpg', bg: '#F0FDF4', rate: 'From ₹15/km', fare: '300 km/day min' }
+              { name: 'Coorg', desc: 'Misty Coffee Valleys', dist: '260 km', img: '/images/destinations/coorg.jpg', bg: '#F0FDF4', rate: 'From ₹15/km', fare: '300 km/day min' },
+              { name: 'Wayanad', desc: 'Rainforest & Sanctuaries', dist: '280 km', img: '/images/destinations/wayanad.jpg', bg: '#F0FDF4', rate: 'From ₹15/km', fare: '300 km/day min' },
+              { name: 'Sakleshpur', desc: 'Mist & Spice Hills', dist: '220 km', img: '/images/destinations/sakleshpur.jpg', bg: '#FDFBF7', rate: 'From ₹15/km', fare: '300 km/day min' },
+              { name: 'Chennai ECR', desc: 'Coastal Scenic Highway', dist: '350 km', img: '/images/destinations/chennai_ecr.jpg', bg: '#F0F9FF', rate: 'From ₹15/km', fare: '300 km/day min' }
             ].map((d, index) => (
               <div
                 key={index}
