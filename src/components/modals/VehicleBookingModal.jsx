@@ -5,7 +5,7 @@ import { Input } from '../common/Input';
 import { PremiumButton } from '../common/PremiumButton';
 import { Badge } from '../common/Badge';
 
-export const VehicleBookingModal = ({ vehicle, isOpen, onClose }) => {
+export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation = '', initialDate = '', initialPackage = '' }) => {
   const [submitted, setSubmitted] = useState(false);
   const localTariff = vehicle ? (pricingService.getLocalTariff(vehicle.id) || {}) : {};
   const priceStr = localTariff.eight_hours_eighty_km ? pricingService.formatPrice(localTariff.eight_hours_eighty_km) : 'Price on Request';
@@ -125,10 +125,11 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose }) => {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                <Input label="Pickup Address in Bengaluru" icon={MapPin} placeholder="e.g. UB City / Airport / Hotel" required />
+                <Input label="Pickup Address in Bengaluru" icon={MapPin} defaultValue={initialLocation} placeholder="e.g. UB City / Airport / Hotel" required />
                 <Input
                   label="Select Tariff Package"
                   icon={Clock}
+                  defaultValue={initialPackage === 'airport' ? 'airport' : initialPackage === 'outstation' ? 'outstation' : '8h'}
                   options={[
                     { value: '8h', label: `Local Full Day — 8 Hours / 80 Kms (₹${priceStr})` },
                     { value: '4h', label: `Local Half Day — 4 Hours / 40 Kms` },
@@ -139,7 +140,7 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose }) => {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                <Input label="Pickup Date" type="date" icon={Calendar} required />
+                <Input label="Pickup Date" type="date" icon={Calendar} defaultValue={initialDate} required />
                 <Input label="Pickup Time" type="time" icon={Clock} required />
               </div>
 

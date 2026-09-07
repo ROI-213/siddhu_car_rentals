@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Plane, MapPin, Briefcase, RefreshCw, ArrowRight, Calendar, LocateFixed, Loader2 } from 'lucide-react';
+import { Plane, MapPin, Briefcase, RefreshCw, ArrowRight, Calendar, LocateFixed, Loader2, Star, Users, ShieldCheck, MessageSquare, Sparkles, X, ChevronRight, PhoneCall } from 'lucide-react';
+import { fleetData } from '../../data/fleetData';
+import { pricingService } from '../../services/pricingService';
+import { VehicleBookingModal } from '../modals/VehicleBookingModal';
 import './CarRentalSearch.css';
 
 const TABS = [
@@ -79,6 +82,17 @@ export const CarRentalSearch = () => {
   const [isLocating, setIsLocating] = useState(false);
   const [locationError, setLocationError] = useState('');
   
+  // Dates & Options State
+  const [pickupDate, setPickupDate] = useState('');
+  const [returnDate, setReturnDate] = useState('');
+  const [sameDropoff, setSameDropoff] = useState(true);
+
+  // Search Results State
+  const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [resultCategoryFilter, setResultCategoryFilter] = useState('all');
+  const [selectedVehicleForModal, setSelectedVehicleForModal] = useState(null);
+  
   const dropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -128,7 +142,6 @@ export const CarRentalSearch = () => {
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          // Reverse geocoding using Nominatim (free, no API key required)
           const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
           const data = await response.json();
           
@@ -157,9 +170,96 @@ export const CarRentalSearch = () => {
     );
   };
 
+  const handleSearch = (e) => {
+    if (e) e.preventDefault();
+    setIsSearching(true);
+    setTimeout(() => {
+      setIsSearching(false);
+      setShowResults(true);
+      setTimeout(() => {
+        const el = document.getElementById('crs-search-results');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }, 350);
+  };
+
   // Duplicate for seamless infinite marquee loop
   const col1Marquee = [...COL_1_IMAGES, ...COL_1_IMAGES];
   const col2Marquee = [...COL_2_IMAGES, ...COL_2_IMAGES];
+
+  // Helper to compute tariff info for a vehicle based on activeTab
+  const getVehicleTariffInfo = (vehicle) => {
+    if (activeTab === 'airport') {
+      const p = pricingService.getAirportTransferPrice(vehicle.id);
+      return {
+        price: p ? pricingService.formatPrice(p) : 'Price on Request',
+        label: 'Flat Airport VIP Transfer',
+        rawPrice: p
+      };
+    }
+    if (activeTab === 'local') {
+      const t = pricingService.getLocalTariff(vehicle.id);
+      const p = t?.eight_hours_eighty_km;
+      return {
+        price: p ? pricingService.formatPrice(p) : 'Price on Request',
+        label: '8h / 80km Full Day Local Package',
+        rawPrice: p
+      };
+    }
+    if (activeTab === 'corporate') {
+      const t = pricingService.getLocalTariff(vehicle.id);
+      const p = t?.eight_hours_eighty_km;
+      return {
+        price: p ? pricingService.formatPrice(p) : 'Price on Request',
+        label: 'Daily Corporate B2B Billing',
+        rawPrice: p
+      };
+    }
+    // Outstation, Roundtrip, Oneway
+    const t = pricingService.getOutstationTariff(vehicle.id);
+    const p = t?.rate_per_km;
+    return {
+      price: p ? `₹${p}/km` : 'Price on Request',
+      label: `Outstation (${t?.minimum_km_per_day || 300} km/day min)`,
+      rawPrice: p
+    };
+  };
+
+  const filteredVehicles = useMemo(() => {
+    return fleetData.filter(v => {
+      if (resultCategoryFilter === 'sedans') {
+        return v.seatCategory === '3-4' || v.category.toLowerCase().includes('sedan');
+      }
+      if (resultCategoryFilter === 'suvs') {
+        return v.category.toLowerCase().includes('mpv') || v.category.toLowerCase().includes('suv');
+      }
+      if (resultCategoryFilter === 'luxury') {
+        return v.categoryKey === 'luxury' || (v.badgeText && v.badgeText.includes('VIP'));
+      }
+      if (resultCategoryFilter === 'buses') {
+        return v.category.toLowerCase().includes('bus') || v.category.toLowerCase().includes('traveller') || v.category.toLowerCase().includes('urbania');
+      }
+      return true;
+    });
+  }, [resultCategoryFilter]);
+
+  const activeTabLabel = TABS.find(t => t.id === activeTab)?.label || 'Car Rental';
+
+  const getWhatsAppLink = (vehicle) => {
+    const tariffInfo = getVehicleTariffInfo(vehicle);
+    const msg = 
+      `*Vehicle Booking Enquiry - Siddhu Car Rentals*\n\n` +
+      `• *Vehicle:* ${vehicle.name}\n` +
+      `• *Service:* ${activeTabLabel}\n` +
+      `• *Estimated Rate:* ${tariffInfo.price}\n` +
+      `• *Pickup Location:* ${locationQuery || 'Bengaluru City'}\n` +
+      `• *Pickup Date:* ${pickupDate || 'Immediate'}\n` +
+      (returnDate ? `• *Return Date:* ${returnDate}\n` : '') +
+      `\nPlease confirm vehicle availability and driver details.`;
+    return `https://wa.me/917625059665?text=${encodeURIComponent(msg)}`;
+  };
 
   return (
     <section className="car-rental-search-section">
@@ -175,8 +275,11 @@ export const CarRentalSearch = () => {
               return (
                 <button
                   key={tab.id}
+                  type="button"
                   className={`crs-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                  }}
                 >
                   <Icon className="crs-tab-icon" />
                   {tab.label}
@@ -186,14 +289,14 @@ export const CarRentalSearch = () => {
           </div>
 
           {/* COMPACT HORIZONTAL SEARCH BAR */}
-          <div className="crs-search-bar">
+          <form onSubmit={handleSearch} className="crs-search-bar">
             {/* Pick-up Location */}
             <div className="crs-input-section location" ref={dropdownRef}>
               <MapPin className="crs-input-icon" />
               <input 
                 type="text" 
                 className="crs-input" 
-                placeholder="Explore destinations"
+                placeholder="Explore destinations or areas"
                 value={locationQuery}
                 onChange={(e) => {
                   setLocationQuery(e.target.value);
@@ -206,7 +309,7 @@ export const CarRentalSearch = () => {
               {isDropdownOpen && (
                 <div className="crs-dropdown">
                   {/* Current Location Action */}
-                  <button className="crs-dropdown-item" onClick={handleCurrentLocation}>
+                  <button type="button" className="crs-dropdown-item" onClick={handleCurrentLocation}>
                     {isLocating ? (
                       <Loader2 className="crs-dropdown-icon crs-spinner" size={18} />
                     ) : (
@@ -225,6 +328,7 @@ export const CarRentalSearch = () => {
                     searchResults.map((loc, idx) => (
                       <button 
                         key={idx} 
+                        type="button"
                         className="crs-dropdown-item"
                         onClick={() => handleSelectLocation(loc.name)}
                       >
@@ -252,23 +356,52 @@ export const CarRentalSearch = () => {
             {/* Pick-up Date & Time */}
             <div className="crs-input-section date">
               <Calendar className="crs-input-icon" style={{ width: '14px', height: '14px' }} />
-              <input type="text" className="crs-input" placeholder="Pick-up date" onFocus={(e) => e.target.type = 'date'} onBlur={(e) => {if(!e.target.value) e.target.type = 'text'}} />
+              <input 
+                type={pickupDate ? 'date' : 'text'} 
+                className="crs-input" 
+                placeholder="Pick-up date" 
+                value={pickupDate}
+                onChange={(e) => setPickupDate(e.target.value)}
+                onFocus={(e) => (e.target.type = 'date')} 
+                onBlur={(e) => { if (!e.target.value) e.target.type = 'text'; }} 
+              />
             </div>
 
             {/* Return Date & Time */}
             <div className="crs-input-section date">
               <Calendar className="crs-input-icon" style={{ width: '14px', height: '14px' }} />
-              <input type="text" className="crs-input" placeholder="Return date" onFocus={(e) => e.target.type = 'date'} onBlur={(e) => {if(!e.target.value) e.target.type = 'text'}} />
+              <input 
+                type={returnDate ? 'date' : 'text'} 
+                className="crs-input" 
+                placeholder="Return date" 
+                value={returnDate}
+                onChange={(e) => setReturnDate(e.target.value)}
+                onFocus={(e) => (e.target.type = 'date')} 
+                onBlur={(e) => { if (!e.target.value) e.target.type = 'text'; }} 
+              />
             </div>
 
             {/* Search Button */}
-            <button className="crs-search-btn">
-              Search
+            <button type="submit" className="crs-search-btn" disabled={isSearching}>
+              {isSearching ? (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Loader2 className="crs-spinner" size={16} />
+                  <span>Searching...</span>
+                </span>
+              ) : (
+                <span>Search</span>
+              )}
             </button>
-          </div>
+          </form>
           
           <div className="crs-options">
-            <input type="checkbox" id="sameDropoff" defaultChecked style={{ accentColor: '#2C1E16' }} />
+            <input 
+              type="checkbox" 
+              id="sameDropoff" 
+              checked={sameDropoff} 
+              onChange={(e) => setSameDropoff(e.target.checked)}
+              style={{ accentColor: '#2C1E16' }} 
+            />
             <label htmlFor="sameDropoff">Same drop-off</label>
           </div>
         </div>
@@ -299,6 +432,149 @@ export const CarRentalSearch = () => {
         </div>
 
       </div>
+
+      {/* SEARCH RESULTS SECTION */}
+      {showResults && (
+        <div id="crs-search-results" className="crs-results-wrapper">
+          <div className="crs-results-header">
+            <div>
+              <div className="crs-results-badge">
+                <Sparkles size={13} />
+                <span>Available Luxury Vehicles</span>
+              </div>
+              <h3 className="crs-results-title">
+                Matching Fleet for {activeTabLabel}
+              </h3>
+              <p className="crs-results-sub">
+                <span>📍 Location: <strong>{locationQuery || 'Bengaluru Central'}</strong></span>
+                <span>•</span>
+                <span>📅 Schedule: <strong>{pickupDate || 'Immediate Pickup'}</strong> {returnDate ? `to ${returnDate}` : ''}</span>
+                <span>•</span>
+                <span style={{ color: '#16A34A', fontWeight: '700' }}>✓ 100% Verified Chauffeurs</span>
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <div className="crs-results-filter-bar">
+                {[
+                  { id: 'all', label: `All (${fleetData.length})` },
+                  { id: 'sedans', label: 'Sedans' },
+                  { id: 'suvs', label: 'SUVs & MPVs' },
+                  { id: 'luxury', label: 'VIP Flagship' },
+                  { id: 'buses', label: 'Coaches & Vans' }
+                ].map(f => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    className={`crs-filter-pill ${resultCategoryFilter === f.id ? 'active' : ''}`}
+                    onClick={() => setResultCategoryFilter(f.id)}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                className="crs-close-btn"
+                onClick={() => setShowResults(false)}
+                title="Close Search Results"
+              >
+                <X size={14} />
+                <span>Close Results</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Vehicles Grid */}
+          <div className="crs-vehicles-grid">
+            {filteredVehicles.map((vehicle) => {
+              const tariffInfo = getVehicleTariffInfo(vehicle);
+              const whatsappUrl = getWhatsAppLink(vehicle);
+
+              return (
+                <div key={vehicle.id} className="crs-vehicle-card">
+                  <div className="crs-card-img-wrap">
+                    <img src={vehicle.image} alt={vehicle.name} loading="lazy" />
+                    {vehicle.badgeText && (
+                      <span className="crs-card-badge">{vehicle.badgeText}</span>
+                    )}
+                  </div>
+
+                  <div className="crs-card-body">
+                    <div>
+                      <h4 className="crs-card-title">{vehicle.name}</h4>
+                      <div className="crs-card-category">{vehicle.category}</div>
+
+                      <div className="crs-card-specs">
+                        <span className="crs-spec-tag">
+                          <Users size={12} />
+                          <span>{vehicle.passengerCapacity || 4} Seats</span>
+                        </span>
+                        <span className="crs-spec-tag">
+                          <Briefcase size={12} />
+                          <span>{vehicle.luggageCapacity || 3} Bags</span>
+                        </span>
+                        <span className="crs-spec-tag">
+                          <ShieldCheck size={12} />
+                          <span>Chauffeur</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="crs-card-pricing">
+                        <div>
+                          <div className="crs-price-label">{tariffInfo.label}</div>
+                          <div className="crs-price-value">{tariffInfo.price}</div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ fontSize: '0.72rem', background: 'rgba(37, 211, 102, 0.12)', color: '#128C7E', padding: '2px 8px', borderRadius: '4px', fontWeight: '700' }}>
+                            Instant Dispatch
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="crs-card-actions">
+                        <a
+                          href={whatsappUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="crs-btn-whatsapp"
+                          title="Instant WhatsApp Booking"
+                        >
+                          <MessageSquare size={16} />
+                          <span>WhatsApp</span>
+                        </a>
+
+                        <button
+                          type="button"
+                          className="crs-btn-reserve"
+                          onClick={() => setSelectedVehicleForModal(vehicle)}
+                        >
+                          <span>Reserve Now</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Interactive Booking Modal */}
+      {selectedVehicleForModal && (
+        <VehicleBookingModal
+          vehicle={selectedVehicleForModal}
+          isOpen={Boolean(selectedVehicleForModal)}
+          onClose={() => setSelectedVehicleForModal(null)}
+          initialLocation={locationQuery}
+          initialDate={pickupDate}
+          initialPackage={activeTab}
+        />
+      )}
     </section>
   );
 };

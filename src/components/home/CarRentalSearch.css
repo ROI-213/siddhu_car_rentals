@@ -415,3 +415,281 @@
 @keyframes crsSpin {
   100% { transform: rotate(360deg); }
 }
+
+/* SEARCH RESULTS SECTION */
+.crs-results-wrapper {
+  width: 100%;
+  max-width: 1400px;
+  margin-top: 24px;
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(197, 160, 89, 0.35);
+  animation: crsFadeIn 0.35s ease-out;
+}
+
+@keyframes crsFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.crs-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #F1F5F9;
+  margin-bottom: 24px;
+}
+
+.crs-results-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(197, 160, 89, 0.12);
+  color: #8C6D2B;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.crs-results-title {
+  font-family: var(--font-editorial, serif);
+  font-size: 1.8rem;
+  color: #0F172A;
+  margin: 0 0 6px 0;
+  font-weight: 800;
+}
+
+.crs-results-sub {
+  font-size: 0.9rem;
+  color: #64748B;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.crs-results-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.crs-filter-pill {
+  border: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  color: #475569;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.crs-filter-pill.active,
+.crs-filter-pill:hover {
+  background: #0F172A;
+  color: #FFFFFF;
+  border-color: #0F172A;
+}
+
+.crs-close-btn {
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #64748B;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.crs-close-btn:hover {
+  background: #FEE2E2;
+  color: #DC2626;
+  border-color: #FCA5A5;
+}
+
+/* VEHICLES GRID */
+.crs-vehicles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.crs-vehicle-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid #E2E8F0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+}
+
+.crs-vehicle-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+  border-color: #C5A059;
+}
+
+.crs-card-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  background: #F8FAFC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 16px;
+}
+
+.crs-card-img-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+}
+
+.crs-vehicle-card:hover .crs-card-img-wrap img {
+  transform: scale(1.04);
+}
+
+.crs-card-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #C5A059;
+  color: #FFFFFF;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.crs-card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.crs-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0 0 4px 0;
+}
+
+.crs-card-category {
+  font-size: 0.8rem;
+  color: #94A3B8;
+  margin: 0 0 14px 0;
+}
+
+.crs-card-specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.crs-spec-tag {
+  background: #F1F5F9;
+  color: #334155;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.crs-card-pricing {
+  background: #FAF8F5;
+  border: 1px solid rgba(197, 160, 89, 0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.crs-price-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: #64748B;
+  font-weight: 600;
+}
+
+.crs-price-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.crs-card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.crs-btn-whatsapp {
+  flex: 1;
+  background: #25D366;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.crs-btn-whatsapp:hover {
+  background: #1EBE5B;
+}
+
+.crs-btn-reserve {
+  flex: 1;
+  background: #C5A059;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.crs-btn-reserve:hover {
+  background: #B38E47;
+}
