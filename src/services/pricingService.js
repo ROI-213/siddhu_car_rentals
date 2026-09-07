@@ -1,5 +1,5 @@
 
-import { DEFAULT_DISPOSAL_TARIFFS, DEFAULT_OUTSTATION_TARIFFS } from './tariffApi';
+import { DEFAULT_DISPOSAL_TARIFFS, DEFAULT_OUTSTATION_TARIFFS } from './tariffApi.js';
 
 export const FLEET_TARIFF_MAPPING = {
   "mercedes-s-class": "Merc \"S\" Class / BMW 7\" / Audi A8 latest model",
@@ -26,7 +26,12 @@ export const FLEET_TARIFF_MAPPING = {
   "honda-accord": "Camry / Accord / Fortuner latest model",
   "toyota-commuter": "Toyato Commuter",
   "luxury-mini-bus": "Mini Bus 21 Seater AC",
-  "luxury-large-bus": "Bus 45 Seater AC"
+  "mini-bus-21": "Mini Bus 21 Seater AC",
+  "mini-bus-25": "Mini Bus 25 Seater AC",
+  "bus-32": "32 Seater AC Bus",
+  "luxury-large-bus": "Bus 45 Seater AC",
+  "bus-45": "Bus 45 Seater AC",
+  "bus-49": "Bus 49 Seater AC"
 };
 
 export const pricingService = {

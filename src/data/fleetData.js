@@ -358,14 +358,47 @@ export const fleetData = [
     ]
   },
   {
-    "id": "luxury-mini-bus",
-    "name": "Luxury Mini Bus (21-25 Seater AC)",
-    "modelYear": "2024-2025 Luxury Coach",
+    "id": "mini-bus-21",
+    "name": "Luxury Mini Bus (21 Seater AC)",
+    "modelYear": "2024-2025 Luxury Mini Coach",
     "category": "Executive Group Coaches",
     "categoryKey": "coach",
     "image": "/images/fleet/studio_mini_bus.jpg",
     "gallery": [
-      "/images/fleet/studio_mini_bus.jpg"
+      "/images/fleet/studio_mini_bus.jpg",
+      "/images/fleet/force_traveller_interior_seats.jpg",
+      "/images/fleet/force_traveller_cabin_view.jpg"
+    ],
+    "rating": 4.8,
+    "passengerCapacity": 21,
+    "seatCategory": "12+",
+    "luggageCapacity": 12,
+    "transmission": "Manual",
+    "fuelType": "Turbo Diesel",
+    "ac": "High-Capacity Dual Air Conditioning",
+    "badgeText": "21 Seater Executive",
+    "regPlate": "SIDDHU CAR RENTALS",
+    "description": "Our official 21-seater luxury mini bus is tailor-made for corporate teams, airport delegacy shuttles, and VIP family pilgrimages. Features plush 2x1 push-back recliner seating with generous legroom, carpeted aisle, high-fidelity PA & audio system, and experienced highway drivers.",
+    "amenities": [
+      "2x1 Push-Back Recliner Seats",
+      "Overhead Personal Luggage Racks",
+      "High-Capacity Dual AC Vents",
+      "PA System & Mic",
+      "Pristine White Commercial Coach",
+      "Uniformed Highway Driver"
+    ]
+  },
+  {
+    "id": "mini-bus-25",
+    "name": "Luxury Mini Bus (25 Seater AC)",
+    "modelYear": "2024-2025 Luxury Tourist Coach",
+    "category": "Executive Group Coaches",
+    "categoryKey": "coach",
+    "image": "/images/fleet/studio_mini_bus.jpg",
+    "gallery": [
+      "/images/fleet/studio_mini_bus.jpg",
+      "/images/fleet/force_traveller_cabin_view.jpg",
+      "/images/fleet/force_traveller_roof_tv.jpg"
     ],
     "rating": 4.8,
     "passengerCapacity": 25,
@@ -373,46 +406,110 @@ export const fleetData = [
     "luggageCapacity": 15,
     "transmission": "Manual",
     "fuelType": "Turbo Diesel",
-    "ac": "Multi-Zone Air Conditioning",
-    "badgeText": "Mid-Size Group",
-    "regPlate": "KA 05 VIP 2525",
-    "description": "Our modern white luxury 25-Seater Mini Bus is ideal for mid-sized corporate outings, pilgrimage tours, and destination weddings. Equipped with comfortable push-back reclining seats, pristine white exteriors, yellow commercial registration boards, and a premium VIP interior for a smooth and comfortable group journey.",
+    "ac": "Multi-Zone High-Capacity Air Conditioning",
+    "badgeText": "25 Seater Coach",
+    "regPlate": "SIDDHU CAR RENTALS",
+    "description": "Spacious 25-seater executive mini bus designed for medium-sized corporate outings, tech park events, and destination weddings. Equipped with comfortable push-back reclining seats, large luggage bays, entertainment console, and verified chauffeurs.",
     "amenities": [
-      "Push-Back Reclining Seats",
-      "Overhead Luggage Racks",
-      "High-Capacity AC",
-      "PA System",
-      "Clean White Exterior",
-      "Uniformed Driver"
+      "Comfortable Push-Back Recliners",
+      "LED TV & Hi-Fi Audio Entertainment",
+      "Overhead AC Blowers for Every Row",
+      "Rear Boot & Roof Luggage Space",
+      "Emergency Exit & First Aid Kit",
+      "Uniformed Experienced Chauffeur"
     ]
   },
   {
-    "id": "luxury-large-bus",
-    "name": "Luxury Large Bus (32-45 Seater AC)",
-    "modelYear": "2024-2025 Luxury Tourist Coach",
+    "id": "bus-32",
+    "name": "Luxury Coach (32 Seater AC)",
+    "modelYear": "2024-2025 Executive Touring Bus",
     "category": "Executive Group Coaches",
     "categoryKey": "coach",
     "image": "/images/fleet/studio_large_bus.jpg",
     "gallery": [
-      "/images/fleet/studio_large_bus.jpg"
+      "/images/fleet/studio_large_bus.jpg",
+      "/images/fleet/force_traveller_interior_seats.jpg",
+      "/images/fleet/force_traveller_roof_tv.jpg"
+    ],
+    "rating": 4.9,
+    "passengerCapacity": 32,
+    "seatCategory": "12+",
+    "luggageCapacity": 20,
+    "transmission": "Manual",
+    "fuelType": "Heavy Turbo Diesel",
+    "ac": "Central Multi-Vent Climate AC",
+    "badgeText": "32 Seater Touring",
+    "regPlate": "SIDDHU CAR RENTALS",
+    "description": "High-capacity 32-seater luxury touring coach with panoramic viewing windows, high-back reclining seats, expansive underbelly storage, and dedicated guide seat. The ideal choice for mid-to-large business delegations, college industrial visits, and interstate journeys across South India.",
+    "amenities": [
+      "High-Back Reclining Cushioned Seats",
+      "Wide Panoramic Windows with Curtains",
+      "Spacious Underbelly Luggage Compartment",
+      "Digital PA Announcement System",
+      "USB Charging Ports for Passengers",
+      "Uniformed Long-Distance Captain & Crew"
+    ]
+  },
+  {
+    "id": "bus-45",
+    "name": "Luxury Large Bus (45 Seater AC)",
+    "modelYear": "2024-2025 Interstate Tourist Coach",
+    "category": "Executive Group Coaches",
+    "categoryKey": "coach",
+    "image": "/images/fleet/studio_large_bus.jpg",
+    "gallery": [
+      "/images/fleet/studio_large_bus.jpg",
+      "/images/fleet/force_traveller_interior_seats.jpg",
+      "/images/fleet/force_traveller_cabin_view.jpg"
     ],
     "rating": 4.9,
     "passengerCapacity": 45,
     "seatCategory": "12+",
-    "luggageCapacity": 25,
-    "transmission": "Manual",
-    "fuelType": "Turbo Diesel",
-    "ac": "Multi-Zone Air Conditioning",
-    "badgeText": "Large Group Transport",
-    "regPlate": "KA 05 VIP 4545",
-    "description": "The ultimate transport solution for large-scale corporate events, conventions, and mass delegate travel. Our official 45-seater luxury coaches feature spacious interiors, panoramic windows, massive underbelly luggage compartments, and professional uniformed chauffeurs, delivering a premium journey experience.",
+    "luggageCapacity": 28,
+    "transmission": "Heavy-Duty Manual",
+    "fuelType": "Interstate Commercial Diesel",
+    "ac": "Full-Length Central Chilled AC",
+    "badgeText": "45 Seater Flagship",
+    "regPlate": "SIDDHU CAR RENTALS",
+    "description": "Premium 45-passenger full-size luxury AC tourist bus for large corporate conventions, tech summits, employee shuttles, and grand wedding convoys. Features wide air-cushioned push-back seats, LED TV entertainment, reading lamps, and cavernous luggage compartments.",
     "amenities": [
-      "Spacious Layout",
-      "Panoramic Windows",
-      "Large Underbelly Luggage",
-      "PA & Entertainment System",
-      "Onboard Guide Seat",
-      "Uniformed Chauffeur"
+      "Air-Suspension Smooth Ride",
+      "Plush Push-Back Recliner Seats",
+      "Massive Underbelly Luggage Bays",
+      "Dual LED TV Monitors with HDMI",
+      "Clean Sanitized Air-Cooled Cabin",
+      "Commercial Yellow Board Interstate Permit"
+    ]
+  },
+  {
+    "id": "bus-49",
+    "name": "Luxury Large Bus (49 Seater AC)",
+    "modelYear": "2024-2025 Maximum Capacity Coach",
+    "category": "Executive Group Coaches",
+    "categoryKey": "coach",
+    "image": "/images/fleet/studio_large_bus.jpg",
+    "gallery": [
+      "/images/fleet/studio_large_bus.jpg",
+      "/images/fleet/force_traveller_interior_seats.jpg",
+      "/images/fleet/force_traveller_roof_tv.jpg"
+    ],
+    "rating": 4.9,
+    "passengerCapacity": 49,
+    "seatCategory": "12+",
+    "luggageCapacity": 32,
+    "transmission": "Heavy-Duty Manual",
+    "fuelType": "Interstate Commercial Diesel",
+    "ac": "Full-Length Central Chilled AC",
+    "badgeText": "49 Seater Maximum",
+    "regPlate": "SIDDHU CAR RENTALS",
+    "description": "Our highest capacity 49-seater luxury tourist coach. Configured for maximum delegation transport with ergonomic recliner seating, wide aisles, advanced pneumatic suspension, panoramic tinted windows, and seasoned highway captains for seamless group transit.",
+    "amenities": [
+      "49 Full Adult Passenger Recliners",
+      "Advanced Air Suspension Ride Comfort",
+      "Largest-in-Class Luggage Bays",
+      "Emergency Exit & Speed Governor",
+      "PA System & Hi-Fi Audio Speakers",
+      "Dedicated On-Road Highway Crew"
     ]
   },
   {

@@ -44,8 +44,20 @@ export const CinematicHero = ({ onExploreFleet, onGetQuote }) => {
             <span className="heading-subline">OUR DRIVE.</span>
           </h1>
 
+          <h2 style={{
+            fontSize: 'clamp(1rem, 2vw, 1.25rem)',
+            fontWeight: '700',
+            color: '#C5A059',
+            letterSpacing: '0.04em',
+            margin: '0 0 12px 0',
+            textTransform: 'uppercase',
+            fontFamily: 'var(--font-ui)'
+          }}>
+            Luxury Car Rental Bengaluru • Executive Chauffeur & Bus Services
+          </h2>
+
           <p className="cinematic-supporting-text">
-            Premium cars, professional chauffeurs and seamless travel experiences across Bengaluru and beyond.
+            Premium luxury cars, outstation travel, group coaches and 24/7 airport VIP transfers across Bengaluru and South India with verified chauffeurs.
           </p>
 
           <motion.div 
