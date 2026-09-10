@@ -210,7 +210,27 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
             <span className="action-text">Call</span>
           </a>
 
-          <WhatsAppEnquiryMenu context={{}} triggerLabel="WhatsApp" triggerIcon={WhatsAppIcon} />
+          <WhatsAppEnquiryMenu
+            context={{}}
+            triggerLabel=""
+            triggerIcon={WhatsAppIcon}
+            iconSize={20}
+            buttonStyle={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              background: '#25D366',
+              color: '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 8px rgba(37, 211, 102, 0.35)',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              transition: 'all 0.2s ease'
+            }}
+          />
 
           <PremiumButton variant="sky" size="sm" pill icon={ChevronRight} iconPosition="right" onClick={() => handleNavClick('contact')}>
             <span style={{ whiteSpace: 'nowrap' }}>Get Quote</span>
