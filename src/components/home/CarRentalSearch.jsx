@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Plane, MapPin, Briefcase, RefreshCw, ArrowRight, Calendar, LocateFixed, Loader2, Star, Users, ShieldCheck, MessageSquare, Sparkles, X, ChevronRight, PhoneCall, ArrowLeftRight, Compass, Clock } from 'lucide-react';
+import { Plane, MapPin, Briefcase, RefreshCw, ArrowRight, Calendar, LocateFixed, Loader2, Star, Users, ShieldCheck, MessageSquare, Sparkles, X, ChevronRight, PhoneCall, ArrowLeftRight, Compass, Clock, Crown, FileText } from 'lucide-react';
 import { fleetData } from '../../data/fleetData';
 import { pricingService } from '../../services/pricingService';
 import { VehicleBookingModal } from '../modals/VehicleBookingModal';
 import { WhatsAppEnquiryMenu, WhatsAppIcon } from '../common/WhatsAppEnquiryMenu';
+import { SITE_CONFIG } from '../../config/site';
 import './CarRentalSearch.css';
 
 // ── Trip types matching the spec ──────────────────────────────────────────────
@@ -658,128 +659,107 @@ export const CarRentalSearch = ({ onNavigate }) => {
   return (
     <section className="car-rental-search-section">
       <div className="crs-container" id="quick-enquiry">
-        {/* ── LEFT – Search Panel ─────────────────────────────────────────── */}
+        {/* ── LEFT – Feature Highlights & Trust Pillars ───────────────────── */}
         <div className="crs-left-panel">
-          <h2 className="crs-headline">Find the perfect car for your journey.</h2>
-
-          {/* Trip type tabs */}
-          <div className="crs-tabs">
-            {TABS.map(tab => {
-              const Icon = tab.icon;
-              return (
-                <button key={tab.id} type="button"
-                  className={`crs-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
-                  onClick={() => { setActiveTab(tab.id); setShowResults(false); }}
-                >
-                  <Icon className="crs-tab-icon" />
-                  {tab.label}
-                </button>
-              );
-            })}
+          <div className="crs-feature-badge">
+            <ShieldCheck size={14} />
+            <span>Bengaluru Luxury Chauffeur Specialists</span>
           </div>
 
-          {/* Search bar */}
-          <form onSubmit={handleSearch} className="crs-search-bar">
-            {/* Pickup autocomplete */}
-            <LocationAutocomplete
-              value={pickupLocation}
-              onChange={setPickupLocation}
-              placeholder="Pickup location — e.g. Indiranagar, BLR Airport"
-              icon={MapPin}
-              onCurrentLocation={handleCurrentLocation}
-              isLocating={isLocating}
+          <h2 className="crs-headline">
+            Exceptional Journeys, Backed by Uncompromised Luxury.
+          </h2>
+
+          <p className="crs-supporting-desc">
+            Bengaluru’s premier chauffeur-driven fleet for executive airport VIP transfers, full-day corporate mobility, luxury weddings, and serene South India getaways.
+          </p>
+
+          <div className="crs-trust-grid">
+            <div className="crs-trust-item">
+              <div className="crs-trust-icon-wrap">
+                <ShieldCheck size={18} color="#C5A059" />
+              </div>
+              <div>
+                <div className="crs-trust-title">100% Verified Chauffeurs</div>
+                <div className="crs-trust-text">Uniformed, police-verified, bilingual professionals</div>
+              </div>
+            </div>
+
+            <div className="crs-trust-item">
+              <div className="crs-trust-icon-wrap">
+                <Clock size={18} color="#0284C7" />
+              </div>
+              <div>
+                <div className="crs-trust-title">24/7 Guaranteed Dispatch</div>
+                <div className="crs-trust-text">Punctual Kempegowda Airport pickups & rapid city deployment</div>
+              </div>
+            </div>
+
+            <div className="crs-trust-item">
+              <div className="crs-trust-icon-wrap">
+                <FileText size={18} color="#059669" />
+              </div>
+              <div>
+                <div className="crs-trust-title">Transparent GST Billing</div>
+                <div className="crs-trust-text">Fixed rate card, zero surge charges, consolidated corporate invoices</div>
+              </div>
+            </div>
+
+            <div className="crs-trust-item">
+              <div className="crs-trust-icon-wrap">
+                <Crown size={18} color="#D97706" />
+              </div>
+              <div>
+                <div className="crs-trust-title">Flagship Pristine Fleet</div>
+                <div className="crs-trust-text">Mercedes S/E-Class, BMW, Vellfire, Crysta & luxury coaches</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="crs-cta-cluster">
+            <WhatsAppEnquiryMenu
+              context={{ tripType: 'Concierge Booking' }}
+              triggerLabel="Instant WhatsApp Concierge"
+              triggerIcon={WhatsAppIcon}
+              iconSize={16}
+              buttonStyle={{
+                background: '#25D366',
+                color: '#FFFFFF',
+                borderRadius: '999px',
+                padding: '11px 22px',
+                fontSize: '0.88rem',
+                fontWeight: '700',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(37, 211, 102, 0.3)',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+              }}
             />
 
-            {/* Swap + Destination (conditional) */}
-            {showDestination && (
-              <>
-                <button type="button" className="crs-swap-btn" onClick={() => {
-                  const tmp = pickupLocation;
-                  setPickupLocation(dropLocation);
-                  setDropLocation(tmp);
-                }} aria-label="Swap pickup and drop">
-                  <ArrowLeftRight size={16} />
-                </button>
-                <LocationAutocomplete
-                  value={dropLocation}
-                  onChange={setDropLocation}
-                  placeholder="Drop location — e.g. Mysuru, Coorg"
-                  icon={MapPin}
-                  disabled={false}
-                  dropdownWidth="300px"
-                />
-              </>
-            )}
+            <a
+              href={`tel:${SITE_CONFIG.contact.phone}`}
+              className="crs-btn-call"
+            >
+              <PhoneCall size={15} color="#0F172A" />
+              <span>Call Desk: +91 76250 59665</span>
+            </a>
 
-            {/* Pickup date */}
-            <div className="crs-input-section date">
-              <Calendar size={14} className="crs-input-icon" />
-              <input
-                type="date"
-                className="crs-input"
-                placeholder="Pickup date"
-                value={pickupDate}
-                min={today}
-                onChange={e => {
-                  setPickupDate(e.target.value);
-                  if (returnDate && returnDate < e.target.value) setReturnDate('');
-                }}
-              />
-            </div>
-
-            {/* Pickup time */}
-            <div className="crs-input-section date">
-              <Clock size={14} className="crs-input-icon" />
-              <input
-                type="time"
-                className="crs-input"
-                placeholder="Pickup time"
-                value={pickupTime}
-                onChange={e => setPickupTime(e.target.value)}
-              />
-            </div>
-
-            {/* Return date (conditional) */}
-            {showReturnDate && (
-              <div className="crs-input-section date">
-                <Calendar size={14} className="crs-input-icon" />
-                <input
-                  type="date"
-                  className="crs-input"
-                  placeholder="Return date"
-                  value={returnDate}
-                  min={pickupDate || today}
-                  onChange={e => setReturnDate(e.target.value)}
-                />
-              </div>
-            )}
-
-            {/* Return time (conditional) */}
-            {showReturnDate && (
-              <div className="crs-input-section date">
-                <Clock size={14} className="crs-input-icon" />
-                <input
-                  type="time"
-                  className="crs-input"
-                  placeholder="Return time"
-                  value={returnTime}
-                  onChange={e => setReturnTime(e.target.value)}
-                />
-              </div>
-            )}
-
-            {/* Search button */}
-            <button type="submit" className="crs-search-btn" disabled={isSearching}>
-              {isSearching ? (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                  <Loader2 size={16} className="crs-spinner" />
-                  <span>Searching</span>
-                </span>
-              ) : <span>Search</span>}
+            <button
+              type="button"
+              className="crs-btn-explore"
+              onClick={() => {
+                const el = document.getElementById('fleet-section') || document.getElementById('journey-planner');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                else if (onNavigate) onNavigate('fleets');
+              }}
+            >
+              <span>Explore Fleet</span>
+              <ChevronRight size={15} />
             </button>
-          </form>
-
-          {locationError && <div className="crs-location-error">{locationError}</div>}
+          </div>
         </div>
 
         {/* ── RIGHT – Image Collage ────────────────────────────────────────── */}
