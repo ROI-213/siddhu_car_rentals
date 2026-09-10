@@ -1,5 +1,6 @@
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { pricingService } from '../../services/pricingService';
-import React, { useState } from 'react';
 import { X, CheckCircle2, Phone, Calendar, Clock, MapPin, User, ChevronRight, ShieldCheck, Star } from 'lucide-react';
 import { Input } from '../common/Input';
 import { PremiumButton } from '../common/PremiumButton';
@@ -7,6 +8,23 @@ import { Badge } from '../common/Badge';
 
 export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation = '', initialDate = '', initialPackage = '' }) => {
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape') onClose();
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = 'unset';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isOpen, onClose]);
+
   const localTariff = vehicle ? (pricingService.getLocalTariff(vehicle.id) || {}) : {};
   const priceStr = localTariff.eight_hours_eighty_km ? pricingService.formatPrice(localTariff.eight_hours_eighty_km) : 'Price on Request';
 
@@ -21,30 +39,40 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
     }, 4000);
   };
 
-  return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      zIndex: 2000,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px',
-      backgroundColor: 'rgba(18, 21, 28, 0.8)',
-      backdropFilter: 'blur(16px)',
-      WebkitBackdropFilter: 'blur(16px)'
-    }}>
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        maxWidth: '720px',
-        maxHeight: '90vh',
-        overflowY: 'auto',
-        background: '#FFFFFF',
-        borderRadius: '24px',
-        boxShadow: '0 24px 60px rgba(0,0,0,0.3)',
-        border: '1px solid var(--accent-gold-border)'
-      }}>
+  return createPortal(
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 99999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '40px 20px',
+        backgroundColor: 'rgba(18, 21, 28, 0.85)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        overflowY: 'auto'
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: '720px',
+          maxHeight: 'calc(100vh - 80px)',
+          overflowY: 'auto',
+          background: '#FFFFFF',
+          borderRadius: '24px',
+          boxShadow: '0 24px 70px rgba(0,0,0,0.45)',
+          border: '1px solid var(--accent-gold-border)',
+          margin: 'auto'
+        }}
+      >
         {/* Modal Close Button */}
         <button
           onClick={onClose}
@@ -152,6 +180,7 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
 
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
