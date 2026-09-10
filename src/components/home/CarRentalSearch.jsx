@@ -3,7 +3,7 @@ import { Plane, MapPin, Briefcase, RefreshCw, ArrowRight, Calendar, LocateFixed,
 import { fleetData } from '../../data/fleetData';
 import { pricingService } from '../../services/pricingService';
 import { VehicleBookingModal } from '../modals/VehicleBookingModal';
-import { WhatsAppEnquiryMenu } from '../common/WhatsAppEnquiryMenu';
+import { WhatsAppEnquiryMenu, WhatsAppIcon } from '../common/WhatsAppEnquiryMenu';
 import './CarRentalSearch.css';
 
 // ── Trip types matching the spec ──────────────────────────────────────────────
@@ -902,7 +902,25 @@ export const CarRentalSearch = ({ onNavigate }) => {
                           }}
                           menuPlacement="top-end"
                           triggerLabel="WhatsApp"
-                          triggerIcon={MessageSquare}
+                          triggerIcon={WhatsAppIcon}
+                          iconSize={15}
+                          buttonStyle={{
+                            flex: 1,
+                            background: '#25D366',
+                            color: '#FFFFFF',
+                            borderRadius: '999px',
+                            padding: '9px 12px',
+                            fontSize: '0.82rem',
+                            fontWeight: '700',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '6px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'background 0.2s ease',
+                            fontFamily: 'inherit'
+                          }}
                         />
                         <button type="button" className="crs-btn-reserve"
                           onClick={() => setSelectedVehicleForModal(vehicle)}>

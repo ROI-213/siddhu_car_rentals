@@ -4,7 +4,9 @@
   margin-top: 24px; /* Placed cleanly below hero, no overlap */
   padding: 0 24px 40px 24px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .crs-container {
@@ -597,11 +599,32 @@
   border-color: #FCA5A5;
 }
 
-/* VEHICLES GRID */
+/* VEHICLES GRID - 4x4 Card Style */
 .crs-vehicles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 1280px) {
+  .crs-vehicles-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+}
+
+@media (max-width: 900px) {
+  .crs-vehicles-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 580px) {
+  .crs-vehicles-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 
 .crs-vehicle-card {
@@ -624,13 +647,13 @@
 .crs-card-img-wrap {
   position: relative;
   width: 100%;
-  height: 190px;
+  height: 170px;
   background: #F8FAFC;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 16px;
+  padding: 12px;
 }
 
 .crs-card-img-wrap img {
@@ -646,20 +669,20 @@
 
 .crs-card-badge {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 10px;
+  left: 10px;
   background: #C5A059;
   color: #FFFFFF;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  padding: 3px 10px;
+  padding: 3px 8px;
   border-radius: 999px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 .crs-card-body {
-  padding: 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -667,10 +690,13 @@
 }
 
 .crs-card-title {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #0F172A;
   margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .crs-card-category {
