@@ -73,50 +73,102 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
           margin: 'auto'
         }}
       >
-        {/* Modal Close Button */}
-        <button
-          onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: '20px',
-            right: '20px',
-            zIndex: 10,
-            width: '38px',
-            height: '38px',
-            borderRadius: '50%',
-            background: 'rgba(0,0,0,0.06)',
-            border: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer'
-          }}
-          aria-label="Close modal"
-        >
-          <X size={20} color="var(--color-charcoal-900)" />
-        </button>
+        {/* Modal Top Header Bar: Title, Category, Pricing & Close Button */}
+        <div style={{
+          position: 'relative',
+          padding: '24px 28px 20px',
+          background: '#12151C',
+          borderRadius: '24px 24px 0 0',
+          borderBottom: '1px solid rgba(197, 160, 89, 0.25)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          gap: '20px'
+        }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
+              <Badge variant="gold" icon={Star}>{vehicle.rating || '4.9'} Verified Rating</Badge>
+              <span style={{ fontSize: '0.82rem', color: '#C5A059', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                {vehicle.category}
+              </span>
+            </div>
+            <h2 style={{
+              fontSize: 'clamp(1.2rem, 2.8vw, 1.65rem)',
+              fontWeight: '800',
+              color: '#FFFFFF',
+              margin: 0,
+              lineHeight: 1.25,
+              fontFamily: 'var(--font-editorial)'
+            }}>
+              {vehicle.name}
+            </h2>
+          </div>
 
-        {/* Modal Vehicle Header Banner */}
-        <div style={{ position: 'relative', width: '100%', height: '220px', background: '#12151C', borderRadius: '24px 24px 0 0', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Hourly Package
+              </div>
+              <div style={{ fontSize: '1.45rem', fontWeight: '800', color: '#C5A059', fontFamily: 'var(--font-ui)', lineHeight: 1.1 }}>
+                ₹{priceStr.replace("₹", "")}<span style={{ fontSize: '0.8rem', fontWeight: '400', color: 'rgba(255,255,255,0.7)' }}>/hr</span>
+              </div>
+            </div>
+
+            {/* Modal Close Button */}
+            <button
+              onClick={onClose}
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.12)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                flexShrink: 0
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.25)';
+                e.currentTarget.style.transform = 'scale(1.05)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.12)';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              aria-label="Close modal"
+            >
+              <X size={20} color="#FFFFFF" />
+            </button>
+          </div>
+        </div>
+
+        {/* Dedicated Vehicle Showcase: Full, Uncropped, Studio Lighting */}
+        <div style={{
+          position: 'relative',
+          width: '100%',
+          height: '240px',
+          background: 'radial-gradient(ellipse at 50% 60%, #222735 0%, #0E1117 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '16px 24px',
+          overflow: 'hidden'
+        }}>
           <img
             src={vehicle.image}
             alt={vehicle.name}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
+            style={{
+              maxWidth: '100%',
+              maxHeight: '100%',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 16px 28px rgba(0,0,0,0.65))',
+              transition: 'transform 0.3s ease'
+            }}
           />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(18,21,28,0.95) 100%)' }} />
-          <div style={{ position: 'absolute', bottom: '20px', left: '24px', right: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-            <div>
-              <Badge variant="gold" icon={Star}>{vehicle.rating || '4.9'} Verified Rating</Badge>
-              <h2 className="text-h2" style={{ color: '#FFFFFF', marginTop: '6px' }}>{vehicle.name}</h2>
-              <div style={{ fontSize: '0.85rem', color: '#C5A059', fontWeight: '600' }}>{vehicle.category}</div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase' }}>Hourly Package</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#FFFFFF', fontFamily: 'var(--font-ui)' }}>
-                ₹{priceStr.replace("₹", "")}<span style={{ fontSize: '0.85rem', fontWeight: '400', color: '#C5A059' }}>/hr</span>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Modal Body Content */}
