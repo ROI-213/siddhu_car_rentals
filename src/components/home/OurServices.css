@@ -97,13 +97,14 @@
   cursor: pointer;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
   position: relative;
-  width: calc(33.333% - 16px);
+  width: calc(25% - 18px);
   display: flex;
   flex-direction: column;
 }
 
 .os-row-bottom .os-card {
-  max-width: 380px;
+  max-width: none;
+  width: calc(33.333% - 16px);
 }
 
 .os-card:hover {
@@ -263,6 +264,24 @@
   .os-features {
     gap: 20px;
     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .our-services-section {
+    padding: 60px 0;
+  }
+  .os-image-box {
+    height: 180px;
+  }
+  .os-card-content {
+    padding: 20px;
+  }
+  .os-features {
+    gap: 14px;
+  }
+  .os-feature {
+    font-size: 0.82rem;
   }
 }
 

@@ -2,10 +2,11 @@ import React from 'react';
 import { Crown, PhoneCall, MessageSquare, ChevronRight } from 'lucide-react';
 import { GlassCard } from './GlassCard';
 import { PremiumButton } from './PremiumButton';
+import { WhatsAppButton } from './WhatsAppButton';
 
 export const CTASection = ({
-  title = "Experience Unmatched Luxury Mobility Today",
-  description = "Book your Mercedes-Benz sedan, Innova Crysta, or BMW executive chauffeur in Bengaluru with 100% transparent pricing and instant WhatsApp booking.",
+  title = "Need a Car with Chauffeur?",
+  description = "Book a Mercedes, Innova, or BMW with driver in Bengaluru. Transparent rates, instant WhatsApp confirmation.",
   onReserveClick
 }) => {
   return (
@@ -121,28 +122,21 @@ export const CTASection = ({
               <ChevronRight size={18} />
             </button>
 
-            <a
-              href="https://wa.me/917625059665"
-              target="_blank"
-              rel="noopener noreferrer"
+            <WhatsAppButton
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
                 padding: '0.95rem 2rem',
                 fontSize: '1rem',
                 fontWeight: '700',
                 borderRadius: '9999px',
                 background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
                 color: '#FFFFFF',
-                textDecoration: 'none',
                 boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
                 transition: 'all 0.25s ease'
               }}
             >
               <MessageSquare size={18} />
               <span>WhatsApp Quick Book</span>
-            </a>
+            </WhatsAppButton>
 
             <a
               href="tel:+917625059665"

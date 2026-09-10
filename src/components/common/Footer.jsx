@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Crown, MapPin, Phone, Mail, ShieldCheck, Clock, Award, Globe, ExternalLink, Share2, FileText } from 'lucide-react';
+import { MapPin, Phone, Mail, ShieldCheck, Clock, Award, Globe, ExternalLink, Share2, FileText } from 'lucide-react';
 import { LegalModal } from './LegalModal';
 
 export const Footer = ({ onNavigate }) => {
@@ -37,13 +37,17 @@ export const Footer = ({ onNavigate }) => {
                 width: '40px',
                 height: '40px',
                 borderRadius: '8px',
-                background: 'linear-gradient(135deg, #C5A059 0%, #E6CA85 100%)',
+                overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 boxShadow: '0 4px 12px rgba(197, 160, 89, 0.3)'
               }}>
-                <Crown size={22} color="#12151C" />
+                <img
+                  src="/images/siddhu_logo_transparent.png"
+                  alt="Siddhu Car Rentals"
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                />
               </div>
               <span style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.4rem', fontWeight: '800', letterSpacing: '-0.02em', color: '#FFFFFF' }}>
                 SIDDHU
@@ -51,7 +55,7 @@ export const Footer = ({ onNavigate }) => {
             </div>
 
             <p style={{ color: 'rgba(255, 255, 255, 0.72)', fontSize: '0.9rem', lineHeight: '1.7', marginBottom: '24px' }}>
-              Bengaluru’s premier luxury car rental and executive chauffeur mobility service. Delivering pristine luxury sedans, VIP MPVs, and outstation fleets.
+              Car rental with driver in Bengaluru. Sedans, SUVs, MPVs, and coaches for airport transfers, local hourly, outstation trips, and corporate fleets.
             </p>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>

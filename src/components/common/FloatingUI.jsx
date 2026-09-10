@@ -1,5 +1,7 @@
 import React from 'react';
 import { MessageSquare, PhoneCall, ChevronRight, Calendar } from 'lucide-react';
+import { WhatsAppEnquiryMenu } from './WhatsAppEnquiryMenu';
+import { SITE_CONFIG } from '../../config/site';
 
 export const FloatingUI = ({ onOpenEnquiry }) => {
   return (
@@ -18,7 +20,7 @@ export const FloatingUI = ({ onOpenEnquiry }) => {
 
         {/* Call Button */}
         <a
-          href="tel:+917625059665"
+          href={`tel:${SITE_CONFIG.whatsapp.phone}`}
           style={{
             width: '50px',
             height: '50px',
@@ -40,35 +42,13 @@ export const FloatingUI = ({ onOpenEnquiry }) => {
         </a>
 
         {/* WhatsApp Button */}
-        <a
-          href="https://wa.me/917625059665?text=Hello%20Siddhu%20Car%20Rentals,%20I%20would%20like%20to%20reserve%20a%20car."
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
-            color: '#FFFFFF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 8px 24px rgba(37, 211, 102, 0.4)',
-            border: '2px solid #FFFFFF',
-            textDecoration: 'none',
-            transition: 'transform 0.2s ease'
-          }}
-          title="Chat on WhatsApp (+91 76250 59665)"
-          aria-label="Chat on WhatsApp"
-        >
-          <MessageSquare size={26} />
-        </a>
+        <WhatsAppEnquiryMenu context={{}} menuPlacement="bottom-end" triggerLabel="" triggerIcon={MessageSquare} />
       </div>
 
       {/* Mobile Bottom Sticky CTA Bar (Shown only on small screens < 768px) */}
       <div className="mobile-sticky-bar">
         <a
-          href="tel:+917625059665"
+          href={`tel:${SITE_CONFIG.whatsapp.phone}`}
           style={{
             flex: 1,
             height: '46px',
@@ -88,28 +68,7 @@ export const FloatingUI = ({ onOpenEnquiry }) => {
           <span>Call Desk</span>
         </a>
 
-        <a
-          href="https://wa.me/917625059665"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            flex: 1,
-            height: '46px',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
-            color: '#FFFFFF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '6px',
-            textDecoration: 'none',
-            fontSize: '0.85rem',
-            fontWeight: '600'
-          }}
-        >
-          <MessageSquare size={16} />
-          <span>WhatsApp</span>
-        </a>
+        <WhatsAppEnquiryMenu context={{}} menuPlacement="top-end" triggerLabel="WhatsApp" triggerIcon={MessageSquare} />
 
         <button
           onClick={onOpenEnquiry}

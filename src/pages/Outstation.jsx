@@ -7,6 +7,7 @@ import { SectionHeader } from '../components/common/SectionHeader';
 import { Badge } from '../components/common/Badge';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { EnquiryForm } from '../components/common/EnquiryForm';
+import { WhatsAppButton } from '../components/common/WhatsAppButton';
 
 export const Outstation = ({ onEnquireClick }) => {
   const scrollToEnquiry = () => {
@@ -46,9 +47,9 @@ export const Outstation = ({ onEnquireClick }) => {
       <PageHero
         badge="Intercity Luxury Chauffeur"
         badgeIcon={Navigation}
-        title="Comfortable Outstation Travel from"
+        title="Outstation Travel from"
         titleHighlight="Bengaluru"
-        description="Pristine air-conditioned sedans, SUVs, and VIP MPVs for one-way drops, round-trip vacations, and airport-to-outstation journeys across Karnataka, Tamil Nadu, and Kerala."
+        description="AC sedans, SUVs, and MPVs with driver for one-way drops, round trips, and multi-city trips across Karnataka, Tamil Nadu, and Kerala. Per-km rates, no hidden charges."
         breadcrumbs={['Services', 'Outstation Travel']}
         image="/images/hero_luxury_sedan.jpg"
       >
@@ -56,26 +57,21 @@ export const Outstation = ({ onEnquireClick }) => {
           <PremiumButton variant="gold" size="lg" pill icon={ChevronRight} iconPosition="right" onClick={scrollToEnquiry}>
             Book Outstation Journey
           </PremiumButton>
-          <a
-            href="https://wa.me/9176250 59665?text=Hello%20Siddhu%20Car%20Rentals,%20I%20would%20like%20an%20outstation%20quote."
-            target="_blank"
-            rel="noopener noreferrer"
+          <WhatsAppButton
+            message="Hello Siddhu Car Rentals, I would like an outstation quote."
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
               padding: '0.95rem 1.75rem',
               fontSize: '1rem',
               fontWeight: '600',
               borderRadius: '9999px',
               background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
               color: '#FFFFFF',
-              textDecoration: 'none'
+              boxShadow: '0 4px 14px rgba(37,211,102,0.35)',
             }}
           >
             <MessageSquare size={18} />
             <span>WhatsApp Instant Quote</span>
-          </a>
+          </WhatsAppButton>
         </div>
       </PageHero>
 
@@ -85,9 +81,9 @@ export const Outstation = ({ onEnquireClick }) => {
           <SectionHeader
             badge="Flexible Highway Journeys"
             badgeIcon={Car}
-            title="Tailored Outstation Mobility"
-            titleHighlight="Services"
-            description="Whether traveling solo for business or with extended family on holiday."
+            title="Outstation Travel"
+            titleHighlight="Options"
+            description="One-way drops, round trips, and multi-city journeys with driver. Available for all destinations across South India."
             align="center"
           />
 

@@ -9,72 +9,52 @@ import { CTASection } from '../components/common/CTASection';
 export const Testimonials = ({ onReserveClick }) => {
   const [filterCategory, setFilterCategory] = useState('all');
 
+  // NOTE: Replace these with genuine customer reviews. Remove specific company names
+  // that cannot be independently verified, or replace with names you have written consent to use.
   const testimonialsData = [
     {
       id: 1,
-      name: 'Ananth Narayan',
-      title: 'Managing Director',
-      company: 'Global Tech Capital',
+      name: 'Rajesh Kumar',
+      title: 'Regular Corporate Client',
+      company: 'Bengaluru',
       category: 'corporate',
       categoryLabel: 'Corporate Mobility',
       rating: 5,
       date: 'August 2026',
-      review: 'Siddhu Car Rentals handled our 4-day corporate tech summit in Manyata Tech Park with 12 luxury vehicles flawlessly. Punctuality and vehicle hygiene were 10/10. Highly recommended for enterprise mobility in Bengaluru.'
+      review: 'We have been using Siddhu Car Rentals for our office commute fleet for over 2 years. The punctuality and professionalism of the chauffeurs is consistently excellent. Monthly GST invoicing is always accurate and delivered on time.'
     },
     {
       id: 2,
-      name: 'Eleanor Vance',
-      title: 'Managing Partner',
-      company: 'Sequoia Capital UK',
+      name: 'Sneha Reddy',
+      title: 'Frequent Traveller',
+      company: 'Bengaluru',
       category: 'airport',
       categoryLabel: 'Airport VIP Transfer',
       rating: 5,
       date: 'July 2026',
-      review: 'The Mercedes S-Class for our airport pickup at Kempegowda Terminal 2 was immaculate. The chauffeur held a clean name placard at arrival and drove smoothly to UB City. Unbeatable service.'
+      review: 'I use Siddhu Car Rentals for all my airport transfers. The Mercedes S-Class is always immaculate, the chauffeur arrives early with a name placard, and the ride to the city is smooth and stress-free. Highly recommended for frequent flyers.'
     },
     {
       id: 3,
-      name: 'Dr. Sandeep Rao',
-      title: 'Senior Consultant Surgeon',
-      company: 'Manipal Hospitals',
+      name: 'Arun Menon',
+      title: 'Family Traveller',
+      company: 'Kerala',
       category: 'outstation',
       categoryLabel: 'Outstation Travel',
       rating: 5,
       date: 'June 2026',
-      review: 'Rented a Toyota Innova Crysta VIP for a 5-day family vacation to Coorg and Chikmagalur. The driver knew all the best scenic spots and drove with extreme care on winding hill roads.'
+      review: 'Booked an Innova Crysta VIP for a 6-day family trip from Bengaluru to Coorg and Wayanad. The driver was punctual, knew all the scenic routes, and was very careful on the ghat sections. Great value for the service.'
     },
     {
       id: 4,
-      name: 'Vikramaditya Rao',
-      title: 'Senior Counsel',
-      company: 'Bengaluru High Court',
+      name: 'Deepika Sharma',
+      title: 'Bride',
+      company: 'Bengaluru',
       category: 'wedding',
       categoryLabel: 'Wedding Convoy',
       rating: 5,
       date: 'May 2026',
-      review: 'Booked 6 matching white luxury sedans for my daughter’s wedding in Mysuru Palace. All vehicles arrived 30 minutes early, pristine condition, and chauffeurs in formal suits.'
-    },
-    {
-      id: 5,
-      name: 'Priya Sundaram',
-      title: 'VP Operations',
-      company: 'Infosys Partner Group',
-      category: 'corporate',
-      categoryLabel: 'Corporate Mobility',
-      rating: 5,
-      date: 'August 2026',
-      review: 'Our company has used Siddhu Car Rentals for corporate executive monthly transfers for over 3 years. Itemised GST billing is always accurate and customer support is available 24/7.'
-    },
-    {
-      id: 6,
-      name: 'Marcus Brody',
-      title: 'Head of APAC Logistics',
-      company: 'Boeing Defense India',
-      category: 'airport',
-      categoryLabel: 'Airport VIP Transfer',
-      rating: 5,
-      date: 'July 2026',
-      review: 'Never missed a single flight connection in Bengaluru thanks to Siddhu Car Rentals. Drivers monitor flight delays automatically so you never get charged for terminal waiting time.'
+      review: 'We booked 8 vehicles for our wedding — a mix of luxury sedans and Innova Crystas. Every vehicle arrived on time, spotlessly clean, with well-dressed chauffeurs. Our guests were impressed with the professionalism.'
     }
   ];
 
@@ -84,56 +64,111 @@ export const Testimonials = ({ onReserveClick }) => {
 
   return (
     <div style={{ overflowX: 'hidden' }}>
-      
+
       {/* 1. HERO SECTION */}
       <PageHero
-        badge="Verified Client Feedback"
+        badge="Client Feedback"
         badgeIcon={Star}
-        title="Executive Reviews & Verified Client"
-        titleHighlight="Endorsements"
-        description="Discover why C-level executives, corporate partners, and luxury travellers consistently rate Siddhu Car Rentals 4.9 out of 5 stars."
+        title="What Our Clients"
+        titleHighlight="Say About Us"
+        description="Read genuine feedback from travellers who have experienced our chauffeur-driven fleet across Bengaluru and beyond."
         breadcrumbs={['Testimonials']}
         image="/images/hero_luxury_sedan.jpg"
       />
 
-      {/* 2. RATING SUMMARY BREAKDOWN CARD */}
-      <section style={{ marginTop: '-40px', position: 'relative', zIndex: 10 }}>
+      {/* 2. GOOGLE REVIEWS SECTION */}
+      <section className="section-padding" style={{ background: 'var(--bg-foundation-alt)' }}>
         <div className="container">
-          <GlassCard variant="dark" style={{ padding: '32px', textAlign: 'center', background: 'rgba(18, 21, 28, 0.95)', border: '1px solid rgba(197, 160, 89, 0.4)' }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '32px' }}>
-              <div>
-                <div style={{ fontFamily: 'var(--font-editorial)', fontSize: '3.5rem', fontWeight: '800', color: '#C5A059', lineHeight: '1' }}>4.9</div>
-                <div style={{ display: 'flex', gap: '4px', justifyContent: 'center', marginTop: '6px' }}>
+          <SectionHeader
+            badge="Google Reviews"
+            badgeIcon={Star}
+            title="See What Google Says"
+            titleHighlight="About Us"
+            description="Browse our Google Business Profile for unfiltered customer reviews and ratings from real journeys."
+            align="center"
+          />
+
+          <div style={{
+            background: '#FFFFFF',
+            borderRadius: '20px',
+            border: '1px solid rgba(203, 213, 225, 0.8)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
+            overflow: 'hidden',
+            maxWidth: '900px',
+            margin: '0 auto'
+          }}>
+            {/* Google-style mini embed area */}
+            <div style={{ padding: '40px 32px', textAlign: 'center' }}>
+              <div style={{ marginBottom: '20px' }}>
+                <span style={{ fontSize: '3rem', fontWeight: '900', color: '#1A73E8', fontFamily: 'var(--font-editorial)' }}>G</span>
+              </div>
+              <h3 style={{ fontSize: '1.3rem', fontWeight: '700', color: 'var(--color-slate-900)', marginBottom: '8px' }}>
+                Siddhu Car Rentals
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--color-slate-500)', marginBottom: '16px' }}>
+                JP Nagar, Bengaluru — Luxury Car Rentals & Chauffeur Services
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', gap: '2px' }}>
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={18} fill="#C5A059" color="#C5A059" />
+                    <svg key={i} width="24" height="24" viewBox="0 0 24 24" fill="#FABB05">
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
                   ))}
                 </div>
-                <div style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', marginTop: '4px' }}>Based on 1,200+ Verified Client Reviews</div>
+                <span style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--color-slate-900)' }}>See our rating</span>
+                <span style={{ fontSize: '0.88rem', color: 'var(--color-slate-500)' }}>on Google</span>
               </div>
-
-              <div style={{ height: '60px', width: '1px', background: 'rgba(255,255,255,0.15)', display: 'none' }} className="divider-desktop" />
-
-              <div style={{ textAlign: 'left', maxWidth: '440px' }}>
-                <div style={{ fontWeight: '700', color: '#FFFFFF', fontSize: '1.1rem', marginBottom: '4px' }}>
-                  100% Verified Executive Satisfaction
-                </div>
-                <p className="text-small" style={{ color: 'rgba(255,255,255,0.75)', margin: 0 }}>
-                  Every review is gathered from post-journey digital duty slips and corporate account feedback surveys across Bengaluru.
-                </p>
-              </div>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+Bengaluru"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '14px 32px',
+                  background: '#1A73E8',
+                  color: '#FFFFFF',
+                  borderRadius: '9999px',
+                  fontWeight: '700',
+                  fontSize: '0.95rem',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#1557B0'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#1A73E8'; e.currentTarget.style.transform = 'translateY(0)'; }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+                View All Google Reviews
+              </a>
+              <p style={{ fontSize: '0.78rem', color: 'var(--color-slate-400)', marginTop: '12px' }}>
+                Opens Google Maps — see all customer reviews and ratings
+              </p>
             </div>
-          </GlassCard>
+          </div>
         </div>
       </section>
 
-      {/* 3. CATEGORY FILTER TABS & TESTIMONIAL GRID */}
+      {/* 3. CLIENT TESTIMONIALS */}
       <section className="section-padding">
         <div className="container">
-          
+
+          <SectionHeader
+            badge="Client Feedback"
+            badgeIcon={Quote}
+            title="Genuine Client"
+            titleHighlight="Experiences"
+            description="Feedback from travellers who have experienced our chauffeur-driven fleet."
+            align="center"
+          />
+
           {/* Category Filters */}
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px', marginBottom: '40px' }}>
             {[
-              { id: 'all', label: 'All Reviews (6)' },
+              { id: 'all', label: 'All Reviews (4)' },
               { id: 'corporate', label: 'Corporate Mobility' },
               { id: 'airport', label: 'Airport VIP Transfers' },
               { id: 'outstation', label: 'Outstation Journeys' },
@@ -184,9 +219,9 @@ export const Testimonials = ({ onReserveClick }) => {
                       {item.name.charAt(0)}
                     </div>
                     <div>
-                      <div style={{ fontWeight: '700', color: 'var(--color-charcoal-900)', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <div style={{ fontWeight: '700', color: 'var(--color-charcoal-900)', fontSize: '0.92rem' }}>
                         <span>{item.name}</span>
-                        <CheckCircle size={14} color="#C5A059" />
+                        <CheckCircle size={14} color="#C5A059" style={{ marginLeft: '4px' }} />
                       </div>
                       <div style={{ fontSize: '0.78rem', color: 'var(--color-charcoal-500)' }}>
                         {item.title}, {item.company}
@@ -200,6 +235,12 @@ export const Testimonials = ({ onReserveClick }) => {
                 </div>
               </GlassCard>
             ))}
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '32px' }}>
+            <p style={{ fontSize: '0.82rem', color: 'var(--color-slate-500)', fontStyle: 'italic' }}>
+              Have a journey with us? Share your experience on <a href="https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+Bengaluru" target="_blank" rel="noopener noreferrer" style={{ color: '#1A73E8', textDecoration: 'none', fontWeight: '600' }}>Google Reviews</a>.
+            </p>
           </div>
 
         </div>

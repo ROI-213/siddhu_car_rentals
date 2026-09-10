@@ -180,25 +180,25 @@
   .story-section-wrapper {
     height: auto; /* Disable scroll-jacking on mobile */
   }
-  
+
   .sticky-story-container {
     height: auto;
     position: relative;
     padding: 60px 20px;
   }
-  
+
   .story-container {
     flex-direction: column;
     padding: 0;
     gap: 40px;
   }
-  
+
   .story-left-pane {
     width: 100%;
     flex: none;
     height: 40vh;
   }
-  
+
   .story-image-viewport {
     height: 100%;
   }
@@ -214,15 +214,33 @@
     flex-direction: column;
     gap: 24px;
   }
-  
+
   .story-content-block {
     position: relative;
     opacity: 1 !important; /* Disable framer motion inline styles for mobile */
     transform: none !important;
     filter: none !important;
   }
-  
+
   .story-step-indicator {
     display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .story-content-block {
+    padding: 24px;
+  }
+
+  .story-heading {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+  }
+
+  .story-desc {
+    font-size: 0.95rem;
+  }
+
+  .story-image-viewport {
+    height: 35vh;
   }
 }

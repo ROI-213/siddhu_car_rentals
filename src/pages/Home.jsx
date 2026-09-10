@@ -23,6 +23,7 @@ import { TestimonialCard } from '../components/cards/TestimonialCard';
 import { StatCard } from '../components/cards/StatCard';
 import { SlideUp, FadeIn } from '../components/common/Motion';
 import { CTASection } from '../components/common/CTASection';
+import { SITE_CONFIG } from '../config/site';
 
 export const Home = ({ onViewVehicleDetail, onNavigate }) => {
   const [heroLoaded, setHeroLoaded] = useState(false);
@@ -116,17 +117,17 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
   });
 
   const plannerVehicles = [
-    { id: 'mercedes_s', name: 'Mercedes-Benz S-Class S350d', subtitle: 'VIP Flagship Sedan', seats: '4+1 Seats', bags: '4 Bags', img: '/images/sclass_front.png', priceTag: 'Flagship VIP' },
-    { id: 'bmw_730ld', name: 'BMW 730Ld xDrive', subtitle: 'Ultra VIP Flagship Sedan', seats: '4+1 Seats', bags: '3 Bags', img: '/images/bmw_front.jpg', priceTag: 'Ultra VIP' },
-    { id: 'vellfire', name: 'Toyota Vellfire Executive Lounge', subtitle: 'Supreme VIP Luxury MPV', seats: '6+1 Seats', bags: '4 Bags', img: '/images/vellfire_front.jpg', priceTag: 'Supreme VIP' },
-    { id: 'mercedes_e', name: 'Mercedes-Benz E-Class', subtitle: 'Luxury Executive Sedan', seats: '4+1 Seats', bags: '3 Bags', img: '/images/eclass_front.jpg', priceTag: 'Executive VIP' },
-    { id: 'audi_q7', name: 'Audi Q7 Quattro SUV', subtitle: 'Executive Luxury 7-Seater', seats: '6+1 Seats', bags: '4 Bags', img: '/images/audi_q7_front.jpg', priceTag: 'Luxury SUV' },
-    { id: 'toyota_fortuner', name: 'Toyota Fortuner 4x4 SUV', subtitle: 'Executive Luxury 7-Seater', seats: '6+1 Seats', bags: '4 Bags', img: '/images/fortuner_front.jpg', priceTag: 'Executive SUV' },
-    { id: 'honda_accord', name: 'Honda Accord Executive', subtitle: 'Executive Luxury Sedan', seats: '4+1 Seats', bags: '3 Bags', img: '/images/accord_front.jpg', priceTag: 'Executive Sedan' },
-    { id: 'innova_crysta', name: 'Toyota Innova Crysta VIP', subtitle: 'Executive Captain MPV', seats: '6+1 Seats', bags: '5 Bags', img: '/images/crysta_front.png', priceTag: 'VIP MPV' },
-    { id: 'innova_hycross', name: 'Toyota Innova Hycross Hybrid', subtitle: 'Hybrid Luxury MPV', seats: '6+1 Seats', bags: '5 Bags', img: '/images/hycross_front.jpg', priceTag: 'Hybrid MPV' },
-    { id: 'toyota_commuter', name: 'Toyota HiAce Commuter VIP', subtitle: 'VIP Luxury Lounge Van', seats: '9+1 Seats', bags: '8 Bags', img: '/images/hiace_front.png', priceTag: 'VIP Lounge' },
-    { id: 'traveller', name: 'Force Traveller Luxury AC', subtitle: 'VIP Group Coach', seats: '16+1 Seats', bags: '10 Bags', img: '/images/traveller_front.jpg', priceTag: 'VIP Group' },
+    { id: 'mercedes_s', name: 'Mercedes-Benz S-Class S350d', subtitle: 'VIP Flagship Sedan', seats: '4 Pax + Chauffeur', bags: '4 Bags', img: '/images/sclass_front.png', priceTag: 'Flagship VIP' },
+    { id: 'bmw_730ld', name: 'BMW 730Ld xDrive', subtitle: 'Ultra VIP Flagship Sedan', seats: '4 Pax + Chauffeur', bags: '3 Bags', img: '/images/bmw_front.jpg', priceTag: 'Ultra VIP' },
+    { id: 'vellfire', name: 'Toyota Vellfire Executive Lounge', subtitle: 'Supreme VIP Luxury MPV', seats: '6 Pax + Chauffeur', bags: '4 Bags', img: '/images/vellfire_front.jpg', priceTag: 'Supreme VIP' },
+    { id: 'mercedes_e', name: 'Mercedes-Benz E-Class', subtitle: 'Luxury Executive Sedan', seats: '4 Pax + Chauffeur', bags: '3 Bags', img: '/images/eclass_front.jpg', priceTag: 'Executive VIP' },
+    { id: 'audi_q7', name: 'Audi Q7 Quattro SUV', subtitle: 'Executive Luxury 7-Seater', seats: '6 Pax + Chauffeur', bags: '4 Bags', img: '/images/audi_q7_front.jpg', priceTag: 'Luxury SUV' },
+    { id: 'toyota_fortuner', name: 'Toyota Fortuner 4x4 SUV', subtitle: 'Executive Luxury 7-Seater', seats: '6 Pax + Chauffeur', bags: '4 Bags', img: '/images/fortuner_front.jpg', priceTag: 'Executive SUV' },
+    { id: 'honda_accord', name: 'Honda Accord Executive', subtitle: 'Executive Luxury Sedan', seats: '4 Pax + Chauffeur', bags: '3 Bags', img: '/images/accord_front.jpg', priceTag: 'Executive Sedan' },
+    { id: 'innova_crysta', name: 'Toyota Innova Crysta VIP', subtitle: 'Executive Captain MPV', seats: '6 Pax + Chauffeur', bags: '5 Bags', img: '/images/crysta_front.png', priceTag: 'VIP MPV' },
+    { id: 'innova_hycross', name: 'Toyota Innova Hycross Hybrid', subtitle: 'Hybrid Luxury MPV', seats: '6 Pax + Chauffeur', bags: '5 Bags', img: '/images/hycross_front.jpg', priceTag: 'Hybrid MPV' },
+    { id: 'toyota_commuter', name: 'Toyota HiAce Commuter VIP', subtitle: 'VIP Luxury Lounge Van', seats: '9 Pax + Chauffeur', bags: '8 Bags', img: '/images/hiace_front.png', priceTag: 'VIP Lounge' },
+    { id: 'traveller', name: 'Force Traveller Luxury AC', subtitle: 'VIP Group Coach', seats: '16 Pax + Chauffeur', bags: '10 Bags', img: '/images/traveller_front.jpg', priceTag: 'VIP Group' },
     { id: 'mini_bus', name: 'Luxury Mini Bus (21-25 Seater)', subtitle: 'Corporate & Wedding', seats: '21-25 Seats', bags: '15 Bags', img: '/images/fleet/studio_mini_bus.jpg', priceTag: 'Group AC' },
     { id: 'large_bus', name: 'Luxury Large Bus (32-45 Seater)', subtitle: 'Large Event Transport', seats: '32-45 Seats', bags: '30 Bags', img: '/images/fleet/studio_large_bus.jpg', priceTag: 'Event Coach' }
   ];
@@ -144,8 +145,8 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
 
   const nextStep = () => {
     if (formStep === 1) {
-      if (!formData.name || !formData.mobile || !formData.email) {
-        alert('Please fill out all contact details to continue.');
+      if (!formData.name || !formData.mobile) {
+        alert('Please enter your name and phone number to continue.');
         return;
       }
     }
@@ -160,6 +161,11 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             (formData.airportTransferType === 'Airport Drop' && !formData.pickup) ||
             !formData.date || !formData.time) {
           alert('Please enter your airport transfer address, date, and pickup time.');
+          return;
+        }
+      } else if (activeTripType === 'Outstation') {
+        if (!formData.pickup || !formData.drop || !formData.date || !formData.time || !formData.returnDate || !formData.returnTime) {
+          alert('Please fill out pickup, destination, departure date/time, and return date/time.');
           return;
         }
       } else if (activeTripType === 'Round Trip') {
@@ -235,7 +241,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
       {/* ========================================================================= */}
       <CinematicHero onExploreFleet={scrollToFleet} onGetQuote={scrollToEnquiry} />
 
-      <CarRentalSearch />
+      <CarRentalSearch onNavigate={onNavigate} />
 
 
 
@@ -368,7 +374,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                     Plan Another Journey
                   </button>
                   <a 
-                    href="https://wa.me/917625059665" 
+                    href={`https://wa.me/${SITE_CONFIG.whatsapp.phone}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="btn-success-whatsapp"
@@ -427,7 +433,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                         <div className="custom-planner-input">
                           <label className="input-header-label">
                             <Mail size={13} className="label-icon" />
-                            <span>EMAIL ADDRESS (INVOICE & ITINERARY)</span>
+                            <span>EMAIL ADDRESS (OPTIONAL — FOR INVOICE)</span>
                           </label>
                           <input
                             type="email"
@@ -435,7 +441,6 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                             value={formData.email}
                             onChange={e => handleInputChange('email', e.target.value)}
                             className="styled-box-input"
-                            required
                           />
                         </div>
                       </div>
@@ -615,12 +620,12 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
 
                           <div className="datetime-cards-row">
                             <div className="datetime-card">
-                              <div className="card-top-tag"><Calendar size={13} className="dt-icon" /><span>RETURN DATE (OPTIONAL)</span></div>
-                              <input type="date" value={formData.returnDate} onChange={e => handleInputChange('returnDate', e.target.value)} className="dt-native-input" />
+                              <div className="card-top-tag"><Calendar size={13} className="dt-icon" /><span>RETURN DATE</span></div>
+                              <input type="date" value={formData.returnDate} onChange={e => handleInputChange('returnDate', e.target.value)} className="dt-native-input" required />
                             </div>
                             <div className="datetime-card">
-                              <div className="card-top-tag"><Clock size={13} className="dt-icon" /><span>RETURN TIME (OPTIONAL)</span></div>
-                              <input type="time" value={formData.returnTime} onChange={e => handleInputChange('returnTime', e.target.value)} className="dt-native-input" />
+                              <div className="card-top-tag"><Clock size={13} className="dt-icon" /><span>RETURN TIME</span></div>
+                              <input type="time" value={formData.returnTime} onChange={e => handleInputChange('returnTime', e.target.value)} className="dt-native-input" required />
                             </div>
                           </div>
                         </div>
@@ -2443,11 +2448,13 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                     <VehicleCard
                       name={vehicle.name}
                       category={vehicle.category}
+                      categoryKey={vehicle.categoryKey}
                       image={vehicle.image}
                       price={priceStr}
                       period="8h / 80km"
                       passengerCapacity={vehicle.passengerCapacity}
                       luggageCapacity={vehicle.luggageCapacity}
+                      bestFor={vehicle.bestFor}
                       transmission={vehicle.transmission}
                       ac={vehicle.ac}
                       rating={vehicle.rating}
@@ -2578,7 +2585,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
           <div className="destination-collage-grid" style={{ marginTop: '48px' }}>
             
             {/* Featured Hero: Hampi */}
-            <div className="dest-collage-card hero-dest-card" onClick={scrollToEnquiry}>
+            <div className="dest-collage-card hero-dest-card" onClick={() => onNavigate && onNavigate('outstation')}>
               <img src="/images/destinations/hampi.jpg" alt="Hampi UNESCO Stone Heritage" className="dest-img" />
               <div className="dest-glass-label">
                 <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-sky-primary)', fontWeight: '700', marginBottom: '2px' }}>
@@ -2592,7 +2599,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             <div className="dest-right-stack">
               
               {/* Mysuru */}
-              <div className="dest-collage-card stacked-dest-card" onClick={scrollToEnquiry}>
+              <div className="dest-collage-card stacked-dest-card" onClick={() => onNavigate && onNavigate('outstation')}>
                 <img src="/images/destinations/mysuru.jpg" alt="Mysuru Palace" className="dest-img" />
                 <div className="dest-glass-label">
                   <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-coral-primary)', fontWeight: '700', marginBottom: '2px' }}>
@@ -2638,8 +2645,8 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
               <div
                 key={index}
                 className="dest-ribbon-card"
-                onClick={scrollToEnquiry}
-                style={{ background: d.bg }}
+                onClick={() => onNavigate && onNavigate('outstation')}
+                style={{ background: d.bg, cursor: 'pointer' }}
               >
                 <div className="dest-ribbon-img-wrapper">
                   <img src={d.img} alt={d.name} className="dest-img" />
@@ -2790,6 +2797,9 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             .carousel-swipe-hint {
               display: none !important;
             }
+            .hero-dest-card, .dest-right-stack, .stacked-dest-card {
+              height: 200px !important;
+            }
           }
         `}</style>
       </section>
@@ -2819,13 +2829,16 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
 
               {/* Trust Metric Badge */}
               <div className="testimonials-trust-metric">
-                <div style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--color-slate-900)', fontFamily: 'var(--font-editorial)', lineHeight: '1' }}>4.95 / 5</div>
+                <div style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--color-slate-900)', fontFamily: 'var(--font-editorial)', lineHeight: '1' }}>4.9 / 5</div>
                 <div style={{ display: 'flex', gap: '2px', margin: '6px 0 4px 0' }}>
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} size={14} fill="var(--accent-gold-primary)" color="var(--accent-gold-primary)" />
                   ))}
                 </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--color-slate-500)', fontWeight: '600' }}>Average rating based on 2,500+ VIP journeys</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--color-slate-500)', fontWeight: '600' }}>Rated highly by our clients</div>
+                <a href="https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+Bengaluru" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.72rem', color: '#1A73E8', fontWeight: '700', textDecoration: 'none', display: 'inline-block', marginTop: '4px' }}>
+                  View on Google →
+                </a>
               </div>
             </div>
 
@@ -3006,6 +3019,12 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             .marquee-set > .editorial-quote-card {
               width: 340px;
               flex-shrink: 0;
+            }
+
+            @media (max-width: 480px) {
+              .marquee-set > .editorial-quote-card {
+                width: calc(100vw - 40px);
+              }
             }
             @keyframes marqueeSlide {
               0% { transform: translateX(0); }

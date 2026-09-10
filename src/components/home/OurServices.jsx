@@ -1,47 +1,63 @@
 import React from 'react';
-import { Plane, MapPin, Briefcase, RefreshCw, ArrowRight, ShieldCheck, Clock, User } from 'lucide-react';
+import { Plane, MapPin, Briefcase, RefreshCw, ArrowRight, ShieldCheck, Clock, User, Car, Users } from 'lucide-react';
 import './OurServices.css';
 
 const SERVICES = [
   {
     id: 'airport',
     title: 'AIRPORT TRANSFER',
-    subtitle: 'On-time pickups. Stress-free arrivals.',
+    subtitle: 'Punctual pickups & drop-offs at Kempegowda International Airport.',
     icon: Plane,
     image: '/images/services_airport_final.jpg',
     path: '/local'
   },
   {
     id: 'local',
-    title: 'LOCAL RENTALS',
-    subtitle: 'Drive around the city in comfort.',
+    title: 'LOCAL RENTAL',
+    subtitle: 'Hourly & full-day car rentals within Bangalore.',
     icon: MapPin,
     image: '/images/services_local_final.jpg',
     path: '/local'
   },
   {
-    id: 'corporate',
-    title: 'CORPORATE TRANSFER',
-    subtitle: 'Reliable travel for you and your business.',
-    icon: Briefcase,
-    image: '/images/services_corporate_final.jpg',
-    path: '/corporate'
-  },
-  {
-    id: 'roundtrip',
-    title: 'ROUND TRIP',
-    subtitle: 'Go there and back with complete ease.',
+    id: 'outstation',
+    title: 'OUTSTATION TRIPS',
+    subtitle: 'One-way & round-trip travel to Mysore, Coorg, Hampi & beyond.',
     icon: RefreshCw,
     image: '/images/services_roundtrip_final.jpg',
     path: '/outstation'
   },
   {
-    id: 'oneway',
-    title: 'ONE WAY',
-    subtitle: 'One destination. Total convenience.',
-    icon: ArrowRight,
-    image: '/images/services_oneway_final.jpg',
-    path: '/outstation'
+    id: 'corporate',
+    title: 'CORPORATE TRAVEL',
+    subtitle: 'Dedicated fleet & billing for business & employee commutes.',
+    icon: Briefcase,
+    image: '/images/services_corporate_final.jpg',
+    path: '/corporate'
+  },
+  {
+    id: 'luxury',
+    title: 'LUXURY CARS',
+    subtitle: 'Premium sedans & SUVs with chauffeur for executive travel.',
+    icon: Car,
+    image: '/images/services_luxury_final.jpg',
+    path: '/fleet'
+  },
+  {
+    id: 'wedding',
+    title: 'WEDDINGS & EVENTS',
+    subtitle: 'Decorated cars for weddings, engagements & special occasions.',
+    icon: Users,
+    image: '/images/services_wedding_final.jpg',
+    path: '/local'
+  },
+  {
+    id: 'group',
+    title: 'GROUP TRAVEL',
+    subtitle: 'Tempo travellers & mini buses for group outings & tours.',
+    icon: Users,
+    image: '/images/services_group_final.jpg',
+    path: '/local'
   }
 ];
 
@@ -67,10 +83,10 @@ export const OurServices = ({ onNavigate }) => {
 
         {/* Grid Layout */}
         <div className="os-grid">
-          
-          {/* Top Row: 3 Cards */}
+
+          {/* Top Row: 4 Cards */}
           <div className="os-row os-row-top">
-            {SERVICES.slice(0, 3).map((service) => {
+            {SERVICES.slice(0, 4).map((service) => {
               const Icon = service.icon;
               return (
                 <div key={service.id} className="os-card" onClick={() => onNavigate && onNavigate(service.path)}>
@@ -96,9 +112,9 @@ export const OurServices = ({ onNavigate }) => {
             })}
           </div>
 
-          {/* Bottom Row: 2 Cards Centered */}
+          {/* Bottom Row: 3 Cards Centered */}
           <div className="os-row os-row-bottom">
-            {SERVICES.slice(3, 5).map((service) => {
+            {SERVICES.slice(4, 7).map((service) => {
               const Icon = service.icon;
               return (
                 <div key={service.id} className="os-card" onClick={() => onNavigate && onNavigate(service.path)}>

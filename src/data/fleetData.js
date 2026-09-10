@@ -5,6 +5,7 @@ export const fleetData = [
     "modelYear": "2024–2025 S350d Executive",
     "category": "Ultra Luxury VIP Sedans",
     "categoryKey": "luxury",
+    "bestFor": "VIP Airport Transfers, Luxury Weddings, C-Suite Corporate",
     "image": "/images/sclass_front.png",
     "gallery": [
       "/images/sclass_front.png",
@@ -37,6 +38,7 @@ export const fleetData = [
     "modelYear": "2024–2025 E-Class Luxury",
     "category": "Luxury Executive Sedans",
     "categoryKey": "luxury",
+    "bestFor": "VIP Airport Transit, Corporate Delegations, Luxury Weddings",
     "image": "/images/eclass_front.jpg",
     "gallery": [
       "/images/eclass_front.jpg",
@@ -70,6 +72,7 @@ export const fleetData = [
     "modelYear": "2024–2025 Long Wheelbase Luxury",
     "category": "Ultra Luxury VIP Sedans",
     "categoryKey": "luxury",
+    "bestFor": "C-Suite Airport Transfers, High-Profile Weddings, Corporate Delegations",
     "image": "/images/bmw_front.jpg",
     "gallery": [
       "/images/bmw_front.jpg",
@@ -103,6 +106,7 @@ export const fleetData = [
     "modelYear": "2024–2025 Executive Lounge Edition",
     "category": "Ultra Luxury VIP MPVs",
     "categoryKey": "luxury",
+    "bestFor": "VVIP Airport Transfers, Celebrity Transport, Destination Weddings, C-Suite Hospitality",
     "image": "/images/vellfire_front.jpg",
     "gallery": [
       "/images/vellfire_front.jpg",
@@ -136,6 +140,7 @@ export const fleetData = [
     "modelYear": "2024–2025 Executive Edition",
     "category": "Executive Luxury SUVs",
     "categoryKey": "suv",
+    "bestFor": "VIP Family Tours, Scenic Outstation, Corporate Airport Transit",
     "image": "/images/audi_q7_front.jpg",
     "gallery": [
       "/images/audi_q7_front.jpg",
@@ -170,6 +175,7 @@ export const fleetData = [
     "modelYear": "2024–2025 Executive Edition",
     "category": "Executive Luxury SUVs",
     "categoryKey": "suv",
+    "bestFor": "Corporate VIP Disposals, Airport Transfers, Luxury Wedding Escorts, Outstation (Coorg, Kabini)",
     "image": "/images/fortuner_front.jpg",
     "gallery": [
       "/images/fortuner_front.jpg",
@@ -202,6 +208,7 @@ export const fleetData = [
     "modelYear": "2024–2025 Executive Luxury Edition",
     "category": "Executive Luxury Sedans",
     "categoryKey": "luxury",
+    "bestFor": "Corporate VIP Transit, Executive Airport Transfers, Client Visits, Luxury Weddings",
     "image": "/images/accord_front.jpg",
     "gallery": [
       "/images/accord_front.jpg",
@@ -233,6 +240,7 @@ export const fleetData = [
     "modelYear": "2024–2025 Luxury Edition",
     "category": "Executive MPVs",
     "categoryKey": "mpv",
+    "bestFor": "Corporate Delegates, Airport VIP Transfers, Family City Disposals, Outstation (Coorg, Ooty, Mysuru)",
     "image": "/images/crysta_front.png",
     "gallery": [
       "/images/crysta_front.png",
@@ -266,6 +274,7 @@ export const fleetData = [
     "modelYear": "2024–2025 VX Hybrid Edition",
     "category": "Hybrid Luxury MPVs",
     "categoryKey": "mpv",
+    "bestFor": "Executive Airport Transfers, Corporate Delegations, Luxury Outstation Journeys",
     "image": "/images/hycross_front.jpg",
     "gallery": [
       "/images/hycross_front.jpg",
@@ -297,6 +306,7 @@ export const fleetData = [
     "modelYear": "2024–2025 Luxury Lounge Edition",
     "category": "VIP Luxury Vans & Commuters",
     "categoryKey": "coach",
+    "bestFor": "VIP Airport Transfers, High-Profile Executive Delegations, Corporate Roadshows",
     "image": "/images/hiace_front.png",
     "gallery": [
       "/images/hiace_front.png",
@@ -330,6 +340,7 @@ export const fleetData = [
     "modelYear": "2024–2025 Luxury High-Roof Edition",
     "category": "Executive Group Coaches",
     "categoryKey": "coach",
+    "bestFor": "Corporate Group Transfers, Airport Delegate Shuttles, Pilgrimage Tours, Destination Wedding Convoys",
     "image": "/images/traveller_front.jpg",
     "gallery": [
       "/images/traveller_front.jpg",
@@ -363,6 +374,7 @@ export const fleetData = [
     "modelYear": "2024-2025 Luxury Mini Coach",
     "category": "Executive Group Coaches",
     "categoryKey": "coach",
+    "bestFor": "Corporate Teams, Airport Delegation Shuttles, VIP Family Pilgrimages",
     "image": "/images/fleet/studio_mini_bus.jpg",
     "gallery": [
       "/images/fleet/studio_mini_bus.jpg",
@@ -394,6 +406,7 @@ export const fleetData = [
     "modelYear": "2024-2025 Luxury Tourist Coach",
     "category": "Executive Group Coaches",
     "categoryKey": "coach",
+    "bestFor": "Medium-Sized Corporate Outings, Tech Park Events, Destination Weddings",
     "image": "/images/fleet/studio_mini_bus.jpg",
     "gallery": [
       "/images/fleet/studio_mini_bus.jpg",
@@ -425,6 +438,7 @@ export const fleetData = [
     "modelYear": "2024-2025 Executive Touring Bus",
     "category": "Executive Group Coaches",
     "categoryKey": "coach",
+    "bestFor": "Mid-to-Large Business Delegations, College Industrial Visits, Interstate Journeys",
     "image": "/images/fleet/studio_large_bus.jpg",
     "gallery": [
       "/images/fleet/studio_large_bus.jpg",
@@ -456,6 +470,7 @@ export const fleetData = [
     "modelYear": "2024-2025 Interstate Tourist Coach",
     "category": "Executive Group Coaches",
     "categoryKey": "coach",
+    "bestFor": "Large Corporate Conventions, Tech Summits, Employee Shuttles, Grand Wedding Convoys",
     "image": "/images/fleet/studio_large_bus.jpg",
     "gallery": [
       "/images/fleet/studio_large_bus.jpg",
@@ -487,6 +502,7 @@ export const fleetData = [
     "modelYear": "2024-2025 Maximum Capacity Coach",
     "category": "Executive Group Coaches",
     "categoryKey": "coach",
+    "bestFor": "Maximum Delegation Transport, Corporate Group Events, Interstate Tours",
     "image": "/images/fleet/studio_large_bus.jpg",
     "gallery": [
       "/images/fleet/studio_large_bus.jpg",
@@ -518,6 +534,7 @@ export const fleetData = [
     "modelYear": "2024–2025 Executive Fleet",
     "category": "Executive MPVs",
     "categoryKey": "mpv",
+    "bestFor": "Airport Transit, Corporate Disposals, Family Getaways",
     "image": "/images/fleet/innova_white_front.jpg",
     "gallery": [
       "/images/fleet/innova_white_front.jpg",
@@ -548,6 +565,7 @@ export const fleetData = [
     "modelYear": "2024–2025 Executive Edition",
     "category": "Executive MPVs",
     "categoryKey": "mpv",
+    "bestFor": "Budget Corporate Transfers, Airport Transfers, Family Excursions",
     "image": "/images/fleet/ertiga_white_front.jpg",
     "gallery": [
       "/images/fleet/ertiga_white_front.jpg",
@@ -578,6 +596,7 @@ export const fleetData = [
     "modelYear": "2024–2025 Luxury Plus Edition",
     "category": "Executive MPVs",
     "categoryKey": "mpv",
+    "bestFor": "Corporate Delegates, VIP Airport Runs, Family Tours",
     "image": "/images/fleet/kia_carens_white_front.jpg",
     "gallery": [
       "/images/fleet/kia_carens_white_front.jpg",
@@ -608,6 +627,7 @@ export const fleetData = [
     "modelYear": "2024–2025 Self-Charging Hybrid",
     "category": "Executive Luxury Sedans",
     "categoryKey": "luxury",
+    "bestFor": "C-Suite Airport Transfers, Diplomatic Delegates, VIP Corporate Visits",
     "image": "/images/fleet/camry_hybrid_white_front.jpg",
     "gallery": [
       "/images/fleet/camry_hybrid_white_front.jpg",
@@ -638,6 +658,7 @@ export const fleetData = [
     "modelYear": "2024–2025 Executive Luxury",
     "category": "Luxury Executive Sedans",
     "categoryKey": "luxury",
+    "bestFor": "High-Profile Business Visits, Tech Summits, Airport VIP Transits",
     "image": "/images/fleet/bmw_5_series_white_front.jpg",
     "gallery": [
       "/images/fleet/bmw_5_series_white_front.jpg",
@@ -668,9 +689,10 @@ export const fleetData = [
     "modelYear": "2024–2025 Technology Luxury",
     "category": "Luxury Executive Sedans",
     "categoryKey": "luxury",
-    "image": "/images/eclass_front.jpg",
+    "bestFor": "Board Meetings, VIP Airport Runs, Executive Corporate Visits",
+    "image": "/images/fleet/audi_q7_front.jpg",
     "gallery": [
-      "/images/eclass_front.jpg",
+      "/images/fleet/audi_q7_front.jpg",
       "/images/fleet/audi_q7_interior.png"
     ],
     "rating": 4.9,
@@ -698,10 +720,11 @@ export const fleetData = [
     "modelYear": "2024–2025 Long Wheelbase Flagship",
     "category": "Ultra Luxury VIP Sedans",
     "categoryKey": "luxury",
-    "image": "/images/sclass_front.png",
+    "bestFor": "Celebrity Transport, VVIP Airport Transfers, High-Profile Corporate & Wedding Events",
+    "image": "/images/fleet/audi_q7_front.jpg",
     "gallery": [
-      "/images/sclass_front.png",
-      "/images/fleet/mercedes_s_class_interior.jpg"
+      "/images/fleet/audi_q7_front.jpg",
+      "/images/fleet/audi_q7_interior.png"
     ],
     "rating": 5.0,
     "passengerCapacity": 4,

@@ -2,14 +2,13 @@
 import { DEFAULT_DISPOSAL_TARIFFS, DEFAULT_OUTSTATION_TARIFFS } from './tariffApi.js';
 
 export const FLEET_TARIFF_MAPPING = {
-  "mercedes-s-class": "Merc \"S\" Class / BMW 7\" / Audi A8 latest model",
-  "bmw-7-series": "Merc \"S\" Class / BMW 7\" / Audi A8 latest model",
-  "audi-a8": "Merc \"S\" Class / BMW 7\" / Audi A8 latest model",
+  "mercedes-s-class": "Mercedes S-Class (Latest Model)",
+  "bmw-7-series": "BMW 7-Series (Latest Model)",
+  "audi-a8": "Audi A8L (Latest Model)",
   "mercedes-e-class": "Merc \"E\" Class / BMW 5\" / Audi A6",
   "bmw-5-series": "Merc \"E\" Class / BMW 5\" / Audi A6",
   "audi-a6": "Merc \"E\" Class / BMW 5\" / Audi A6",
-  "vellfire": "Toyota Vellfie",
-  "toyota-vellfire": "Toyota Vellfie",
+  "toyota-vellfire": "Toyota Vellfire",
   "innova-hycross": "Innova Hycross",
   "innova-crysta": "Innova Crysta",
   "innova": "Innova,Ertiga,Kia Carnes",

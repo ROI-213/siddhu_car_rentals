@@ -21,11 +21,11 @@ export const LocalTransfer = () => {
       
       {/* 1. HERO SECTION */}
       <PageHero
-        badge="Bengaluru City Chauffeur"
+        badge="Hourly Car Rental with Driver"
         badgeIcon={Clock}
-        title="Executive Local City Rentals & Hourly"
-        titleHighlight="Packages"
-        description="Punctual, non-smoking chauffeur services for business meetings at UB City, IT park visits, shopping tours, and luxury event mobility within Bengaluru."
+        title="Local City Transfers & Hourly"
+        titleHighlight="Rental Packages"
+        description="Chauffeur-driven cars for business meetings, IT park visits, shopping, airport transfers, and events across Bengaluru. Fixed packages, no surge pricing."
         breadcrumbs={['Services', 'Local Transfer']}
         image="/images/services_local_vellfire.jpg"
       >

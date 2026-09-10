@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Users, Briefcase, Disc, Wind, Star, ChevronRight, Eye, ShieldCheck } from 'lucide-react';
+import { Users, Briefcase, Disc, Wind, Star, ChevronRight, Eye, ShieldCheck, MessageSquare } from 'lucide-react';
+import { WhatsAppEnquiryMenu } from '../common/WhatsAppEnquiryMenu';
 
 export const VehicleCard = ({
   name,
@@ -9,6 +10,8 @@ export const VehicleCard = ({
   period = '8h / 80km',
   passengerCapacity = 4,
   luggageCapacity = 3,
+  categoryKey = '',
+  bestFor = '',
   transmission = 'Automatic',
   ac = 'Air Conditioned',
   rating = 5.0,
@@ -90,13 +93,11 @@ export const VehicleCard = ({
         position: 'relative',
         width: '100%',
         aspectRatio: '16/10',
-        minHeight: '220px',
-        maxHeight: '240px',
         overflow: 'hidden',
         background: '#FFFFFF',
         borderBottom: '1px solid rgba(226, 232, 240, 0.8)',
-        minHeight: '260px',
-        maxHeight: '320px'
+        minHeight: '200px',
+        maxHeight: '280px'
       }}>
         <img
           src={image}
@@ -149,6 +150,53 @@ export const VehicleCard = ({
           }}>
             {name}
           </h3>
+        </div>
+
+        {/* Vehicle Details Row */}
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '8px',
+          marginBottom: '12px'
+        }}>
+          <span style={{
+            fontSize: '0.72rem',
+            fontWeight: '700',
+            color: 'var(--color-slate-700)',
+            background: '#F1F5F9',
+            padding: '4px 10px',
+            borderRadius: '6px',
+            whiteSpace: 'nowrap'
+          }}>
+            {passengerCapacity} Pax + Chauffeur
+          </span>
+          <span style={{
+            fontSize: '0.72rem',
+            fontWeight: '700',
+            color: 'var(--color-slate-700)',
+            background: '#F1F5F9',
+            padding: '4px 10px',
+            borderRadius: '6px',
+            whiteSpace: 'nowrap'
+          }}>
+            {luggageCapacity} Bags
+          </span>
+          {bestFor && (
+            <span style={{
+              fontSize: '0.72rem',
+              fontWeight: '700',
+              color: accent.color,
+              background: accent.badgeBg,
+              padding: '4px 10px',
+              borderRadius: '6px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: '100%'
+            }}>
+              {bestFor.split(',')[0]}
+            </span>
+          )}
         </div>
 
         {/* 3. TARIFF FOOTER & DUAL ACTION BUTTONS */}
@@ -227,42 +275,8 @@ export const VehicleCard = ({
               <span>View Specs</span>
             </button>
 
-            {/* Primary CTA: Book This Vehicle via WhatsApp */}
-            <a
-              href={`https://wa.me/917625059665?text=${encodeURIComponent(`Hello Siddhu Car Rentals, I would like to book the ${name} (${price ? `₹${price}/${period}` : 'Price on Request'}). Please share availability and booking details.`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '4px',
-                height: '40px',
-                borderRadius: '10px',
-                background: accent.btnBg,
-                border: 'none',
-                color: '#FFFFFF',
-                fontSize: '0.8rem',
-                fontWeight: '800',
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                transition: 'all 0.25s ease',
-                textDecoration: 'none'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = accent.btnHover;
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = accent.btnBg;
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-              }}
-            >
-              <span>Book Now</span>
-              <ChevronRight size={14} />
-            </a>
+            {/* Primary CTA: Get Quote */}
+            <WhatsAppEnquiryMenu context={{ vehicleName: name }} menuPlacement="bottom-end" triggerLabel="Get Quote" triggerIcon={MessageSquare} />
           </div>
         </div>
       </div>

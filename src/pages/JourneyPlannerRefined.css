@@ -430,3 +430,11 @@
   .bento-bot-right2 { grid-column: 1; grid-row: auto; height: 200px; }
 }
 
+@media (max-width: 640px) {
+  .bento-left-main { height: 240px; }
+  .bento-top-right1 { height: 180px; }
+  .bento-top-right2 { height: 180px; }
+  .bento-bot-right1 { height: 180px; }
+  .bento-bot-right2 { height: 180px; }
+}
+

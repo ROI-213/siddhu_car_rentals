@@ -9,6 +9,7 @@ import { pricingService } from '../services/pricingService';
 import { Badge } from '../components/common/Badge';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { SectionHeader } from '../components/common/SectionHeader';
+import { WhatsAppEnquiryMenu } from '../components/common/WhatsAppEnquiryMenu';
 
 export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) => {
   // ALL hooks must be called before any conditional returns
@@ -145,7 +146,7 @@ export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) =>
                     <div style={{ fontSize: '0.75rem', color: 'var(--color-charcoal-500)', textTransform: 'uppercase' }}>Seating Capacity</div>
                     <div style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Users size={18} color="var(--accent-gold-primary)" />
-                      <span>{vehicle.passengerCapacity} Executive Seats</span>
+                      <span>{vehicle.passengerCapacity} Passengers + Chauffeur</span>
                     </div>
                   </div>
 
@@ -195,26 +196,26 @@ export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) =>
                       Enquire for this Vehicle
                     </PremiumButton>
 
-                    <a
-                      href="https://wa.me/9176250 59665"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        padding: '0.95rem 1.75rem',
-                        fontSize: '1rem',
-                        fontWeight: '600',
-                        borderRadius: '9999px',
-                        background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
-                        color: '#FFFFFF',
-                        textDecoration: 'none'
-                      }}
-                    >
-                      <MessageSquare size={18} />
-                      <span>WhatsApp Quote</span>
-                    </a>
+                    <WhatsAppEnquiryMenu context={{ vehicleName: vehicle.name }} menuPlacement="bottom-end">
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '0.95rem 1.75rem',
+                          fontSize: '1rem',
+                          fontWeight: '600',
+                          borderRadius: '9999px',
+                          background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                          color: '#FFFFFF',
+                          cursor: 'pointer',
+                          boxShadow: '0 4px 14px rgba(37,211,102,0.35)'
+                        }}
+                      >
+                        <MessageSquare size={18} />
+                        <span>WhatsApp Quote</span>
+                      </span>
+                    </WhatsAppEnquiryMenu>
                   </div>
                 </div>
               </div>

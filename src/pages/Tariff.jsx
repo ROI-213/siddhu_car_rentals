@@ -26,6 +26,8 @@ import { Badge } from '../components/common/Badge';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { SectionHeader } from '../components/common/SectionHeader';
 import { tariffApi, formatCurrency } from '../services/tariffApi';
+import { SITE_CONFIG } from '../config/site';
+import { WhatsAppButton } from '../components/common/WhatsAppButton';
 
 export const Tariff = ({ onSelectVehicleForBooking }) => {
   const [activeCategory, setActiveCategory] = useState('disposal'); // 'disposal' | 'outstation'
@@ -83,7 +85,7 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
     if (onSelectVehicleForBooking) {
       onSelectVehicleForBooking(variant);
     } else {
-      window.location.href = `https://wa.me/917625059665?text=Hello%20Siddhu%20Car%20Rentals,%20I%20would%20like%20to%20enquire%20about%20tariff%20and%20booking%20for%20${encodeURIComponent(variant)}%20(${activeCategory.toUpperCase()}%20Bangalore).`;
+      window.open(`https://wa.me/${SITE_CONFIG.whatsapp.phone}?text=Hello%20Siddhu%20Car%20Rentals,%20I%20would%20like%20to%20enquire%20about%20tariff%20and%20booking%20for%20${encodeURIComponent(variant)}%20(${activeCategory.toUpperCase()}%20Bangalore).`, '_blank');
     }
   };
 
@@ -96,7 +98,7 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
         badgeIcon={FileText}
         title="Complete Fleet Price List & Rates"
         titleHighlight="in Bengaluru"
-        description="Explore Bengaluru's most competitive, all-inclusive luxury car rental and fleet pricing. Guaranteed pristine fleet, verified chauffeurs, and 100% transparent pricing."
+        description="Full list of car rental rates with driver in Bengaluru. Local hourly packages, airport transfers, outstation per-km, and corporate monthly tariffs."
         breadcrumbs={['Fleet Pricing & Rate Card']}
         image="/images/indian_hotel_driveway.jpg"
       />
@@ -660,7 +662,7 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>
                   <a
-                    href="tel:+917625059665"
+                    href={`tel:${SITE_CONFIG.whatsapp.phone}`}
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -677,10 +679,7 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
                     <PhoneCall size={14} color="#C5A059" />
                     <span>Call 7625059665</span>
                   </a>
-                  <a
-                    href="https://wa.me/917625059665"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <WhatsAppButton
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -689,14 +688,13 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
                       borderRadius: '8px',
                       background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
                       color: '#FFFFFF',
-                      textDecoration: 'none',
                       fontSize: '0.84rem',
                       fontWeight: '600'
                     }}
                   >
                     <MessageSquare size={14} />
                     <span>WhatsApp Booking</span>
-                  </a>
+                  </WhatsAppButton>
                 </div>
               </div>
             </GlassCard>

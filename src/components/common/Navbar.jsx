@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Crown, PhoneCall, MessageSquare, Menu, X, ChevronRight, Sparkles } from 'lucide-react';
 import { PremiumButton } from './PremiumButton';
+import { WhatsAppButton } from './WhatsAppButton';
+import { SITE_CONFIG } from '../../config/site';
 
 export const Navbar = ({ activePage = 'home', onNavigate }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -77,11 +79,11 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
         <div className="container" style={{ maxWidth: '1440px', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Sparkles size={13} color="#FFFFFF" />
-            <span>Bengaluru’s Premier Luxury Chauffeur Service — Kempegowda Airport & Corporate Fleets</span>
+            <span className="nav-top-strip-text">Car Rental with Driver — Bengaluru | Airport, Outstation & Corporate</span>
           </div>
-          <div style={{ display: 'none', gap: '20px', alignItems: 'center' }} className="nav-top-right">
-            <a href="tel:+917625059665" style={{ color: '#FFFFFF', textDecoration: 'none' }}>
-              📞 Dispatch: +91 76250 59665 / 81472 04327
+          <div style={{ gap: '16px', fontSize: '0.78rem', fontWeight: '600', alignItems: 'center' }} className="nav-top-right">
+            <a href={`tel:${SITE_CONFIG.contact.phone}`} style={{ color: '#FFFFFF', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              +91 76250 59665
             </a>
             <a 
               href="https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+%23314%2C+12th+Main%2C+15th+Cross%2C+JP+Nagar+5th+Phase%2C+Bengaluru+-+560078"
@@ -199,7 +201,7 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
         {/* RIGHT: Action Cluster (Call, WhatsApp, Get Quote) */}
         <div className="nav-right-actions">
           <a
-            href="tel:+917625059665"
+            href={`tel:${SITE_CONFIG.contact.phone}`}
             className="nav-action-call"
             title="Call Dispatch Desk"
           >
@@ -207,16 +209,7 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
             <span className="action-text">Call</span>
           </a>
 
-          <a
-            href="https://wa.me/917625059665?text=Hello%20Siddhu%20Car%20Rentals,%20I%20would%20like%20to%20enquire%20about%20luxury%20car%20booking%20and%20tariffs."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-action-wa"
-            title="Chat on WhatsApp"
-          >
-            <MessageSquare size={14} />
-            <span className="action-text">WhatsApp</span>
-          </a>
+          <WhatsAppEnquiryMenu context={{}} triggerLabel="WhatsApp" triggerIcon={MessageSquare} />
 
           <PremiumButton variant="sky" size="sm" pill icon={ChevronRight} iconPosition="right" onClick={() => handleNavClick('contact')}>
             <span style={{ whiteSpace: 'nowrap' }}>Get Quote</span>
@@ -328,7 +321,7 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '28px', position: 'relative', zIndex: 2 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <a
-                href="tel:+917625059665"
+                href={`tel:${SITE_CONFIG.contact.phone}`}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -346,10 +339,7 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
                 <PhoneCall size={16} color="var(--accent-sky-primary)" />
                 <span>Call</span>
               </a>
-              <a
-                href="https://wa.me/917625059665"
-                target="_blank"
-                rel="noopener noreferrer"
+              <WhatsAppButton
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -359,14 +349,13 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
                   borderRadius: '12px',
                   background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
                   color: '#FFFFFF',
-                  textDecoration: 'none',
                   fontSize: '0.9rem',
                   fontWeight: '600'
                 }}
               >
                 <MessageSquare size={16} />
                 <span>WhatsApp</span>
-              </a>
+              </WhatsAppButton>
             </div>
 
             <PremiumButton variant="sky" size="lg" fullWidth pill icon={ChevronRight} iconPosition="right" onClick={() => handleNavClick('contact')}>
@@ -476,6 +465,14 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
         /* RESPONSIVE NAVBAR BREAKPOINTS */
         @media (min-width: 1380px) {
           .nav-top-right { display: flex !important; }
+        }
+        @media (min-width: 769px) and (max-width: 1379px) {
+          .nav-top-right { display: flex !important; gap: 12px; font-size: 0.72rem; }
+          .nav-top-right a { color: #FFFFFF !important; textDecoration: 'none'; }
+        }
+        @media (max-width: 768px) {
+          .nav-top-strip-text { display: none; }
+          .nav-top-right { gap: 10px; font-size: 0.7rem; }
         }
         @media (min-width: 1080px) and (max-width: 1280px) {
           .nav-center-links { gap: 8px; margin: 0 6px; }
