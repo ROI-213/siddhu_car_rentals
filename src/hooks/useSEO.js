@@ -73,20 +73,14 @@ export function useSEO(pageKey, customTitle, customDescription) {
     document.title = title;
 
     const setMeta = (attr, content) => {
-      let el = document.querySelector(`meta[${attr}="${content ? '' : attr.includes('property') ? attr : ''}"]`);
+      if (!content) return;
+      const isOg = attr.startsWith('og:');
+      const attrName = isOg ? 'property' : 'name';
+      let el = document.querySelector(`meta[${attrName}="${attr}"]`);
       if (!el) {
         el = document.createElement('meta');
-        if (attr.startsWith('og:')) {
-          el.setAttribute('property', attr);
-        } else {
-          el.setAttribute('name', attr);
-        }
+        el.setAttribute(attrName, attr);
         document.head.appendChild(el);
-      }
-      if (attr.startsWith('og:')) {
-        el.setAttribute('property', attr);
-      } else {
-        el.setAttribute('name', attr);
       }
       el.setAttribute('content', content);
     };

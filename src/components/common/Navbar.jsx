@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Crown, PhoneCall, MessageSquare, Menu, X, ChevronRight, Sparkles } from 'lucide-react';
 import { PremiumButton } from './PremiumButton';
 import { WhatsAppButton } from './WhatsAppButton';
+import { WhatsAppEnquiryMenu } from './WhatsAppEnquiryMenu';
 import { SITE_CONFIG } from '../../config/site';
 
 export const Navbar = ({ activePage = 'home', onNavigate }) => {
