@@ -2,12 +2,35 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { pricingService } from '../../services/pricingService';
 import { SITE_CONFIG } from '../../config/site';
-import { X, CheckCircle2, Phone, Calendar, Clock, MapPin, User, ChevronRight, ShieldCheck, Star } from 'lucide-react';
+import { X, CheckCircle2, Phone, Calendar, Clock, MapPin, User, ChevronRight, ShieldCheck, Star, Briefcase } from 'lucide-react';
 import { Input } from '../common/Input';
 import { PremiumButton } from '../common/PremiumButton';
 import { Badge } from '../common/Badge';
 import { LocationAutocompleteInput } from '../common/LocationAutocompleteInput';
 import { WhatsAppIcon } from '../common/WhatsAppEnquiryMenu';
+
+const getTodayDateStr = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const getNormalizedPackage = (pkg) => {
+  if (!pkg) return 'local_8h';
+  if (pkg === '8h' || pkg === 'local_8h' || pkg === 'local') return 'local_8h';
+  if (pkg === '4h' || pkg === 'local_4h') return 'local_4h';
+  if (pkg === '12h' || pkg === 'local_12h') return 'local_12h';
+  if (pkg === 'airport' || pkg === 'airport_transfer') return 'airport_transfer';
+  if (pkg === 'outstation' || pkg === 'outstation_roundtrip') return 'outstation_roundtrip';
+  if (pkg === 'oneway' || pkg === 'outstation_oneway') return 'outstation_oneway';
+  if (pkg === 'corporate') return 'corporate';
+  if (pkg === 'wedding' || pkg === 'wedding_event') return 'wedding_event';
+  if (pkg === 'luxury' || pkg === 'luxury_chauffeur') return 'luxury_chauffeur';
+  if (pkg === 'group' || pkg === 'group_travel') return 'group_travel';
+  return pkg;
+};
 
 export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation = '', initialDate = '', initialPackage = '' }) => {
   const [submitted, setSubmitted] = useState(false);
@@ -16,7 +39,7 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
     phone: '',
     pickup: initialLocation || '',
     drop: '',
-    packageType: initialPackage === 'airport' ? 'airport' : initialPackage === 'outstation' ? 'outstation' : '8h',
+    packageType: getNormalizedPackage(initialPackage),
     date: initialDate || '',
     time: '10:00'
   });
@@ -28,7 +51,10 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
     if (initialDate) {
       setFormData(prev => ({ ...prev, date: initialDate }));
     }
-  }, [initialLocation, initialDate]);
+    if (initialPackage) {
+      setFormData(prev => ({ ...prev, packageType: getNormalizedPackage(initialPackage) }));
+    }
+  }, [initialLocation, initialDate, initialPackage]);
 
   useEffect(() => {
     if (isOpen) {
@@ -47,7 +73,11 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
   }, [isOpen, onClose]);
 
   const localTariff = vehicle ? (pricingService.getLocalTariff(vehicle.id) || {}) : {};
+  const outstationTariff = vehicle ? (pricingService.getOutstationTariff(vehicle.id) || {}) : {};
   const priceStr = localTariff.eight_hours_eighty_km ? pricingService.formatPrice(localTariff.eight_hours_eighty_km) : 'Price on Request';
+  const fourHourPriceStr = localTariff.four_hours_forty_km ? pricingService.formatPrice(localTariff.four_hours_forty_km) : null;
+  const airportPriceStr = localTariff.airport_transfer ? pricingService.formatPrice(localTariff.airport_transfer) : null;
+  const perKmRateStr = outstationTariff.per_km_rate ? `₹${outstationTariff.per_km_rate}/km` : null;
 
   if (!isOpen || !vehicle) return null;
 
@@ -60,18 +90,80 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
     setFormData(prev => ({ ...prev, [fieldName]: e.target.value }));
   };
 
+  const serviceOptions = [
+    {
+      value: 'airport_transfer',
+      label: `✈️ Airport Transfer — Kempegowda Airport (BLR) Pickup / Drop${airportPriceStr ? ` (${airportPriceStr})` : ''}`
+    },
+    {
+      value: 'local_8h',
+      label: `📍 Local Rental — Full Day 8h / 80 Kms${priceStr !== 'Price on Request' ? ` (${priceStr})` : ''}`
+    },
+    {
+      value: 'local_4h',
+      label: `📍 Local Rental — Half Day 4h / 40 Kms${fourHourPriceStr ? ` (${fourHourPriceStr})` : ''}`
+    },
+    {
+      value: 'local_12h',
+      label: `📍 Local Rental — Extended Day 12h / 120 Kms`
+    },
+    {
+      value: 'outstation_roundtrip',
+      label: `🛣️ Outstation Round Trip — Mysore, Coorg, Ooty & Beyond${perKmRateStr ? ` (${perKmRateStr})` : ''}`
+    },
+    {
+      value: 'outstation_oneway',
+      label: `🛣️ Outstation One-Way Drop — Intercity Transit`
+    },
+    {
+      value: 'corporate',
+      label: `💼 Corporate Travel & Executive Chauffeur Delegation`
+    },
+    {
+      value: 'wedding_event',
+      label: `💒 Weddings & VIP Special Occasions`
+    },
+    {
+      value: 'luxury_chauffeur',
+      label: `✨ Luxury Car Chauffeur Service — VIP Flagship Experience`
+    },
+    {
+      value: 'group_travel',
+      label: `👥 Group Travel — Tempo Traveller & Luxury Mini Coach`
+    }
+  ];
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const serviceLabels = {
+      'airport_transfer': `Airport Transfer (Kempegowda Airport BLR Pickup/Drop${airportPriceStr ? ` • ${airportPriceStr}` : ''})`,
+      'airport': `Airport Transfer (Kempegowda Airport BLR Pickup/Drop${airportPriceStr ? ` • ${airportPriceStr}` : ''})`,
+      'local_8h': `Local Rental (Full Day 8 Hours / 80 Kms${priceStr !== 'Price on Request' ? ` • ${priceStr}` : ''})`,
+      '8h': `Local Rental (Full Day 8 Hours / 80 Kms${priceStr !== 'Price on Request' ? ` • ${priceStr}` : ''})`,
+      'local_4h': `Local Rental (Half Day 4 Hours / 40 Kms${fourHourPriceStr ? ` • ${fourHourPriceStr}` : ''})`,
+      '4h': `Local Rental (Half Day 4 Hours / 40 Kms${fourHourPriceStr ? ` • ${fourHourPriceStr}` : ''})`,
+      'local_12h': 'Local Rental (Extended Day 12 Hours / 120 Kms)',
+      'outstation_roundtrip': `Outstation Round Trip (Mysore, Coorg, Ooty & Beyond${perKmRateStr ? ` • ${perKmRateStr}` : ''})`,
+      'outstation': `Outstation Long Distance Journey${perKmRateStr ? ` • ${perKmRateStr}` : ''}`,
+      'outstation_oneway': 'Outstation One-Way Drop (Intercity Transit)',
+      'corporate': 'Corporate Travel & Executive Chauffeur Delegation',
+      'wedding_event': 'Weddings & VIP Special Occasions',
+      'luxury_chauffeur': 'Luxury Car Chauffeur Service — VIP Flagship Experience',
+      'group_travel': 'Group Travel — Tempo Traveller & Luxury Mini Coach'
+    };
+
+    const chosenServiceLabel = serviceLabels[formData.packageType] || formData.packageType;
 
     const lines = [
       `*VEHICLE RESERVATION ENQUIRY - SIDDHU CAR RENTALS*`,
       `----------------------------------------`,
       `🚘 *Vehicle:* ${vehicle.name} (${vehicle.category || 'VIP Luxury'})`,
+      `🛎️ *Service Required:* ${chosenServiceLabel}`,
       `👤 *Customer Name:* ${formData.name}`,
       `📱 *WhatsApp Phone:* ${formData.phone}`,
       `📍 *Pickup Location:* ${formData.pickup || 'Bengaluru'}`,
       formData.drop ? `🎯 *Destination:* ${formData.drop}` : null,
-      `⏱️ *Package:* ${formData.packageType === 'airport' ? 'Airport VIP Transfer' : formData.packageType === 'outstation' ? 'Outstation Trip' : formData.packageType === '4h' ? 'Local 4h / 40km' : 'Local 8h / 80km'}`,
       formData.date ? `📅 *Date:* ${formData.date} at ${formData.time || '10:00 AM'}` : null,
       `----------------------------------------`,
       `Please confirm vehicle availability and reservation quote.`
@@ -289,17 +381,12 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
                 <Input
-                  label="Select Tariff Package"
+                  label="Select Service to Book"
                   name="packageType"
                   value={formData.packageType}
                   onChange={handleChange}
-                  icon={Clock}
-                  options={[
-                    { value: '8h', label: `Local Full Day — 8 Hours / 80 Kms (₹${priceStr})` },
-                    { value: '4h', label: `Local Half Day — 4 Hours / 40 Kms` },
-                    { value: 'airport', label: `Kempegowda Airport Flat VIP Transfer` },
-                    { value: 'outstation', label: `Outstation Long Distance Journey` }
-                  ]}
+                  icon={Briefcase}
+                  options={serviceOptions}
                 />
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
@@ -307,6 +394,7 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
                     label="Pickup Date"
                     type="date"
                     name="date"
+                    min={getTodayDateStr()}
                     value={formData.date}
                     onChange={handleChange}
                     icon={Calendar}
