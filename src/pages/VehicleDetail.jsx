@@ -9,7 +9,7 @@ import { pricingService } from '../services/pricingService';
 import { Badge } from '../components/common/Badge';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { SectionHeader } from '../components/common/SectionHeader';
-import { WhatsAppEnquiryMenu } from '../components/common/WhatsAppEnquiryMenu';
+import { WhatsAppEnquiryMenu, WhatsAppIcon } from '../components/common/WhatsAppEnquiryMenu';
 
 export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) => {
   // ALL hooks must be called before any conditional returns
@@ -212,7 +212,7 @@ export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) =>
                           boxShadow: '0 4px 14px rgba(37,211,102,0.35)'
                         }}
                       >
-                        <MessageSquare size={18} />
+                        <WhatsAppIcon size={18} />
                         <span>WhatsApp Quote</span>
                       </span>
                     </WhatsAppEnquiryMenu>

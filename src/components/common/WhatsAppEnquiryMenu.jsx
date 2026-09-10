@@ -66,7 +66,7 @@ export const WhatsAppIcon = ({ size = 20, color = 'currentColor', className = ''
   </svg>
 );
 
-export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement = 'bottom-end', triggerLabel, triggerIcon: TriggerIcon, iconSize = 18 }) => {
+export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement = 'bottom-end', triggerLabel, triggerIcon: TriggerIcon, iconSize = 18, children, className = '', ...restProps }) => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
   const triggerRef = useRef(null);
@@ -92,16 +92,24 @@ export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement =
   const hasExplicitLabel = triggerLabel !== undefined;
   const label = hasExplicitLabel ? triggerLabel : 'WhatsApp';
   const Icon = TriggerIcon || WhatsAppIcon;
+  const isFullWidth = buttonStyle?.width === '100%';
 
   return (
-    <span style={{ position: 'relative', display: 'inline-flex' }}>
+    <span style={{
+      position: 'relative',
+      display: isFullWidth ? 'flex' : 'inline-flex',
+      width: isFullWidth ? '100%' : 'auto',
+      flex: buttonStyle?.flex || 'initial'
+    }}>
       <button
         ref={triggerRef}
         type="button"
         onClick={() => setOpen(prev => !prev)}
+        className={className}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
+          justifyContent: 'center',
           gap: '6px',
           border: 'none',
           background: 'transparent',
@@ -114,9 +122,14 @@ export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement =
         }}
         title="Chat on WhatsApp"
         aria-label="Chat on WhatsApp"
+        {...restProps}
       >
-        <Icon size={iconSize} />
-        {label && <span>{label}</span>}
+        {children || (
+          <>
+            <Icon size={iconSize} />
+            {label && <span>{label}</span>}
+          </>
+        )}
       </button>
 
       {open && (

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Users, Briefcase, Disc, Wind, Star, ChevronRight, Eye, ShieldCheck, MessageSquare } from 'lucide-react';
-import { WhatsAppEnquiryMenu } from '../common/WhatsAppEnquiryMenu';
+import { Users, Briefcase, Disc, Wind, Star, ChevronRight, Eye, ShieldCheck } from 'lucide-react';
+import { WhatsAppEnquiryMenu, WhatsAppIcon } from '../common/WhatsAppEnquiryMenu';
 
 export const VehicleCard = ({
   name,
@@ -276,7 +276,39 @@ export const VehicleCard = ({
             </button>
 
             {/* Primary CTA: Get Quote */}
-            <WhatsAppEnquiryMenu context={{ vehicleName: name }} menuPlacement="bottom-end" triggerLabel="Get Quote" triggerIcon={MessageSquare} />
+            <WhatsAppEnquiryMenu
+              context={{ vehicleName: name }}
+              menuPlacement="bottom-end"
+              triggerLabel="Get Quote"
+              triggerIcon={WhatsAppIcon}
+              iconSize={15}
+              buttonStyle={{
+                width: '100%',
+                height: '40px',
+                borderRadius: '10px',
+                background: '#25D366',
+                color: '#FFFFFF',
+                fontSize: '0.78rem',
+                fontWeight: '700',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 2px 6px rgba(37, 211, 102, 0.25)',
+                transition: 'all 0.2s ease',
+                boxSizing: 'border-box'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#20BA5A';
+                e.currentTarget.style.boxShadow = '0 4px 10px rgba(37, 211, 102, 0.35)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#25D366';
+                e.currentTarget.style.boxShadow = '0 2px 6px rgba(37, 211, 102, 0.25)';
+              }}
+            />
           </div>
         </div>
       </div>
