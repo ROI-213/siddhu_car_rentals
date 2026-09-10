@@ -765,10 +765,6 @@ export const CarRentalSearch = ({ onNavigate }) => {
         if (!pickupLocation) setPickupLocation('Bengaluru, Karnataka');
         setSelectedRouteNotice(`Destination Selected: Bengaluru → ${destination}`);
         setTimeout(() => setSelectedRouteNotice(''), 7000);
-        const el = document.getElementById('journey-planner') || document.getElementById('quick-enquiry');
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
       }
     };
     window.addEventListener('scr_select_destination', handleExternalDestinationSelect);

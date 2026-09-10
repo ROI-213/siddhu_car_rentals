@@ -214,12 +214,12 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
   const [routeModalDestination, setRouteModalDestination] = useState(null);
 
   const handleSelectDestination = (dest) => {
-    // 1. Pre-fill Journey Planner form state
+    // 1. Pre-fill Journey Planner form state so it is ready if user accesses it
     if (dest.type === 'airport') {
       setActiveTripType('Airport Transfer');
       setFormData(prev => ({
         ...prev,
-        drop: dest.name || 'Kempegowda International Airport Bengaluru (BLR)',
+        drop: dest.name || 'Kempegowda International Airport (BLR)',
         pickup: prev.pickup || 'Bengaluru, Karnataka'
       }));
     } else {
@@ -231,16 +231,9 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
       }));
     }
     setFormStep(2);
+    setIsFormOpen(true);
 
-    // 2. Dispatch custom event so CarRentalSearch also captures this destination
-    window.dispatchEvent(new CustomEvent('scr_select_destination', {
-      detail: {
-        destination: dest.name,
-        tab: dest.type === 'airport' ? 'airport' : 'outstation'
-      }
-    }));
-
-    // 3. Open the WhatsApp Route Enquiry Modal pre-populated for this route
+    // 2. Open the dedicated instant Route Enquiry Modal right here with destination auto-displayed
     setRouteModalDestination({
       name: dest.name,
       distance: dest.dist,
@@ -2576,18 +2569,37 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                 className="dest-img"
               />
               <div className="dest-glass-label">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-coral-primary)', fontWeight: '700', marginBottom: '2px' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-coral-primary)', fontWeight: '800', marginBottom: '2px' }}>
                     Palaces & Silk Heritage • 140 km
                   </div>
-                  <span style={{ fontSize: '0.72rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 10px', borderRadius: '999px', fontWeight: '700' }}>
-                    Get Quote →
-                  </span>
+                  <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.35rem', color: 'var(--color-slate-900)' }}>Mysore Palace (Mysuru)</h4>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
+                    Starting from ₹15/km • Uniformed Chauffeur Guaranteed
+                  </div>
                 </div>
-                <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.45rem', color: 'var(--color-slate-900)' }}>Mysore Palace (Mysuru)</h4>
-                <div style={{ fontSize: '0.76rem', color: 'var(--color-slate-600)', marginTop: '4px' }}>
-                  Starting from ₹15/km • Uniformed Chauffeur Guaranteed
-                </div>
+                <button
+                  type="button"
+                  className="btn-dest-quote"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    background: '#0284C7',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    fontSize: '0.82rem',
+                    fontWeight: '700',
+                    padding: '8px 18px',
+                    borderRadius: '999px',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(2, 132, 199, 0.3)',
+                    flexShrink: 0,
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  Get Quote →
+                </button>
               </div>
             </div>
 
@@ -2612,18 +2624,37 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                   className="dest-img"
                 />
                 <div className="dest-glass-label">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-sky-primary)', fontWeight: '700', marginBottom: '2px' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-sky-primary)', fontWeight: '800', marginBottom: '2px' }}>
                       VIP Flight Transfers • 38 km
                     </div>
-                    <span style={{ fontSize: '0.68rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 8px', borderRadius: '999px', fontWeight: '700' }}>
-                      Get Quote →
-                    </span>
+                    <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.02rem', color: 'var(--color-slate-900)', lineHeight: '1.2' }}>Bangalore Airport (BLR)</h4>
+                    <div style={{ fontSize: '0.66rem', color: 'var(--color-slate-600)', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      Flight tracking & punctual luxury chauffeur pickup
+                    </div>
                   </div>
-                  <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', color: 'var(--color-slate-900)' }}>Bangalore Airport (BLR)</h4>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
-                    Flight tracking & punctual luxury chauffeur pickup
-                  </div>
+                  <button
+                    type="button"
+                    className="btn-dest-quote"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      background: '#0284C7',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      fontSize: '0.80rem',
+                      fontWeight: '700',
+                      padding: '6px 14px',
+                      borderRadius: '999px',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 8px rgba(2, 132, 199, 0.3)',
+                      flexShrink: 0,
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    Get Quote →
+                  </button>
                 </div>
               </div>
 
@@ -2645,18 +2676,37 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                   className="dest-img"
                 />
                 <div className="dest-glass-label">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-mint-primary)', fontWeight: '700', marginBottom: '2px' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-mint-primary)', fontWeight: '800', marginBottom: '2px' }}>
                       Misty Coffee Valleys • 260 km
                     </div>
-                    <span style={{ fontSize: '0.68rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 8px', borderRadius: '999px', fontWeight: '700' }}>
-                      Get Quote →
-                    </span>
+                    <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.02rem', color: 'var(--color-slate-900)', lineHeight: '1.2' }}>Coorg Hills (Madikeri)</h4>
+                    <div style={{ fontSize: '0.66rem', color: 'var(--color-slate-600)', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      Scenic Western Ghats mountain drive with verified driver
+                    </div>
                   </div>
-                  <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', color: 'var(--color-slate-900)' }}>Coorg Hills (Madikeri)</h4>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
-                    Scenic Western Ghats mountain drive with verified driver
-                  </div>
+                  <button
+                    type="button"
+                    className="btn-dest-quote"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      background: '#0284C7',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      fontSize: '0.80rem',
+                      fontWeight: '700',
+                      padding: '6px 14px',
+                      borderRadius: '999px',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 8px rgba(2, 132, 199, 0.3)',
+                      flexShrink: 0,
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    Get Quote →
+                  </button>
                 </div>
               </div>
 
@@ -2769,17 +2819,35 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
           
           .dest-glass-label {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.85);
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.90);
             backdrop-filter: blur(12px);
             WebkitBackdropFilter: blur(12px);
-            padding: 12px 20px;
+            padding: 12px 18px;
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.95);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
             z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+          }
+
+          .stacked-dest-card .dest-glass-label {
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            padding: 8px 12px;
+            border-radius: 12px;
+          }
+
+          .btn-dest-quote:hover {
+            background: #0369A1 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4) !important;
           }
           
           .dest-img {

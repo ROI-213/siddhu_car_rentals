@@ -52,11 +52,32 @@ export const WhatsAppBookingModal = ({
     }
   }, [isOpen, onClose]);
 
+  // Synchronize incoming context values when modal is opened or changes
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(prev => ({
+        ...prev,
+        pickup: context.pickup !== undefined ? context.pickup : (prev.pickup || 'Bengaluru, Karnataka'),
+        drop: context.drop !== undefined ? context.drop : prev.drop,
+        date: context.date !== undefined ? context.date : prev.date,
+        time: context.time !== undefined ? context.time : (prev.time || '10:00'),
+        returnDate: context.returnDate !== undefined ? context.returnDate : prev.returnDate,
+        returnTime: context.returnTime !== undefined ? context.returnTime : prev.returnTime,
+        passengers: context.passengers !== undefined ? context.passengers : prev.passengers,
+        notes: context.message !== undefined ? context.message : prev.notes
+      }));
+    }
+  }, [isOpen, context.pickup, context.drop, context.date, context.time, context.returnDate, context.returnTime, context.passengers, context.message]);
+
   if (!isOpen) return null;
 
-  const typeId = serviceType?.id || 'general';
-  const typeLabel = serviceType?.label || 'General Enquiry';
-  const typeIcon = serviceType?.icon || '💬';
+  const typeId = typeof serviceType === 'string' ? serviceType : (serviceType?.id || 'general');
+  const typeLabel = typeof serviceType === 'string'
+    ? (serviceType === 'airport' ? 'Airport Transfer' : serviceType === 'outstation' ? 'Outstation Trip' : serviceType === 'local' ? 'Local Rental' : serviceType)
+    : (serviceType?.label || (context.drop ? `Route Enquiry — ${context.drop}` : 'General Enquiry'));
+  const typeIcon = typeof serviceType === 'string'
+    ? (serviceType === 'airport' ? '✈️' : serviceType === 'outstation' ? '🛣️' : serviceType === 'local' ? '📍' : '💬')
+    : (serviceType?.icon || '💬');
   const vehicleName = context.vehicleName || '';
 
   const handleChange = (e) => {
@@ -208,7 +229,7 @@ export const WhatsAppBookingModal = ({
                 color: '#FFFFFF',
                 letterSpacing: '-0.01em'
               }}>
-                {typeLabel}
+                {context.drop ? `Quote for ${context.drop}` : typeLabel}
               </h3>
             </div>
           </div>
