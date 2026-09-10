@@ -2849,72 +2849,171 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
               <div className="editorial-quote-card card-featured">
                 <div className="quote-serif">“</div>
                 <div style={{ zIndex: 2, position: 'relative' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', gap: '2px' }}>
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={15} fill="#FABB05" color="#FABB05" />
+                      ))}
+                    </div>
+                    <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#1A73E8', background: 'rgba(26, 115, 232, 0.08)', padding: '2px 8px', borderRadius: '6px' }}>
+                      Google Verified Review
+                    </span>
+                  </div>
                   <p className="quote-text-large">
-                    Siddhu Car Rentals handled our international board delegation with complete perfection. The Mercedes S-Class was pristine and the chauffeur was impeccably punctual.
+                    We had availed their Luxury Car Rental Service on Valentine's. It was absolutely surreal and peaceful. Seamless booking, Driver arrived on time, Car Superclean and stylish. Even the rates, I believe were attractive. We had fantastic experience. Siddhu Ji and Rudresh Ji made it a memorable experience for us.
                   </p>
                   <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div className="quote-author">Ananth Narayan</div>
-                      <div className="quote-author-title">Managing Director • Global Tech Capital</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#0F766E', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.95rem' }}>
+                        R
+                      </div>
+                      <div>
+                        <div className="quote-author">RIHA GOYAL</div>
+                        <div className="quote-author-title">7 reviews · 1 photo • Google Review</div>
+                      </div>
                     </div>
-                    <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--accent-indigo-primary)', background: 'rgba(79,70,229,0.08)', padding: '4px 10px', borderRadius: '6px' }}>VIP Guest</span>
+                    <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--accent-indigo-primary)', background: 'rgba(79,70,229,0.08)', padding: '4px 10px', borderRadius: '6px' }}>Luxury Rental</span>
                   </div>
                 </div>
               </div>
 
-              {/* Staggered Row for Cards 2 & 3 */}
-              
-                {/* Marquee Row for Cards 2 & 3 */}
-                <div className="testimonial-marquee-wrapper">
-                  <div className="testimonial-marquee-track">
-                    <div className="marquee-set">
-                      {/* Card 2: Sky Blue Tint */}
-                <div className="editorial-quote-card card-sub" style={{ background: '#F0F9FF', borderLeft: '3px solid var(--accent-sky-primary)' }}>
-                  <p className="quote-text-small">
-                    Our company relies on Siddhu Car Rentals for all Kempegowda Airport pick-ups. Never missed a single flight in 3 years. Unbeatable reliability.
-                  </p>
-                  <div style={{ marginTop: '16px' }}>
-                    <div className="quote-author-sub">Priya Sundaram</div>
-                    <div className="quote-author-title-sub">VP Operations • Infosys Partner Group</div>
-                  </div>
-                </div>
-
-                {/* Card 3: Mint Green Tint */}
-                <div className="editorial-quote-card card-sub" style={{ background: '#F0FDF4', borderLeft: '3px solid var(--accent-mint-primary)' }}>
-                  <p className="quote-text-small">
-                    Booked 5 Toyota Innova Crystas for a family wedding in Mysuru. Drivers were courteous, vehicles were clean, and pricing was completely transparent.
-                  </p>
-                  <div style={{ marginTop: '16px' }}>
-                    <div className="quote-author-sub">Vikramaditya Rao</div>
-                    <div className="quote-author-title-sub">Senior Counsel • Bengaluru High Court</div>
-                  </div>
-                </div>
+              {/* Marquee Row for Sub Cards */}
+              <div className="testimonial-marquee-wrapper">
+                <div className="testimonial-marquee-track">
+                  <div className="marquee-set">
+                    {/* Sub-Card 1: Shreevatsa Kulkarni */}
+                    <div className="editorial-quote-card card-sub" style={{ background: '#F0F9FF', borderLeft: '3px solid #0284C7' }}>
+                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
+                        ))}
+                      </div>
+                      <p className="quote-text-small">
+                        Cleaniness and timing is at the peak with very luxurious car maintenance. High class vehicles available at a cheaper cost.
+                      </p>
+                      <div style={{ marginTop: '16px' }}>
+                        <div className="quote-author-sub">Shreevatsa Kulkarni</div>
+                        <div className="quote-author-title-sub">2 reviews · 3 photos • Google Review</div>
+                      </div>
                     </div>
-                    <div className="marquee-set">
-                      {/* Card 2: Sky Blue Tint */}
-                <div className="editorial-quote-card card-sub" style={{ background: '#F0F9FF', borderLeft: '3px solid var(--accent-sky-primary)' }}>
-                  <p className="quote-text-small">
-                    Our company relies on Siddhu Car Rentals for all Kempegowda Airport pick-ups. Never missed a single flight in 3 years. Unbeatable reliability.
-                  </p>
-                  <div style={{ marginTop: '16px' }}>
-                    <div className="quote-author-sub">Priya Sundaram</div>
-                    <div className="quote-author-title-sub">VP Operations • Infosys Partner Group</div>
-                  </div>
-                </div>
 
-                {/* Card 3: Mint Green Tint */}
-                <div className="editorial-quote-card card-sub" style={{ background: '#F0FDF4', borderLeft: '3px solid var(--accent-mint-primary)' }}>
-                  <p className="quote-text-small">
-                    Booked 5 Toyota Innova Crystas for a family wedding in Mysuru. Drivers were courteous, vehicles were clean, and pricing was completely transparent.
-                  </p>
-                  <div style={{ marginTop: '16px' }}>
-                    <div className="quote-author-sub">Vikramaditya Rao</div>
-                    <div className="quote-author-title-sub">Senior Counsel • Bengaluru High Court</div>
-                  </div>
-                </div>
+                    {/* Sub-Card 2: Ram Ghatge */}
+                    <div className="editorial-quote-card card-sub" style={{ background: '#F0FDF4', borderLeft: '3px solid #16A34A' }}>
+                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
+                        ))}
+                      </div>
+                      <p className="quote-text-small">
+                        Cars Mentainance is very well. Drivers reaches ON TIME. Whenever i visit Bangalore i prefer SIDDHU car rentals. Thank u
+                      </p>
+                      <div style={{ marginTop: '16px' }}>
+                        <div className="quote-author-sub">Ram Ghatge</div>
+                        <div className="quote-author-title-sub">Local Guide · 26 reviews • Google Review</div>
+                      </div>
+                    </div>
+
+                    {/* Sub-Card 3: Ashish Bhat */}
+                    <div className="editorial-quote-card card-sub" style={{ background: '#FFFBEB', borderLeft: '3px solid #D97706' }}>
+                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
+                        ))}
+                      </div>
+                      <p className="quote-text-small">
+                        Don Jacob was excellent driver , very friendly and helped us in a 6 day tour
+                      </p>
+                      <div style={{ marginTop: '16px' }}>
+                        <div className="quote-author-sub">Ashish Bhat</div>
+                        <div className="quote-author-title-sub">Local Guide · 10 reviews • Google Review</div>
+                      </div>
+                    </div>
+
+                    {/* Sub-Card 4: William Brown */}
+                    <div className="editorial-quote-card card-sub" style={{ background: '#FAF5FF', borderLeft: '3px solid #9333EA' }}>
+                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
+                        ))}
+                      </div>
+                      <p className="quote-text-small">
+                        I have travelled in ciaz car to ooty and we enjoyed a lot with the service of the driver very honest ..polite ..services thank you siddu car rentals team ..all the best ..i give u 7stars.
+                      </p>
+                      <div style={{ marginTop: '16px' }}>
+                        <div className="quote-author-sub">William Brown</div>
+                        <div className="quote-author-title-sub">1 review • Google Review</div>
+                      </div>
                     </div>
                   </div>
-                </div></div>
+
+                  <div className="marquee-set">
+                    {/* Sub-Card 1: Shreevatsa Kulkarni */}
+                    <div className="editorial-quote-card card-sub" style={{ background: '#F0F9FF', borderLeft: '3px solid #0284C7' }}>
+                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
+                        ))}
+                      </div>
+                      <p className="quote-text-small">
+                        Cleaniness and timing is at the peak with very luxurious car maintenance. High class vehicles available at a cheaper cost.
+                      </p>
+                      <div style={{ marginTop: '16px' }}>
+                        <div className="quote-author-sub">Shreevatsa Kulkarni</div>
+                        <div className="quote-author-title-sub">2 reviews · 3 photos • Google Review</div>
+                      </div>
+                    </div>
+
+                    {/* Sub-Card 2: Ram Ghatge */}
+                    <div className="editorial-quote-card card-sub" style={{ background: '#F0FDF4', borderLeft: '3px solid #16A34A' }}>
+                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
+                        ))}
+                      </div>
+                      <p className="quote-text-small">
+                        Cars Mentainance is very well. Drivers reaches ON TIME. Whenever i visit Bangalore i prefer SIDDHU car rentals. Thank u
+                      </p>
+                      <div style={{ marginTop: '16px' }}>
+                        <div className="quote-author-sub">Ram Ghatge</div>
+                        <div className="quote-author-title-sub">Local Guide · 26 reviews • Google Review</div>
+                      </div>
+                    </div>
+
+                    {/* Sub-Card 3: Ashish Bhat */}
+                    <div className="editorial-quote-card card-sub" style={{ background: '#FFFBEB', borderLeft: '3px solid #D97706' }}>
+                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
+                        ))}
+                      </div>
+                      <p className="quote-text-small">
+                        Don Jacob was excellent driver , very friendly and helped us in a 6 day tour
+                      </p>
+                      <div style={{ marginTop: '16px' }}>
+                        <div className="quote-author-sub">Ashish Bhat</div>
+                        <div className="quote-author-title-sub">Local Guide · 10 reviews • Google Review</div>
+                      </div>
+                    </div>
+
+                    {/* Sub-Card 4: William Brown */}
+                    <div className="editorial-quote-card card-sub" style={{ background: '#FAF5FF', borderLeft: '3px solid #9333EA' }}>
+                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
+                        ))}
+                      </div>
+                      <p className="quote-text-small">
+                        I have travelled in ciaz car to ooty and we enjoyed a lot with the service of the driver very honest ..polite ..services thank you siddu car rentals team ..all the best ..i give u 7stars.
+                      </p>
+                      <div style={{ marginTop: '16px' }}>
+                        <div className="quote-author-sub">William Brown</div>
+                        <div className="quote-author-title-sub">1 review • Google Review</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
           </div>
         </div>

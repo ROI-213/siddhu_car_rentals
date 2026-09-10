@@ -6,55 +6,130 @@ import { SectionHeader } from '../components/common/SectionHeader';
 import { Badge } from '../components/common/Badge';
 import { CTASection } from '../components/common/CTASection';
 
+const GoogleIcon = ({ size = 16 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"/>
+    <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.03 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+  </svg>
+);
+
 export const Testimonials = ({ onReserveClick }) => {
   const [filterCategory, setFilterCategory] = useState('all');
 
-  // NOTE: Replace these with genuine customer reviews. Remove specific company names
-  // that cannot be independently verified, or replace with names you have written consent to use.
+  // Genuine, verified Google Reviews from real customers
   const testimonialsData = [
     {
       id: 1,
-      name: 'Rajesh Kumar',
-      title: 'Regular Corporate Client',
-      company: 'Bengaluru',
-      category: 'corporate',
-      categoryLabel: 'Corporate Mobility',
+      name: 'RIHA GOYAL',
+      title: '7 reviews · 1 photo',
+      company: 'Google Review',
+      category: 'luxury',
+      categoryLabel: 'Luxury Car Rental',
       rating: 5,
-      date: 'August 2026',
-      review: 'We have been using Siddhu Car Rentals for our office commute fleet for over 2 years. The punctuality and professionalism of the chauffeurs is consistently excellent. Monthly GST invoicing is always accurate and delivered on time.'
+      date: '2 years ago',
+      avatarBg: '#0F766E',
+      review: "We had availed their Luxury Car Rental Service on Valentine's. It was absolutely surreal and peaceful. Seamless booking, Driver arrived on time, Car Superclean and stylish. Even the rates, I believe were attractive. We had fantastic experience. Siddhu Ji and Rudresh Ji made it a memorable experience for us."
     },
     {
       id: 2,
-      name: 'Sneha Reddy',
-      title: 'Frequent Traveller',
-      company: 'Bengaluru',
-      category: 'airport',
-      categoryLabel: 'Airport VIP Transfer',
+      name: 'Ashish Bhat',
+      title: 'Local Guide · 10 reviews · 5 photos',
+      company: 'Google Review',
+      category: 'outstation',
+      categoryLabel: '6-Day Tour',
       rating: 5,
-      date: 'July 2026',
-      review: 'I use Siddhu Car Rentals for all my airport transfers. The Mercedes S-Class is always immaculate, the chauffeur arrives early with a name placard, and the ride to the city is smooth and stress-free. Highly recommended for frequent flyers.'
+      date: '2 years ago',
+      avatarBg: '#0284C7',
+      isLocalGuide: true,
+      review: "Don Jacob was excellent driver , very friendly and helped us in a 6 day tour"
     },
     {
       id: 3,
-      name: 'Arun Menon',
-      title: 'Family Traveller',
-      company: 'Kerala',
-      category: 'outstation',
-      categoryLabel: 'Outstation Travel',
+      name: 'Shreevatsa Kulkarni',
+      title: '2 reviews · 3 photos',
+      company: 'Google Review',
+      category: 'luxury',
+      categoryLabel: 'Luxury Maintenance',
       rating: 5,
-      date: 'June 2026',
-      review: 'Booked an Innova Crysta VIP for a 6-day family trip from Bengaluru to Coorg and Wayanad. The driver was punctual, knew all the scenic routes, and was very careful on the ghat sections. Great value for the service.'
+      date: '2 years ago',
+      avatarBg: '#059669',
+      review: "Cleaniness and timing is at the peak with very luxurious car maintenance. High class vehicles available at a cheaper cost."
     },
     {
       id: 4,
-      name: 'Deepika Sharma',
-      title: 'Bride',
-      company: 'Bengaluru',
-      category: 'wedding',
-      categoryLabel: 'Wedding Convoy',
+      name: 'Ram Ghatge',
+      title: 'Local Guide · 26 reviews · 2 photos',
+      company: 'Google Review',
+      category: 'local',
+      categoryLabel: 'On-Time Punctuality',
       rating: 5,
-      date: 'May 2026',
-      review: 'We booked 8 vehicles for our wedding — a mix of luxury sedans and Innova Crystas. Every vehicle arrived on time, spotlessly clean, with well-dressed chauffeurs. Our guests were impressed with the professionalism.'
+      date: '4 years ago',
+      avatarBg: '#D97706',
+      isLocalGuide: true,
+      review: "Cars Mentainance is very well. Drivers reaches ON TIME. Whenever i visit Bangalore i prefer SIDDHU car rentals. Thank u"
+    },
+    {
+      id: 5,
+      name: 'William Brown',
+      title: '1 review',
+      company: 'Google Review',
+      category: 'outstation',
+      categoryLabel: 'Ooty Tour',
+      rating: 5,
+      date: '9 years ago',
+      avatarBg: '#7C3AED',
+      review: "I have travelled in ciaz car to ooty and we enjoyed a lot with the service of the driver very honest ..polite ..services thank you siddu car rentals team ..all the best ..i give u 7stars."
+    },
+    {
+      id: 6,
+      name: 'Tejas S',
+      title: '4 reviews',
+      company: 'Google Review',
+      category: 'local',
+      categoryLabel: 'Comfortable Rental',
+      rating: 5,
+      date: '2 years ago',
+      avatarBg: '#DB2777',
+      review: "An excellent platform to book a rental. I just had to a trip a month before which was good , comfy and very well assurance which is why i have started booking without any issue."
+    },
+    {
+      id: 7,
+      name: 'Pramod Hegde',
+      title: '5 reviews',
+      company: 'Google Review',
+      category: 'local',
+      categoryLabel: 'Smooth Coordination',
+      rating: 5,
+      date: '2 years ago',
+      avatarBg: '#4F46E5',
+      review: "They have provided good service and have looked everything smoothly... Felt better and I suggest you to approach them"
+    },
+    {
+      id: 8,
+      name: 'Rakesh Prajapati',
+      title: '2 reviews',
+      company: 'Google Review',
+      category: 'local',
+      categoryLabel: 'Bangalore Rental',
+      rating: 5,
+      date: '2 years ago',
+      avatarBg: '#EA580C',
+      review: "Very good service provided by Siddhu car Rentals , Banglore"
+    },
+    {
+      id: 9,
+      name: 'Shyama Prasad Das',
+      title: 'Local Guide · 123 reviews · 147 photos',
+      company: 'Google Review',
+      category: 'local',
+      categoryLabel: 'Local Guide Feedback',
+      rating: 5,
+      date: '4 years ago',
+      avatarBg: '#2563EB',
+      isLocalGuide: true,
+      review: "Good experience. They give pretty well service."
     }
   ];
 
@@ -168,11 +243,10 @@ export const Testimonials = ({ onReserveClick }) => {
           {/* Category Filters */}
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px', marginBottom: '40px' }}>
             {[
-              { id: 'all', label: 'All Reviews (4)' },
-              { id: 'corporate', label: 'Corporate Mobility' },
-              { id: 'airport', label: 'Airport VIP Transfers' },
-              { id: 'outstation', label: 'Outstation Journeys' },
-              { id: 'wedding', label: 'Wedding Convoys' }
+              { id: 'all', label: `All Reviews (${testimonialsData.length})` },
+              { id: 'luxury', label: 'Luxury & Events' },
+              { id: 'outstation', label: 'Outstation Tours' },
+              { id: 'local', label: 'City & Punctuality' }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -188,43 +262,52 @@ export const Testimonials = ({ onReserveClick }) => {
           {/* Testimonial Cards Grid */}
           <div className="grid-showcase">
             {filteredTestimonials.map(item => (
-              <GlassCard key={item.id} variant="standard" style={{ display: 'flex', flexDirection: 'column', padding: '28px', height: '100%' }}>
+              <GlassCard key={item.id} variant="standard" style={{ display: 'flex', flexDirection: 'column', padding: '26px', height: '100%', borderRadius: '22px', border: '1px solid rgba(226, 232, 240, 0.8)', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <div style={{ display: 'flex', gap: '4px' }}>
+                  <div style={{ display: 'flex', gap: '3px' }}>
                     {[...Array(item.rating)].map((_, i) => (
-                      <Star key={i} size={16} fill="#C5A059" color="#C5A059" />
+                      <Star key={i} size={16} fill="#FABB05" color="#FABB05" />
                     ))}
                   </div>
-                  <Badge variant="gold">{item.categoryLabel}</Badge>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(26, 115, 232, 0.08)', borderRadius: '999px', border: '1px solid rgba(26, 115, 232, 0.2)' }}>
+                    <GoogleIcon size={13} />
+                    <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#1A73E8' }}>Google Verified</span>
+                  </div>
                 </div>
 
-                <p className="text-body" style={{ fontStyle: 'italic', lineHeight: '1.7', marginBottom: '24px', flex: 1 }}>
+                <p className="text-body" style={{ fontStyle: 'italic', lineHeight: '1.7', color: '#1E293B', marginBottom: '22px', flex: 1, fontSize: '0.94rem' }}>
                   "{item.review}"
                 </p>
 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '16px', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '16px', borderTop: '1px solid rgba(226, 232, 240, 0.8)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{
-                      width: '40px',
-                      height: '40px',
+                      width: '42px',
+                      height: '42px',
                       borderRadius: '50%',
-                      background: 'linear-gradient(135deg, #12151C 0%, #2D3445 100%)',
-                      color: '#C5A059',
-                      fontWeight: '700',
+                      background: item.avatarBg || '#0F766E',
+                      color: '#FFFFFF',
+                      fontWeight: '800',
+                      fontSize: '1.05rem',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontFamily: 'var(--font-editorial)'
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.12)'
                     }}>
                       {item.name.charAt(0)}
                     </div>
                     <div>
-                      <div style={{ fontWeight: '700', color: 'var(--color-charcoal-900)', fontSize: '0.92rem' }}>
+                      <div style={{ fontWeight: '700', color: 'var(--color-charcoal-900)', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
                         <span>{item.name}</span>
-                        <CheckCircle size={14} color="#C5A059" style={{ marginLeft: '4px' }} />
+                        <CheckCircle size={14} color="#1A73E8" />
                       </div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--color-charcoal-500)' }}>
-                        {item.title}, {item.company}
+                      <div style={{ fontSize: '0.74rem', color: 'var(--color-charcoal-500)', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                        <span>{item.title}</span>
+                        {item.isLocalGuide && (
+                          <span style={{ background: '#FEF3C7', color: '#92400E', fontSize: '0.65rem', fontWeight: '800', padding: '1px 6px', borderRadius: '4px' }}>
+                            Local Guide
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
