@@ -34,28 +34,19 @@ export const About = ({ onReserveClick }) => {
         </div>
       </section>
 
-      {/* 3. THE MAN BEHIND THE WHEEL - S.M. PATIL (PHOTO FIRST) */}
+      {/* 3. THE MAN BEHIND THE WHEEL - S.M. PATIL (BALANCED 50/50 EDITORIAL LAYOUT) */}
       <section className="section-padding" style={{ position: 'relative', background: '#FFFFFF' }}>
         <div className="container">
-          <div style={{
-            background: 'linear-gradient(145deg, #FFFFFF, #FAF7F2)',
-            borderRadius: '36px',
-            padding: '48px 40px',
-            boxShadow: '0 20px 45px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(197, 160, 89, 0.18)',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '52px',
-            alignItems: 'center'
-          }}>
+          <div className="founder-story-card">
             
-            {/* FIRST: Founder Photo */}
-            <div style={{ position: 'relative' }}>
+            {/* FIRST: Founder Photo (Balanced Full Height) */}
+            <div className="founder-photo-column">
               <div style={{
                 position: 'absolute',
-                top: '-14px',
-                left: '-14px',
-                right: '14px',
-                bottom: '14px',
+                top: '-12px',
+                left: '-12px',
+                right: '12px',
+                bottom: '12px',
                 borderRadius: '30px',
                 border: '2px solid var(--accent-gold-primary)',
                 opacity: 0.35,
@@ -63,24 +54,11 @@ export const About = ({ onReserveClick }) => {
                 pointerEvents: 'none'
               }} />
 
-              <div style={{
-                position: 'relative',
-                zIndex: 1,
-                borderRadius: '26px',
-                overflow: 'hidden',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.12)',
-                border: '1px solid rgba(255,255,255,0.8)'
-              }}>
+              <div className="founder-photo-frame">
                 <img
                   src="/images/sm_patil_founder.jpg"
                   alt="S.M. Patil - The Man Behind The Wheel"
-                  style={{
-                    width: '100%',
-                    height: 'auto',
-                    maxHeight: '580px',
-                    objectFit: 'cover',
-                    display: 'block'
-                  }}
+                  className="founder-photo-img"
                 />
 
                 <div style={{
@@ -88,32 +66,33 @@ export const About = ({ onReserveClick }) => {
                   bottom: '16px',
                   left: '16px',
                   right: '16px',
-                  background: 'rgba(15, 23, 42, 0.88)',
-                  backdropFilter: 'blur(10px)',
-                  WebkitBackdropFilter: 'blur(10px)',
+                  background: 'rgba(15, 23, 42, 0.92)',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
                   borderRadius: '16px',
-                  padding: '12px 18px',
-                  border: '1px solid rgba(197, 160, 89, 0.4)',
+                  padding: '14px 20px',
+                  border: '1px solid rgba(197, 160, 89, 0.45)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  gap: '12px'
+                  gap: '12px',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)'
                 }}>
                   <div>
-                    <div style={{ color: '#FFFFFF', fontSize: '1.05rem', fontWeight: '800' }}>
+                    <div style={{ color: '#FFFFFF', fontSize: '1.1rem', fontWeight: '800' }}>
                       S.M. Patil
                     </div>
-                    <div style={{ color: 'var(--accent-gold-primary)', fontSize: '0.78rem', fontWeight: '600' }}>
-                      Founder, Siddhu Car Rentals
+                    <div style={{ color: 'var(--accent-gold-primary)', fontSize: '0.8rem', fontWeight: '600' }}>
+                      Founder & Managing Director
                     </div>
                   </div>
                   <div style={{
-                    background: 'rgba(197, 160, 89, 0.15)',
-                    border: '1px solid rgba(197, 160, 89, 0.3)',
+                    background: 'rgba(197, 160, 89, 0.2)',
+                    border: '1px solid rgba(197, 160, 89, 0.4)',
                     borderRadius: '8px',
-                    padding: '4px 10px',
-                    color: '#F1F5F9',
-                    fontSize: '0.72rem',
+                    padding: '6px 12px',
+                    color: '#F8FAFC',
+                    fontSize: '0.75rem',
                     fontWeight: '700',
                     whiteSpace: 'nowrap'
                   }}>
@@ -123,80 +102,84 @@ export const About = ({ onReserveClick }) => {
               </div>
             </div>
 
-            {/* THEN: THE MAN BEHIND THE WHEEL */}
-            <div>
-              <Badge variant="gold" icon={Crown} style={{ marginBottom: '20px' }}>
-                Founder & Visionary
-              </Badge>
+            {/* THEN: Content & Story Column (Balanced Vertical Layout) */}
+            <div className="founder-content-column">
+              <div>
+                <Badge variant="gold" icon={Crown} style={{ marginBottom: '16px' }}>
+                  Founder & Visionary
+                </Badge>
 
-              <h2 style={{
-                fontSize: 'clamp(2rem, 3.2vw, 2.6rem)',
-                fontWeight: '900',
-                color: '#1A1A1A',
-                letterSpacing: '-0.02em',
-                lineHeight: '1.15',
-                marginBottom: '12px',
-                textTransform: 'uppercase'
-              }}>
-                THE MAN BEHIND <span style={{ color: 'var(--accent-gold-primary)' }}>THE WHEEL</span>
-              </h2>
-
-              <div style={{
-                width: '60px',
-                height: '4px',
-                background: 'var(--accent-gold-primary)',
-                marginBottom: '24px',
-                borderRadius: '2px'
-              }} />
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', color: '#4A4A4A', fontSize: '1.05rem', lineHeight: '1.8' }}>
-                <p>
-                  Every great transportation business starts the same way, with one person willing to show up, on time, no matter what. For Siddhu Car Rentals, that person was S.M. Patil.
-                </p>
-
-                <p>
-                  Over two decades ago, S.M. Patil started this journey with nothing but a single car and an unshakeable belief: &ldquo;If you take care of people the way you'd want to be taken care of, the rest follows&rdquo;. There was no fleet, no office, no brand name yet, just one man, one car, and a simple promise that every ride would be on time, every single time.
-                </p>
-
-                <p>
-                  That promise became the foundation of everything Siddhu Car Rentals is today. Over the years, one car grew into a full fleet — from dependable sedans to premium Mercedes-Benz, BMW, and Audi vehicles. But the values behind the wheel never changed. Punctuality wasn't a policy. It was personal.
-                </p>
+                <h2 style={{
+                  fontSize: 'clamp(1.9rem, 3.2vw, 2.5rem)',
+                  fontWeight: '900',
+                  color: '#1A1A1A',
+                  letterSpacing: '-0.02em',
+                  lineHeight: '1.15',
+                  marginBottom: '10px',
+                  textTransform: 'uppercase'
+                }}>
+                  THE MAN BEHIND <span style={{ color: 'var(--accent-gold-primary)' }}>THE WHEEL</span>
+                </h2>
 
                 <div style={{
-                  margin: '8px 0',
-                  padding: '20px 24px',
-                  background: 'rgba(197, 160, 89, 0.08)',
-                  borderLeft: '4px solid var(--accent-gold-primary)',
-                  borderRadius: '0 14px 14px 0'
-                }}>
-                  <p style={{
-                    fontSize: '1.08rem',
-                    fontStyle: 'italic',
-                    fontWeight: '600',
-                    color: '#1E293B',
-                    lineHeight: '1.7',
-                    margin: 0
+                  width: '60px',
+                  height: '4px',
+                  background: 'var(--accent-gold-primary)',
+                  marginBottom: '20px',
+                  borderRadius: '2px'
+                }} />
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', color: '#4A4A4A', fontSize: '1rem', lineHeight: '1.75' }}>
+                  <p style={{ margin: 0 }}>
+                    Every great transportation business starts the same way, with one person willing to show up, on time, no matter what. For <strong>Siddhu Car Rentals</strong>, that person was <strong>S.M. Patil</strong>.
+                  </p>
+
+                  <p style={{ margin: 0 }}>
+                    Over two decades ago, S.M. Patil started this journey with nothing but a single car and an unshakeable belief: &ldquo;If you take care of people the way you'd want to be taken care of, the rest follows&rdquo;. There was no fleet, no office, no brand name yet, just one man, one car, and a simple promise that every ride would be on time, every single time.
+                  </p>
+
+                  <p style={{ margin: 0 }}>
+                    That promise became the foundation of everything Siddhu Car Rentals is today. Over the years, one car grew into a full fleet — from dependable sedans to premium Mercedes-Benz, BMW, and Audi vehicles. But the values behind the wheel never changed. Punctuality wasn't a policy. It was personal.
+                  </p>
+
+                  <div style={{
+                    margin: '6px 0',
+                    padding: '18px 22px',
+                    background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.12) 0%, rgba(250, 247, 242, 0.95) 100%)',
+                    borderLeft: '4px solid var(--accent-gold-primary)',
+                    borderRadius: '0 14px 14px 0',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
                   }}>
-                    &ldquo;People don't remember the car. They remember how you made them feel. That's what I learned in twenty five years behind this business and it's what I still tell every driver who works with us&rdquo;.
+                    <p style={{
+                      fontSize: '1.05rem',
+                      fontStyle: 'italic',
+                      fontWeight: '600',
+                      color: '#1E293B',
+                      lineHeight: '1.65',
+                      margin: 0
+                    }}>
+                      &ldquo;People don't remember the car. They remember how you made them feel. That's what I learned in twenty five years behind this business and it's what I still tell every driver who works with us&rdquo;.
+                    </p>
+                  </div>
+
+                  <p style={{ margin: 0 }}>
+                    What sets Siddhu Car Rentals apart, even now, is something you won't find written into any company handbook: S.M. Patil still personally knows most of his regular clients by name. Not because a system tells him to, but because that's simply who he is. To him, a client isn't a booking number. They're someone he's built trust with, ride after ride, year after year.
+                  </p>
+
+                  <p style={{ margin: 0 }}>
+                    That's the difference between a rental service and a relationship. When you choose Siddhu Car Rentals, you're not just hiring a car and a driver, you're stepping into a legacy built on two decades of reliability, care, and the kind of personal attention that turns first-time riders into family.
                   </p>
                 </div>
-
-                <p>
-                  What sets Siddhu Car Rentals apart, even now, is something you won't find written into any company handbook: S.M. Patil still personally knows most of his regular clients by name. Not because a system tells him to, but because that's simply who he is. To him, a client isn't a booking number. They're someone he's built trust with, ride after ride, year after year.
-                </p>
-
-                <p>
-                  That's the difference between a rental service and a relationship. When you choose Siddhu Car Rentals, you're not just hiring a car and a driver, you're stepping into a legacy built on two decades of reliability, care, and the kind of personal attention that turns first-time riders into family.
-                </p>
               </div>
 
+              {/* Trust Indicators */}
               <div style={{
-                marginTop: '28px',
+                marginTop: '24px',
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
                 gap: '12px',
-                borderTop: '1px solid rgba(197, 160, 89, 0.2)',
-                paddingTop: '20px'
+                borderTop: '1px solid rgba(197, 160, 89, 0.25)',
+                paddingTop: '18px'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <CheckCircle2 size={16} color="var(--accent-gold-primary)" />
