@@ -9,9 +9,14 @@ export const VehicleCard = ({
   price,
   period = '8h / 80km',
   passengerCapacity = 4,
+  passengerDisplay,
   luggageCapacity = 3,
+  luggageDisplay,
   categoryKey = '',
+  categoryLabel,
+  chauffeurIncluded = true,
   bestFor = '',
+  bestSuitedFor = null,
   transmission = 'Automatic',
   ac = 'Air Conditioned',
   rating = 5.0,
@@ -24,10 +29,10 @@ export const VehicleCard = ({
   // Class styling accents
   const getAccent = () => {
     const n = (name || '').toLowerCase();
-    const c = (category || '').toLowerCase();
-    if (n.includes('s-class') || n.includes('bmw') || n.includes('vellfire') || c.includes('luxury') || c.includes('vip')) {
+    const c = (categoryKey || category || '').toLowerCase();
+    if (c === 'luxury' || n.includes('s-class') || n.includes('7-series') || n.includes('vellfire') || n.includes('a8')) {
       return {
-        tag: 'VIP Luxury Class',
+        tag: categoryLabel || 'Luxury Flagship',
         color: '#B45309',
         badgeBg: 'rgba(245, 158, 11, 0.12)',
         btnBg: 'linear-gradient(135deg, #C5A059 0%, #B38E47 100%)',
@@ -35,9 +40,9 @@ export const VehicleCard = ({
         accentColor: '#C5A059'
       };
     }
-    if (n.includes('fortuner') || n.includes('audi') || c.includes('suv')) {
+    if (c === 'premium' || n.includes('e-class') || n.includes('5 series') || n.includes('q7') || n.includes('camry')) {
       return {
-        tag: 'Executive SUV',
+        tag: categoryLabel || 'Premium Luxury',
         color: '#0369A1',
         badgeBg: 'rgba(2, 132, 199, 0.1)',
         btnBg: 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)',
@@ -45,9 +50,9 @@ export const VehicleCard = ({
         accentColor: '#0284C7'
       };
     }
-    if (n.includes('urbania') || n.includes('traveller') || n.includes('commuter') || c.includes('coach') || c.includes('van')) {
+    if (c === 'group' || n.includes('commuter') || n.includes('traveller') || n.includes('bus')) {
       return {
-        tag: 'VIP Delegation Coach',
+        tag: categoryLabel || 'Group Travel',
         color: '#4338CA',
         badgeBg: 'rgba(99, 102, 241, 0.12)',
         btnBg: 'linear-gradient(135deg, #4F46E5 0%, #3730A3 100%)',
@@ -56,7 +61,7 @@ export const VehicleCard = ({
       };
     }
     return {
-      tag: 'Executive Fleet',
+      tag: categoryLabel || 'Executive Fleet',
       color: '#0F766E',
       badgeBg: 'rgba(13, 148, 136, 0.1)',
       btnBg: 'linear-gradient(135deg, #0F766E 0%, #115E59 100%)',
@@ -66,6 +71,11 @@ export const VehicleCard = ({
   };
 
   const accent = getAccent();
+  const displayPassengers = passengerDisplay || `${passengerCapacity} Passengers + Chauffeur`;
+  const displayLuggage = luggageDisplay || `${luggageCapacity} Bags`;
+  const suitedText = Array.isArray(bestSuitedFor) && bestSuitedFor.length > 0 
+    ? bestSuitedFor.slice(0, 3).join(' • ') 
+    : (bestFor || 'Airport • Corporate • Outstation');
 
   return (
     <div
@@ -88,7 +98,7 @@ export const VehicleCard = ({
         position: 'relative'
       }}
     >
-      {/* 1. VEHICLE PHOTOGRAPH CONTAINER (Crisp 16:10 framing with subtle luxury vignette) */}
+      {/* 1. VEHICLE PHOTOGRAPH CONTAINER */}
       <div style={{
         position: 'relative',
         width: '100%',
@@ -112,6 +122,24 @@ export const VehicleCard = ({
             transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
           }}
         />
+        {/* Category Tag Top Left */}
+        <div style={{
+          position: 'absolute',
+          top: '12px',
+          left: '12px',
+          padding: '4px 10px',
+          borderRadius: '6px',
+          fontSize: '0.70rem',
+          fontWeight: '800',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          color: accent.color,
+          background: 'rgba(255, 255, 255, 0.95)',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+          backdropFilter: 'blur(4px)'
+        }}>
+          {accent.tag}
+        </div>
       </div>
 
       {/* 2. VEHICLE DETAILS BODY */}
@@ -123,80 +151,95 @@ export const VehicleCard = ({
         justifyContent: 'space-between'
       }}>
         <div>
-          {/* Tagline / Class Header */}
-          <div style={{
-            fontSize: '0.72rem',
-            fontWeight: '800',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            color: accent.color,
-            marginBottom: '6px'
-          }}>
-            {accent.tag}
-          </div>
-
-          {/* Vehicle Name (Consistent 2-line height for clean horizontal alignment) */}
+          {/* Vehicle Name */}
           <h3 style={{
             fontFamily: 'var(--font-ui)',
-            fontSize: '1.2rem',
+            fontSize: '1.15rem',
             fontWeight: '800',
             color: 'var(--color-slate-900)',
-            margin: '0 0 14px 0',
+            margin: '0 0 12px 0',
             letterSpacing: '-0.01em',
             lineHeight: '1.3',
-            minHeight: '3.1rem',
+            minHeight: '3.0rem',
             display: 'flex',
             alignItems: 'center'
           }}>
             {name}
           </h3>
-        </div>
 
-        {/* Vehicle Details Row */}
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '8px',
-          marginBottom: '12px'
-        }}>
-          <span style={{
-            fontSize: '0.72rem',
-            fontWeight: '700',
-            color: 'var(--color-slate-700)',
-            background: '#F1F5F9',
-            padding: '4px 10px',
-            borderRadius: '6px',
-            whiteSpace: 'nowrap'
+          {/* Useful Specs Pills */}
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '6px',
+            marginBottom: '10px'
           }}>
-            {passengerCapacity} Pax + Chauffeur
-          </span>
-          <span style={{
-            fontSize: '0.72rem',
-            fontWeight: '700',
-            color: 'var(--color-slate-700)',
-            background: '#F1F5F9',
-            padding: '4px 10px',
-            borderRadius: '6px',
-            whiteSpace: 'nowrap'
-          }}>
-            {luggageCapacity} Bags
-          </span>
-          {bestFor && (
+            {/* Passenger Capacity: X Passengers + Chauffeur */}
             <span style={{
               fontSize: '0.72rem',
               fontWeight: '700',
-              color: accent.color,
-              background: accent.badgeBg,
-              padding: '4px 10px',
+              color: 'var(--color-slate-800)',
+              background: '#F1F5F9',
+              padding: '4px 9px',
               borderRadius: '6px',
               whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              maxWidth: '100%'
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px'
             }}>
-              {bestFor.split(',')[0]}
+              <Users size={12} color="#0284C7" />
+              {displayPassengers}
             </span>
-          )}
+
+            {/* Luggage Capacity */}
+            <span style={{
+              fontSize: '0.72rem',
+              fontWeight: '700',
+              color: 'var(--color-slate-800)',
+              background: '#F1F5F9',
+              padding: '4px 9px',
+              borderRadius: '6px',
+              whiteSpace: 'nowrap',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}>
+              <Briefcase size={12} color="#64748B" />
+              {displayLuggage}
+            </span>
+
+            {/* Chauffeur Included Tag */}
+            <span style={{
+              fontSize: '0.70rem',
+              fontWeight: '700',
+              color: '#15803D',
+              background: 'rgba(22, 163, 74, 0.1)',
+              padding: '4px 9px',
+              borderRadius: '6px',
+              whiteSpace: 'nowrap',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}>
+              <ShieldCheck size={12} color="#15803D" />
+              Chauffeur Included
+            </span>
+          </div>
+
+          {/* Best Suited For Row */}
+          <div style={{
+            fontSize: '0.71rem',
+            color: 'var(--color-slate-600)',
+            lineHeight: '1.4',
+            marginBottom: '12px',
+            background: 'rgba(15, 23, 42, 0.02)',
+            padding: '6px 10px',
+            borderRadius: '6px',
+            borderLeft: `3px solid ${accent.accentColor}`
+          }}>
+            <span style={{ fontWeight: '700', color: 'var(--color-slate-800)' }}>Best Suited For: </span>
+            {suitedText}
+          </div>
         </div>
 
         {/* 3. TARIFF FOOTER & DUAL ACTION BUTTONS */}
@@ -277,7 +320,7 @@ export const VehicleCard = ({
 
             {/* Primary CTA: Get Quote */}
             <WhatsAppEnquiryMenu
-              context={{ vehicleName: name }}
+              context={{ vehicleName: name, vehicleCategory: category, price: price }}
               menuPlacement="bottom-end"
               triggerLabel="Get Quote"
               triggerIcon={WhatsAppIcon}

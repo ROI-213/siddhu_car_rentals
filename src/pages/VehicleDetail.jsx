@@ -146,7 +146,7 @@ export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) =>
                     <div style={{ fontSize: '0.75rem', color: 'var(--color-charcoal-500)', textTransform: 'uppercase' }}>Seating Capacity</div>
                     <div style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Users size={18} color="var(--accent-gold-primary)" />
-                      <span>{vehicle.passengerCapacity} Passengers + Chauffeur</span>
+                      <span>{vehicle.passengerDisplay || `${vehicle.passengerCapacity} Passengers + Chauffeur`}</span>
                     </div>
                   </div>
 
@@ -154,7 +154,7 @@ export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) =>
                     <div style={{ fontSize: '0.75rem', color: 'var(--color-charcoal-500)', textTransform: 'uppercase' }}>Luggage Capacity</div>
                     <div style={{ fontSize: '1.1rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Luggage size={18} color="var(--accent-gold-primary)" />
-                      <span>{vehicle.luggageCapacity} Large Suitcases</span>
+                      <span>{vehicle.luggageDisplay || `${vehicle.luggageCapacity} Bags / Suitcases`}</span>
                     </div>
                   </div>
 

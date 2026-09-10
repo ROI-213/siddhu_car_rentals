@@ -833,8 +833,8 @@ export const CarRentalSearch = ({ onNavigate }) => {
                       <h4 className="crs-card-title">{vehicle.name}</h4>
                       <div className="crs-card-category">{vehicle.category}</div>
                       <div className="crs-card-specs">
-                        <span className="crs-spec-tag"><Users size={12} />{vehicle.passengerCapacity || 4} Seats</span>
-                        <span className="crs-spec-tag"><ShieldCheck size={12} />Chauffeur</span>
+                        <span className="crs-spec-tag"><Users size={12} />{vehicle.passengerDisplay || `${vehicle.passengerCapacity || 4} Passengers + Chauffeur`}</span>
+                        <span className="crs-spec-tag"><ShieldCheck size={12} color="#15803D" />Chauffeur Included</span>
                       </div>
                     </div>
                     <div>

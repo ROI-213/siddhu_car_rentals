@@ -236,13 +236,13 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
               {/* Vehicle Quick Features */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', padding: '14px', background: 'var(--bg-foundation-alt)', borderRadius: '12px' }}>
                 <span style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--color-charcoal-800)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <ShieldCheck size={16} color="var(--accent-gold-primary)" /> {vehicle.passengerCapacity || 4} Passenger Capacity
+                  <ShieldCheck size={16} color="var(--accent-gold-primary)" /> {vehicle.passengerDisplay || `${vehicle.passengerCapacity || 4} Passengers + Chauffeur`}
                 </span>
                 <span style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--color-charcoal-800)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <ShieldCheck size={16} color="var(--accent-gold-primary)" /> {vehicle.luggageCapacity || 3} Luggage Bags
+                  <ShieldCheck size={16} color="var(--accent-gold-primary)" /> {vehicle.luggageDisplay || `${vehicle.luggageCapacity || 3} Bags / Luggage`}
                 </span>
                 <span style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--accent-gold-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <ShieldCheck size={16} color="var(--accent-gold-primary)" /> Uniformed Chauffeur Guaranteed
+                  <ShieldCheck size={16} color="var(--accent-gold-primary)" /> Uniformed Chauffeur Included
                 </span>
               </div>
 

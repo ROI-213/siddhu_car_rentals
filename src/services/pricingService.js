@@ -2,34 +2,40 @@
 import { DEFAULT_DISPOSAL_TARIFFS, DEFAULT_OUTSTATION_TARIFFS } from './tariffApi.js';
 
 export const FLEET_TARIFF_MAPPING = {
-  "mercedes-s-class": "Mercedes S-Class (Latest Model)",
-  "bmw-7-series": "BMW 7-Series (Latest Model)",
-  "audi-a8": "Audi A8L (Latest Model)",
-  "mercedes-e-class": "Merc \"E\" Class / BMW 5\" / Audi A6",
-  "bmw-5-series": "Merc \"E\" Class / BMW 5\" / Audi A6",
-  "audi-a6": "Merc \"E\" Class / BMW 5\" / Audi A6",
-  "toyota-vellfire": "Toyota Vellfire",
-  "innova-hycross": "Innova Hycross",
-  "innova-crysta": "Innova Crysta",
-  "innova": "Innova,Ertiga,Kia Carnes",
-  "maruti-ertiga": "Innova,Ertiga,Kia Carnes",
-  "kia-carens": "Innova,Ertiga,Kia Carnes",
-  "toyota-camry": "Camry / Accord / Fortuner latest model",
-  "sedan-dzire": "D'zire / Amaze / Indigo / Etios",
-  "tempo-traveller": "Tempo Traveller A/C",
+  // Luxury Flagships
+  "mercedes-s-class": "Mercedes S-Class (VIP Flagship)",
+  "toyota-vellfire": "Toyota Vellfire Executive Lounge",
+  "bmw-7-series": "BMW 7-Series 730Ld VIP",
+  "audi-a8": "Audi A8L Quattro VIP",
+
+  // Premium Sedans & SUVs
+  "mercedes-e-class": "Mercedes-Benz E-Class Executive",
+  "bmw-5-series": "BMW 5 Series Luxury Line",
+  "audi-a6": "Audi A6 Technology",
+  "audi-q7": "AUDI Q7 Quattro SUV",
+  "toyota-camry": "Toyota Camry Hybrid",
+
+  // Executive SUVs, MPVs & Sedans
+  "toyota-fortuner": "Toyota Fortuner 4x4",
+  "fortuner": "Toyota Fortuner 4x4",
+  "honda-accord": "Honda Accord Executive",
+  "innova-hycross": "Innova Hycross Hybrid",
+  "innova-crysta": "Innova Crysta VIP",
+  "kia-carens": "Kia Carens Luxury Plus",
+  "innova": "Toyota Innova Classic",
+  "maruti-ertiga": "Maruti Suzuki Ertiga Hybrid",
+  "sedan-dzire": "D'zire / Amaze / Etios",
+
+  // Group Travel Coaches & Vans
+  "toyota-commuter": "Toyota HiAce Commuter VIP",
   "traveller": "Tempo Traveller A/C",
-  "urbania": "Urbania 16+1",
-  "audi-q7": "AUDI Q7",
-  "toyota-fortuner": "Camry / Accord / Fortuner latest model",
-  "fortuner": "Camry / Accord / Fortuner latest model",
-  "honda-accord": "Camry / Accord / Fortuner latest model",
-  "toyota-commuter": "Toyato Commuter",
-  "luxury-mini-bus": "Mini Bus 21 Seater AC",
+  "tempo-traveller": "Tempo Traveller A/C",
   "mini-bus-21": "Mini Bus 21 Seater AC",
+  "luxury-mini-bus": "Mini Bus 21 Seater AC",
   "mini-bus-25": "Mini Bus 25 Seater AC",
   "bus-32": "32 Seater AC Bus",
-  "luxury-large-bus": "Bus 45 Seater AC",
   "bus-45": "Bus 45 Seater AC",
+  "luxury-large-bus": "Bus 45 Seater AC",
   "bus-49": "Bus 49 Seater AC"
 };
 

@@ -6,8 +6,9 @@ import { SectionHeader } from '../components/common/SectionHeader';
 import { Badge } from '../components/common/Badge';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { VehicleBookingModal } from '../components/modals/VehicleBookingModal';
-import { fleetData } from '../data/fleetData';
+import { fleetData, FLEET_CATEGORIES } from '../data/fleetData';
 import { pricingService } from '../services/pricingService';
+import { WhatsAppEnquiryMenu, WhatsAppIcon } from '../components/common/WhatsAppEnquiryMenu';
 
 export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
   const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'table'
@@ -150,22 +151,63 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
             </div>
           </div>
 
+          {/* Quick Category Switcher Tabs */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+            {FLEET_CATEGORIES.map(cat => {
+              const isActive = categoryFilter === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setCategoryFilter(cat.id)}
+                  style={{
+                    padding: '8px 18px',
+                    borderRadius: '9999px',
+                    border: isActive ? '1px solid #C5A059' : '1px solid rgba(226, 232, 240, 0.9)',
+                    background: isActive ? 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)' : '#FFFFFF',
+                    color: isActive ? '#F59E0B' : 'var(--color-slate-700)',
+                    fontWeight: '700',
+                    fontSize: '0.84rem',
+                    cursor: 'pointer',
+                    boxShadow: isActive ? '0 4px 12px rgba(15, 23, 42, 0.15)' : '0 1px 3px rgba(0,0,0,0.03)',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <span>{cat.label}</span>
+                  {cat.id !== 'all' && (
+                    <span style={{
+                      fontSize: '0.70rem',
+                      background: isActive ? 'rgba(245, 158, 11, 0.2)' : '#F1F5F9',
+                      padding: '1px 6px',
+                      borderRadius: '9999px',
+                      color: isActive ? '#F59E0B' : 'var(--color-slate-600)'
+                    }}>
+                      {fleetData.filter(v => v.categoryKey === cat.id).length}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
           <GlassCard variant="standard" style={{ padding: '20px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
               {/* Category Filter */}
               <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '600', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Category</label>
+                <label style={{ fontSize: '0.78rem', fontWeight: '600', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Fleet Category</label>
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
                   className="form-control"
                   style={{ padding: '8px 12px', fontSize: '0.88rem' }}
                 >
-                  <option value="all">All Vehicle Categories ({fleetData.length})</option>
-                  <option value="luxury">Mercedes-Benz & Luxury Sedans</option>
-                  <option value="suv">Luxury SUVs (Fortuner & Audi Q7)</option>
-                  <option value="mpv">Executive MPVs (Vellfire & Innova)</option>
-                  <option value="coach">VIP Vans & Coaches</option>
+                  <option value="all">All Fleet Categories ({fleetData.length})</option>
+                  <option value="luxury">Luxury (S-Class, 7-Series, Vellfire)</option>
+                  <option value="premium">Premium (E-Class, 5-Series, Audi Q7, Camry)</option>
+                  <option value="executive">Executive (Fortuner, Hycross, Crysta, Innova, Accord, Carens, Ertiga, Dzire)</option>
+                  <option value="group">Group Travel (HiAce Commuter, Force Traveller, Mini Buses & Coaches)</option>
                 </select>
               </div>
 
@@ -316,8 +358,8 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
                           </td>
 
                           {/* Seating */}
-                          <td style={{ padding: '16px 14px', fontWeight: '600', color: 'var(--color-slate-700)' }}>
-                            {vehicle.passengerCapacity}+1 Seats
+                          <td style={{ padding: '16px 14px', fontWeight: '600', color: 'var(--color-slate-700)', whiteSpace: 'nowrap' }}>
+                            {vehicle.passengerDisplay || `${vehicle.passengerCapacity} Passengers + Chauffeur`}
                           </td>
 
                           {/* 4h / 40km */}
@@ -347,16 +389,23 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
 
                           {/* Action Button */}
                           <td style={{ padding: '16px 20px', textAlign: 'right' }}>
-                            <PremiumButton
-                              variant={theme.btnVariant}
-                              size="sm"
-                              pill
-                              icon={ChevronRight}
-                              iconPosition="right"
-                              onClick={() => setSelectedVehicleForModal(vehicle)}
-                            >
-                              Book Now
-                            </PremiumButton>
+                            <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center', justifyContent: 'flex-end' }}>
+                              <WhatsAppEnquiryMenu
+                                context={{ vehicleName: vehicle.name, vehicleCategory: vehicle.category, price: fullDayStr }}
+                                menuPlacement="bottom-end"
+                                triggerLabel="Get Quote"
+                                triggerIcon={WhatsAppIcon}
+                                iconSize={14}
+                                buttonStyle={{
+                                  padding: '8px 16px',
+                                  fontSize: '0.82rem',
+                                  borderRadius: '9999px',
+                                  background: '#15803D',
+                                  color: '#FFFFFF',
+                                  boxShadow: '0 2px 8px rgba(21, 128, 61, 0.25)'
+                                }}
+                              />
+                            </div>
                           </td>
                         </tr>
                       );
@@ -447,26 +496,48 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
                           <p className="text-small" style={{ marginBottom: '20px', lineHeight: '1.6', color: 'var(--color-slate-600)' }}>
                             {vehicle.description}
                           </p>
-
                           {/* Specs Grid */}
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', padding: '12px', background: 'rgba(255,255,255,0.6)', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.03)', marginBottom: '20px', textAlign: 'center' }}>
-                            <div>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px', padding: '12px', background: 'rgba(255,255,255,0.6)', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.03)', marginBottom: '16px', textAlign: 'center' }}>
+                            <div style={{ padding: '4px' }}>
                               <Users size={15} color={theme.accent} style={{ margin: '0 auto 4px auto' }} />
-                              <div style={{ fontSize: '0.72rem', fontWeight: '700', color: 'var(--color-slate-800)' }}>{vehicle.passengerCapacity}+1 Seats</div>
+                              <div style={{ fontSize: '0.74rem', fontWeight: '700', color: 'var(--color-slate-800)' }}>
+                                {vehicle.passengerDisplay || `${vehicle.passengerCapacity} Passengers + Chauffeur`}
+                              </div>
                             </div>
-                            <div>
+                            <div style={{ padding: '4px' }}>
                               <Briefcase size={15} color={theme.accent} style={{ margin: '0 auto 4px auto' }} />
-                              <div style={{ fontSize: '0.72rem', fontWeight: '700', color: 'var(--color-slate-800)' }}>{vehicle.luggageCapacity} Bags</div>
+                              <div style={{ fontSize: '0.74rem', fontWeight: '700', color: 'var(--color-slate-800)' }}>
+                                {vehicle.luggageDisplay || `${vehicle.luggageCapacity} Bags`}
+                              </div>
                             </div>
-                            <div>
-                              <Disc size={15} color={theme.accent} style={{ margin: '0 auto 4px auto' }} />
-                              <div style={{ fontSize: '0.72rem', fontWeight: '700', color: 'var(--color-slate-800)' }}>{vehicle.transmission}</div>
+                            <div style={{ padding: '4px' }}>
+                              <ShieldCheck size={15} color="#15803D" style={{ margin: '0 auto 4px auto' }} />
+                              <div style={{ fontSize: '0.74rem', fontWeight: '700', color: '#15803D' }}>
+                                Chauffeur Included
+                              </div>
                             </div>
-                            <div>
+                            <div style={{ padding: '4px' }}>
                               <Wind size={15} color={theme.accent} style={{ margin: '0 auto 4px auto' }} />
-                              <div style={{ fontSize: '0.72rem', fontWeight: '700', color: 'var(--color-slate-800)' }}>{vehicle.ac}</div>
+                              <div style={{ fontSize: '0.74rem', fontWeight: '700', color: 'var(--color-slate-800)' }}>{vehicle.ac}</div>
                             </div>
                           </div>
+
+                          {/* Best Suited For Row */}
+                          {vehicle.bestSuitedFor && vehicle.bestSuitedFor.length > 0 && (
+                            <div style={{
+                              fontSize: '0.78rem',
+                              color: 'var(--color-slate-600)',
+                              lineHeight: '1.4',
+                              marginBottom: '16px',
+                              background: 'rgba(255, 255, 255, 0.7)',
+                              padding: '8px 12px',
+                              borderRadius: '8px',
+                              borderLeft: `3px solid ${theme.accent}`
+                            }}>
+                              <span style={{ fontWeight: '700', color: 'var(--color-slate-800)' }}>Best Suited For: </span>
+                              {vehicle.bestSuitedFor.join(' • ')}
+                            </div>
+                          )}
 
                           {/* Rates Summary Row */}
                           <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: 'rgba(255,255,255,0.7)', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.03)', marginBottom: '20px' }}>
@@ -492,16 +563,36 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
                             <span>Explore Details</span>
                           </button>
 
-                          <PremiumButton
-                            variant={theme.btnVariant}
-                            size="md"
-                            pill
-                            icon={ChevronRight}
-                            iconPosition="right"
+                          <WhatsAppEnquiryMenu
+                            context={{ vehicleName: vehicle.name, vehicleCategory: vehicle.category, price: fullDayStr }}
+                            menuPlacement="bottom-start"
+                            triggerLabel="Get Quote"
+                            triggerIcon={WhatsAppIcon}
+                            iconSize={16}
+                            buttonStyle={{
+                              padding: '10px 24px',
+                              fontSize: '0.88rem',
+                              borderRadius: '9999px',
+                              background: '#15803D',
+                              color: '#FFFFFF',
+                              boxShadow: '0 4px 14px rgba(21, 128, 61, 0.3)'
+                            }}
+                          />
+
+                          <button
                             onClick={() => setSelectedVehicleForModal(vehicle)}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: 'var(--color-slate-600)',
+                              fontSize: '0.82rem',
+                              textDecoration: 'underline',
+                              cursor: 'pointer',
+                              padding: '4px 8px'
+                            }}
                           >
-                            Book This Vehicle
-                          </PremiumButton>
+                            Instant Booking Form
+                          </button>
                         </div>
 
                       </div>

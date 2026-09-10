@@ -145,17 +145,17 @@ export const tariffApi = {
       const res = await fetch(`${API_BASE}/tariffs/reset`, { method: 'POST' });
       return res.ok;
     } catch (err) {
-      localStorage.removeItem('scr_tariffs_cache');
+      localStorage.removeItem('scr_tariffs_cache_v2');
       return true;
     }
   },
 
   // --- LOCAL FALLBACK HELPERS ---
   getLocalTariffs({ usage_type, search, all } = {}) {
-    let list = JSON.parse(localStorage.getItem('scr_tariffs_cache') || 'null');
+    let list = JSON.parse(localStorage.getItem('scr_tariffs_cache_v2') || 'null');
     if (!list || list.length === 0) {
       list = [...DEFAULT_DISPOSAL_TARIFFS, ...DEFAULT_OUTSTATION_TARIFFS];
-      localStorage.setItem('scr_tariffs_cache', JSON.stringify(list));
+      localStorage.setItem('scr_tariffs_cache_v2', JSON.stringify(list));
     }
     if (!all) list = list.filter(t => t.is_active);
     if (usage_type) list = list.filter(t => t.usage_type.toLowerCase() === usage_type.toLowerCase());
@@ -171,7 +171,7 @@ export const tariffApi = {
     const newId = Math.max(...list.map(x => x.id), 0) + 1;
     const record = { ...item, id: newId, display_order: item.display_order || list.length + 1, is_active: item.is_active !== false };
     list.push(record);
-    localStorage.setItem('scr_tariffs_cache', JSON.stringify(list));
+    localStorage.setItem('scr_tariffs_cache_v2', JSON.stringify(list));
     return record;
   },
 
@@ -180,14 +180,14 @@ export const tariffApi = {
     const idx = list.findIndex(x => x.id === parseInt(id, 10));
     if (idx === -1) throw new Error('Tariff record not found');
     list[idx] = { ...list[idx], ...item };
-    localStorage.setItem('scr_tariffs_cache', JSON.stringify(list));
+    localStorage.setItem('scr_tariffs_cache_v2', JSON.stringify(list));
     return list[idx];
   },
 
   deleteLocalTariff(id) {
     let list = tariffApi.getLocalTariffs({ all: true });
     list = list.filter(x => x.id !== parseInt(id, 10));
-    localStorage.setItem('scr_tariffs_cache', JSON.stringify(list));
+    localStorage.setItem('scr_tariffs_cache_v2', JSON.stringify(list));
     return true;
   }
 };
@@ -202,25 +202,32 @@ export const formatCurrency = (val, suffix = '') => {
 
 // Default Static Seed Data for initial rendering / fallback
 export const DEFAULT_DISPOSAL_TARIFFS = [
-  { id: 1, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: "D'zire / Amaze / Indigo / Etios", service_type: 'Garage to Garage', four_hours_forty_km: 1300, eight_hours_eighty_km: 2200, extra_hour: 175, extra_km: 15, night_local_bata: 250, airport_transfer: 1600, display_order: 1, is_active: true },
-  { id: 2, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Innova,Ertiga,Kia Carnes', service_type: 'Garage to Garage', four_hours_forty_km: 1800, eight_hours_eighty_km: 2900, extra_hour: 250, extra_km: 19, night_local_bata: 300, airport_transfer: 2250, display_order: 2, is_active: true },
-  { id: 3, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Innova Crysta', service_type: 'Garage to Garage', four_hours_forty_km: 1900, eight_hours_eighty_km: 3200, extra_hour: 275, extra_km: 23, night_local_bata: 300, airport_transfer: 2600, display_order: 3, is_active: true },
-  { id: 4, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Innova Hycross', service_type: 'Garage to Garage', four_hours_forty_km: 2500, eight_hours_eighty_km: 4100, extra_hour: 400, extra_km: 28, night_local_bata: 400, airport_transfer: 3000, display_order: 4, is_active: true },
-  { id: 5, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Tempo Traveller A/C', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 6000, extra_hour: 500, extra_km: 25, night_local_bata: 500, airport_transfer: 5000, display_order: 5, is_active: true },
-  { id: 6, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Fortuner old model', service_type: 'Garage to Garage', four_hours_forty_km: 3000, eight_hours_eighty_km: 4500, extra_hour: 600, extra_km: 60, night_local_bata: 500, airport_transfer: 5000, display_order: 6, is_active: true },
-  { id: 7, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Camry / Accord / Fortuner latest model', service_type: 'Garage to Garage', four_hours_forty_km: 3500, eight_hours_eighty_km: 6000, extra_hour: 600, extra_km: 60, night_local_bata: 500, airport_transfer: 5000, display_order: 7, is_active: true },
-  { id: 8, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Urbania 12+1', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 12000, extra_hour: 700, extra_km: 45, night_local_bata: 1000, airport_transfer: 9000, display_order: 8, is_active: true },
-  { id: 9, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Urbania 16+1', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 12000, extra_hour: 700, extra_km: 45, night_local_bata: 1000, airport_transfer: 8000, display_order: 9, is_active: true },
-  { id: 10, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Toyato Commuter', service_type: 'Garage to Garage', four_hours_forty_km: 7500, eight_hours_eighty_km: 9000, extra_hour: 900, extra_km: 90, night_local_bata: 800, airport_transfer: 9000, display_order: 10, is_active: true },
-  { id: 11, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Merc "E" Class / BMW 5" / Audi A6', service_type: 'Garage to Garage', four_hours_forty_km: 10000, eight_hours_eighty_km: 12000, extra_hour: 1200, extra_km: 120, night_local_bata: 500, airport_transfer: 10000, display_order: 11, is_active: true },
-  { id: 12, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'AUDI Q7', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 14000, extra_hour: 1400, extra_km: 140, night_local_bata: 1000, airport_transfer: 15000, display_order: 12, is_active: true },
-  { id: 13, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Mercedes S-Class', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 15000, extra_hour: 1500, extra_km: 150, night_local_bata: 1000, airport_transfer: 20000, display_order: 13, is_active: true },
-  { id: 14, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Mercedes S-Class (Latest Model)', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 22500, extra_hour: 2250, extra_km: 250, night_local_bata: 1000, airport_transfer: 20000, display_order: 14, is_active: true },
-  { id: 15, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'BMW 7-Series', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 15000, extra_hour: 1500, extra_km: 150, night_local_bata: 1000, airport_transfer: 20000, display_order: 15, is_active: true },
-  { id: 16, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'BMW 7-Series (Latest Model)', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 22500, extra_hour: 2250, extra_km: 250, night_local_bata: 1000, airport_transfer: 20000, display_order: 16, is_active: true },
-  { id: 17, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Audi A8L', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 15000, extra_hour: 1500, extra_km: 150, night_local_bata: 1000, airport_transfer: 20000, display_order: 17, is_active: true },
-  { id: 18, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Audi A8L (Latest Model)', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 22500, extra_hour: 2250, extra_km: 250, night_local_bata: 1000, airport_transfer: 20000, display_order: 18, is_active: true },
-  { id: 19, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Toyota Vellfire', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 22500, extra_hour: 2250, extra_km: 250, night_local_bata: 1000, airport_transfer: 20000, display_order: 19, is_active: true },
+  // Luxury Flagships
+  { id: 1, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Mercedes S-Class (VIP Flagship)', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 22500, extra_hour: 2250, extra_km: 250, night_local_bata: 1000, airport_transfer: 20000, display_order: 1, is_active: true },
+  { id: 2, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Toyota Vellfire Executive Lounge', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 26000, extra_hour: 2600, extra_km: 280, night_local_bata: 1000, airport_transfer: 22000, display_order: 2, is_active: true },
+  { id: 3, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'BMW 7-Series 730Ld VIP', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 20000, extra_hour: 2000, extra_km: 200, night_local_bata: 1000, airport_transfer: 18000, display_order: 3, is_active: true },
+  { id: 4, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Audi A8L Quattro VIP', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 19000, extra_hour: 1900, extra_km: 190, night_local_bata: 1000, airport_transfer: 17000, display_order: 4, is_active: true },
+
+  // Premium Sedans & SUVs
+  { id: 5, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'AUDI Q7 Quattro SUV', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 14000, extra_hour: 1400, extra_km: 140, night_local_bata: 1000, airport_transfer: 15000, display_order: 5, is_active: true },
+  { id: 6, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Mercedes-Benz E-Class Executive', service_type: 'Garage to Garage', four_hours_forty_km: 10000, eight_hours_eighty_km: 12000, extra_hour: 1200, extra_km: 120, night_local_bata: 500, airport_transfer: 10000, display_order: 6, is_active: true },
+  { id: 7, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'BMW 5 Series Luxury Line', service_type: 'Garage to Garage', four_hours_forty_km: 9000, eight_hours_eighty_km: 11500, extra_hour: 1150, extra_km: 115, night_local_bata: 500, airport_transfer: 9500, display_order: 7, is_active: true },
+  { id: 8, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Audi A6 Technology', service_type: 'Garage to Garage', four_hours_forty_km: 8500, eight_hours_eighty_km: 10500, extra_hour: 1050, extra_km: 105, night_local_bata: 500, airport_transfer: 9000, display_order: 8, is_active: true },
+  { id: 9, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Toyota Camry Hybrid', service_type: 'Garage to Garage', four_hours_forty_km: 4500, eight_hours_eighty_km: 7000, extra_hour: 700, extra_km: 70, night_local_bata: 500, airport_transfer: 5500, display_order: 9, is_active: true },
+
+  // Executive SUVs, MPVs & Sedans
+  { id: 10, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Toyota Fortuner 4x4', service_type: 'Garage to Garage', four_hours_forty_km: 3500, eight_hours_eighty_km: 6000, extra_hour: 600, extra_km: 60, night_local_bata: 500, airport_transfer: 5000, display_order: 10, is_active: true },
+  { id: 11, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Honda Accord Executive', service_type: 'Garage to Garage', four_hours_forty_km: 3500, eight_hours_eighty_km: 5500, extra_hour: 550, extra_km: 55, night_local_bata: 500, airport_transfer: 4500, display_order: 11, is_active: true },
+  { id: 12, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Innova Hycross Hybrid', service_type: 'Garage to Garage', four_hours_forty_km: 2500, eight_hours_eighty_km: 4100, extra_hour: 400, extra_km: 28, night_local_bata: 400, airport_transfer: 3000, display_order: 12, is_active: true },
+  { id: 13, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Innova Crysta VIP', service_type: 'Garage to Garage', four_hours_forty_km: 1900, eight_hours_eighty_km: 3200, extra_hour: 275, extra_km: 23, night_local_bata: 300, airport_transfer: 2600, display_order: 13, is_active: true },
+  { id: 14, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Kia Carens Luxury Plus', service_type: 'Garage to Garage', four_hours_forty_km: 1900, eight_hours_eighty_km: 3000, extra_hour: 260, extra_km: 20, night_local_bata: 300, airport_transfer: 2350, display_order: 14, is_active: true },
+  { id: 15, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Toyota Innova Classic', service_type: 'Garage to Garage', four_hours_forty_km: 1800, eight_hours_eighty_km: 2900, extra_hour: 250, extra_km: 19, night_local_bata: 300, airport_transfer: 2250, display_order: 15, is_active: true },
+  { id: 16, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Maruti Suzuki Ertiga Hybrid', service_type: 'Garage to Garage', four_hours_forty_km: 1700, eight_hours_eighty_km: 2700, extra_hour: 225, extra_km: 18, night_local_bata: 300, airport_transfer: 2100, display_order: 16, is_active: true },
+  { id: 17, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: "D'zire / Amaze / Etios", service_type: 'Garage to Garage', four_hours_forty_km: 1300, eight_hours_eighty_km: 2200, extra_hour: 175, extra_km: 15, night_local_bata: 250, airport_transfer: 1600, display_order: 17, is_active: true },
+
+  // Group Travel Coaches & Vans
+  { id: 18, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Toyota HiAce Commuter VIP', service_type: 'Garage to Garage', four_hours_forty_km: 7500, eight_hours_eighty_km: 9000, extra_hour: 900, extra_km: 90, night_local_bata: 800, airport_transfer: 9000, display_order: 18, is_active: true },
+  { id: 19, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Tempo Traveller A/C', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 6000, extra_hour: 500, extra_km: 25, night_local_bata: 500, airport_transfer: 5000, display_order: 19, is_active: true },
   { id: 20, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Mini Bus 21 Seater AC', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 9000, extra_hour: 550, extra_km: 40, night_local_bata: 700, airport_transfer: 9000, display_order: 20, is_active: true },
   { id: 21, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: 'Mini Bus 25 Seater AC', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 10000, extra_hour: 550, extra_km: 45, night_local_bata: 700, airport_transfer: 10000, display_order: 21, is_active: true },
   { id: 22, location: 'BANGALORE', usage_type: 'disposal', vehicle_variant: '32 Seater AC Bus', service_type: 'Garage to Garage', four_hours_forty_km: null, eight_hours_eighty_km: 11000, extra_hour: 600, extra_km: 52, night_local_bata: 1000, airport_transfer: 11000, display_order: 22, is_active: true },
@@ -229,30 +236,37 @@ export const DEFAULT_DISPOSAL_TARIFFS = [
 ];
 
 export const DEFAULT_OUTSTATION_TARIFFS = [
-  { id: 21, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: "D'zire / Amaze / Indigo / Etios", service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 15, outstation_extra_km: 15, driver_allowance: 400, display_order: 1, is_active: true },
-  { id: 22, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Innova,Ertiga,Kia Carnes', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 19, outstation_extra_km: 19, driver_allowance: 400, display_order: 2, is_active: true },
-  { id: 23, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Innova Crysta', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 23, outstation_extra_km: 23, driver_allowance: 500, display_order: 3, is_active: true },
-  { id: 24, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Innova Hycross', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 28, outstation_extra_km: 28, driver_allowance: 500, display_order: 4, is_active: true },
-  { id: 25, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Tempo Traveller A/C', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 25, outstation_extra_km: 25, driver_allowance: 500, display_order: 5, is_active: true },
-  { id: 26, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Fortuner old model', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 60, outstation_extra_km: 60, driver_allowance: 500, display_order: 6, is_active: true },
-  { id: 27, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Camry / Accord / Fortuner latest model', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 60, outstation_extra_km: 60, driver_allowance: 500, display_order: 7, is_active: true },
-  { id: 28, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Urbania 12+1', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 45, outstation_extra_km: 45, driver_allowance: 800, display_order: 8, is_active: true },
-  { id: 29, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Urbania 16+1', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 45, outstation_extra_km: 45, driver_allowance: 800, display_order: 9, is_active: true },
-  { id: 30, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Toyato Commuter', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 90, outstation_extra_km: 90, driver_allowance: 1000, display_order: 10, is_active: true },
-  { id: 31, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Merc "E" Class / BMW 5" / Audi A6', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 120, outstation_extra_km: 120, driver_allowance: 1000, display_order: 11, is_active: true },
-  { id: 32, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'AUDI Q7', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 140, outstation_extra_km: 140, driver_allowance: 1000, display_order: 12, is_active: true },
-  { id: 33, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Mercedes S-Class', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 150, outstation_extra_km: 150, driver_allowance: 1000, display_order: 13, is_active: true },
-  { id: 34, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Mercedes S-Class (Latest Model)', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 250, outstation_extra_km: 250, driver_allowance: 1000, display_order: 14, is_active: true },
-  { id: 35, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'BMW 7-Series', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 150, outstation_extra_km: 150, driver_allowance: 1000, display_order: 15, is_active: true },
-  { id: 36, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'BMW 7-Series (Latest Model)', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 250, outstation_extra_km: 250, driver_allowance: 1000, display_order: 16, is_active: true },
-  { id: 37, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Audi A8L', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 150, outstation_extra_km: 150, driver_allowance: 1000, display_order: 17, is_active: true },
-  { id: 38, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Audi A8L (Latest Model)', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 250, outstation_extra_km: 250, driver_allowance: 1000, display_order: 18, is_active: true },
-  { id: 39, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Toyota Vellfire', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 250, outstation_extra_km: 250, driver_allowance: 1000, display_order: 19, is_active: true },
-  { id: 40, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Mini Bus 21 Seater AC', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 40, outstation_extra_km: 40, driver_allowance: 800, display_order: 20, is_active: true },
-  { id: 41, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Mini Bus 25 Seater AC', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 45, outstation_extra_km: 45, driver_allowance: 800, display_order: 21, is_active: true },
-  { id: 42, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: '32 Seater AC Bus', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 52, outstation_extra_km: 52, driver_allowance: 1000, display_order: 22, is_active: true },
-  { id: 43, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Bus 45 Seater AC', service_type: 'Garage to Garage', minimum_km_per_day: 400, rate_per_km: 62, outstation_extra_km: 62, driver_allowance: 1000, display_order: 23, is_active: true },
-  { id: 44, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Bus 49 Seater AC', service_type: 'Garage to Garage', minimum_km_per_day: 400, rate_per_km: 64, outstation_extra_km: 64, driver_allowance: 1000, display_order: 24, is_active: true }
+  // Luxury Flagships
+  { id: 101, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Mercedes S-Class (VIP Flagship)', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 250, outstation_extra_km: 250, driver_allowance: 1000, display_order: 1, is_active: true },
+  { id: 102, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Toyota Vellfire Executive Lounge', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 280, outstation_extra_km: 280, driver_allowance: 1000, display_order: 2, is_active: true },
+  { id: 103, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'BMW 7-Series 730Ld VIP', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 200, outstation_extra_km: 200, driver_allowance: 1000, display_order: 3, is_active: true },
+  { id: 104, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Audi A8L Quattro VIP', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 190, outstation_extra_km: 190, driver_allowance: 1000, display_order: 4, is_active: true },
+
+  // Premium Sedans & SUVs
+  { id: 105, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'AUDI Q7 Quattro SUV', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 140, outstation_extra_km: 140, driver_allowance: 1000, display_order: 5, is_active: true },
+  { id: 106, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Mercedes-Benz E-Class Executive', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 120, outstation_extra_km: 120, driver_allowance: 1000, display_order: 6, is_active: true },
+  { id: 107, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'BMW 5 Series Luxury Line', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 115, outstation_extra_km: 115, driver_allowance: 1000, display_order: 7, is_active: true },
+  { id: 108, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Audi A6 Technology', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 105, outstation_extra_km: 105, driver_allowance: 1000, display_order: 8, is_active: true },
+  { id: 109, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Toyota Camry Hybrid', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 70, outstation_extra_km: 70, driver_allowance: 500, display_order: 9, is_active: true },
+
+  // Executive SUVs, MPVs & Sedans
+  { id: 110, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Toyota Fortuner 4x4', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 60, outstation_extra_km: 60, driver_allowance: 500, display_order: 10, is_active: true },
+  { id: 111, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Honda Accord Executive', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 55, outstation_extra_km: 55, driver_allowance: 500, display_order: 11, is_active: true },
+  { id: 112, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Innova Hycross Hybrid', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 28, outstation_extra_km: 28, driver_allowance: 500, display_order: 12, is_active: true },
+  { id: 113, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Innova Crysta VIP', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 23, outstation_extra_km: 23, driver_allowance: 500, display_order: 13, is_active: true },
+  { id: 114, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Kia Carens Luxury Plus', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 20, outstation_extra_km: 20, driver_allowance: 400, display_order: 14, is_active: true },
+  { id: 115, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Toyota Innova Classic', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 19, outstation_extra_km: 19, driver_allowance: 400, display_order: 15, is_active: true },
+  { id: 116, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Maruti Suzuki Ertiga Hybrid', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 18, outstation_extra_km: 18, driver_allowance: 400, display_order: 16, is_active: true },
+  { id: 117, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: "D'zire / Amaze / Etios", service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 15, outstation_extra_km: 15, driver_allowance: 400, display_order: 17, is_active: true },
+
+  // Group Travel Coaches & Vans
+  { id: 118, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Toyota HiAce Commuter VIP', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 90, outstation_extra_km: 90, driver_allowance: 1000, display_order: 18, is_active: true },
+  { id: 119, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Tempo Traveller A/C', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 25, outstation_extra_km: 25, driver_allowance: 500, display_order: 19, is_active: true },
+  { id: 120, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Mini Bus 21 Seater AC', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 40, outstation_extra_km: 40, driver_allowance: 800, display_order: 20, is_active: true },
+  { id: 121, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Mini Bus 25 Seater AC', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 45, outstation_extra_km: 45, driver_allowance: 800, display_order: 21, is_active: true },
+  { id: 122, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: '32 Seater AC Bus', service_type: 'Garage to Garage', minimum_km_per_day: 300, rate_per_km: 52, outstation_extra_km: 52, driver_allowance: 1000, display_order: 22, is_active: true },
+  { id: 123, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Bus 45 Seater AC', service_type: 'Garage to Garage', minimum_km_per_day: 400, rate_per_km: 62, outstation_extra_km: 62, driver_allowance: 1000, display_order: 23, is_active: true },
+  { id: 124, location: 'BANGALORE', usage_type: 'outstation', vehicle_variant: 'Bus 49 Seater AC', service_type: 'Garage to Garage', minimum_km_per_day: 400, rate_per_km: 64, outstation_extra_km: 64, driver_allowance: 1000, display_order: 24, is_active: true }
 ];
 
 export const DEFAULT_TERMS = [
