@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare } from 'lucide-react';
 import { SITE_CONFIG } from '../../config/site';
+import { WhatsAppBookingModal } from '../modals/WhatsAppBookingModal';
 
 export const ENQUIRY_TYPES = [
   { id: 'airport',    label: 'Airport Transfer',   icon: '✈️' },
@@ -68,6 +69,8 @@ export const WhatsAppIcon = ({ size = 20, color = 'currentColor', className = ''
 
 export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement = 'bottom-end', triggerLabel, triggerIcon: TriggerIcon, iconSize = 18, children, className = '', ...restProps }) => {
   const [open, setOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const menuRef = useRef(null);
   const triggerRef = useRef(null);
 
@@ -83,9 +86,9 @@ export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement =
   }, []);
 
   const handleSelect = (typeId) => {
-    const msg = buildMessage(typeId, context);
-    const url = `https://wa.me/${SITE_CONFIG.whatsapp.phone}?text=${encodeURIComponent(msg)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
+    const serviceObj = ENQUIRY_TYPES.find(t => t.id === typeId) || { id: typeId, label: typeId, icon: '💬' };
+    setSelectedService(serviceObj);
+    setIsModalOpen(true);
     setOpen(false);
   };
 
@@ -191,6 +194,15 @@ export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement =
             </button>
           ))}
         </div>
+      )}
+
+      {isModalOpen && (
+        <WhatsAppBookingModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          serviceType={selectedService}
+          context={context}
+        />
       )}
 
       <style>{`

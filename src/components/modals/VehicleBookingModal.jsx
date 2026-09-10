@@ -1,13 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { pricingService } from '../../services/pricingService';
+import { SITE_CONFIG } from '../../config/site';
 import { X, CheckCircle2, Phone, Calendar, Clock, MapPin, User, ChevronRight, ShieldCheck, Star } from 'lucide-react';
 import { Input } from '../common/Input';
 import { PremiumButton } from '../common/PremiumButton';
 import { Badge } from '../common/Badge';
+import { LocationAutocompleteInput } from '../common/LocationAutocompleteInput';
+import { WhatsAppIcon } from '../common/WhatsAppEnquiryMenu';
 
 export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation = '', initialDate = '', initialPackage = '' }) => {
   const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    pickup: initialLocation || '',
+    drop: '',
+    packageType: initialPackage === 'airport' ? 'airport' : initialPackage === 'outstation' ? 'outstation' : '8h',
+    date: initialDate || '',
+    time: '10:00'
+  });
+
+  useEffect(() => {
+    if (initialLocation) {
+      setFormData(prev => ({ ...prev, pickup: initialLocation }));
+    }
+    if (initialDate) {
+      setFormData(prev => ({ ...prev, date: initialDate }));
+    }
+  }, [initialLocation, initialDate]);
 
   useEffect(() => {
     if (isOpen) {
@@ -30,13 +51,40 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
 
   if (!isOpen || !vehicle) return null;
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleLocationChange = (fieldName) => (e) => {
+    setFormData(prev => ({ ...prev, [fieldName]: e.target.value }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const lines = [
+      `*VEHICLE RESERVATION ENQUIRY - SIDDHU CAR RENTALS*`,
+      `----------------------------------------`,
+      `🚘 *Vehicle:* ${vehicle.name} (${vehicle.category || 'VIP Luxury'})`,
+      `👤 *Customer Name:* ${formData.name}`,
+      `📱 *WhatsApp Phone:* ${formData.phone}`,
+      `📍 *Pickup Location:* ${formData.pickup || 'Bengaluru'}`,
+      formData.drop ? `🎯 *Destination:* ${formData.drop}` : null,
+      `⏱️ *Package:* ${formData.packageType === 'airport' ? 'Airport VIP Transfer' : formData.packageType === 'outstation' ? 'Outstation Trip' : formData.packageType === '4h' ? 'Local 4h / 40km' : 'Local 8h / 80km'}`,
+      formData.date ? `📅 *Date:* ${formData.date} at ${formData.time || '10:00 AM'}` : null,
+      `----------------------------------------`,
+      `Please confirm vehicle availability and reservation quote.`
+    ].filter(Boolean);
+
+    const waUrl = `https://wa.me/${SITE_CONFIG.whatsapp.phone}?text=${encodeURIComponent(lines.join('\n'))}`;
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
+
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
       onClose();
-    }, 4000);
+    }, 3500);
   };
 
   return createPortal(
@@ -200,16 +248,52 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
 
               {/* Form Grid */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                <Input label="Your Name" icon={User} placeholder="e.g. Vikramaditya" required />
-                <Input label="WhatsApp Mobile Number" icon={Phone} placeholder="+91 76250 59665" required />
+                <Input
+                  label="Your Name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  icon={User}
+                  placeholder="e.g. Vikramaditya"
+                  required
+                />
+                <Input
+                  label="WhatsApp Mobile Number"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  icon={Phone}
+                  placeholder="+91 76250 59665"
+                  required
+                />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                <Input label="Pickup Address in Bengaluru" icon={MapPin} defaultValue={initialLocation} placeholder="e.g. UB City / Airport / Hotel" required />
+                <LocationAutocompleteInput
+                  label="Pickup Location in Bengaluru"
+                  placeholder="Type location (e.g. Ba, Airport, UB City...)"
+                  value={formData.pickup}
+                  onChange={handleLocationChange('pickup')}
+                  name="pickup"
+                  required
+                />
+
+                <LocationAutocompleteInput
+                  label="Destination / Drop Location"
+                  placeholder="Type destination (e.g. Airport, Coorg, Mysuru...)"
+                  value={formData.drop}
+                  onChange={handleLocationChange('drop')}
+                  name="drop"
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
                 <Input
                   label="Select Tariff Package"
+                  name="packageType"
+                  value={formData.packageType}
+                  onChange={handleChange}
                   icon={Clock}
-                  defaultValue={initialPackage === 'airport' ? 'airport' : initialPackage === 'outstation' ? 'outstation' : '8h'}
                   options={[
                     { value: '8h', label: `Local Full Day — 8 Hours / 80 Kms (₹${priceStr})` },
                     { value: '4h', label: `Local Half Day — 4 Hours / 40 Kms` },
@@ -217,16 +301,62 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
                     { value: 'outstation', label: `Outstation Long Distance Journey` }
                   ]}
                 />
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <Input
+                    label="Pickup Date"
+                    type="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    icon={Calendar}
+                    required
+                  />
+                  <Input
+                    label="Pickup Time"
+                    type="time"
+                    name="time"
+                    value={formData.time}
+                    onChange={handleChange}
+                    icon={Clock}
+                    required
+                  />
+                </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-                <Input label="Pickup Date" type="date" icon={Calendar} defaultValue={initialDate} required />
-                <Input label="Pickup Time" type="time" icon={Clock} required />
-              </div>
-
-              <PremiumButton variant="gold" size="lg" fullWidth pill icon={ChevronRight} iconPosition="right">
-                Confirm & Request Booking
-              </PremiumButton>
+              <button
+                type="submit"
+                style={{
+                  width: '100%',
+                  height: '52px',
+                  borderRadius: '9999px',
+                  background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                  color: '#FFFFFF',
+                  fontSize: '1rem',
+                  fontWeight: '800',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  boxShadow: '0 4px 16px rgba(37, 211, 102, 0.4)',
+                  transition: 'all 0.2s ease',
+                  marginTop: '6px'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(37, 211, 102, 0.5)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(37, 211, 102, 0.4)';
+                }}
+              >
+                <WhatsAppIcon size={22} />
+                <span>Confirm & Request via WhatsApp</span>
+                <ChevronRight size={18} />
+              </button>
             </form>
           )}
 

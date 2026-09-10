@@ -6,7 +6,9 @@ import { SectionHeader } from '../components/common/SectionHeader';
 import { Badge } from '../components/common/Badge';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { Input } from '../components/common/Input';
+import { LocationAutocompleteInput } from '../components/common/LocationAutocompleteInput';
 import { WhatsAppButton } from '../components/common/WhatsAppButton';
+import { WhatsAppIcon } from '../components/common/WhatsAppEnquiryMenu';
 import { SITE_CONFIG } from '../config/site';
 
 export const CorporateTransfer = () => {
@@ -19,6 +21,7 @@ export const CorporateTransfer = () => {
     phone: '',
     email: '',
     companyGstin: '',
+    location: '',
     fleetSize: '1-5',
     serviceType: '',
     startDate: '',
@@ -31,6 +34,10 @@ export const CorporateTransfer = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleLocationChange = (e) => {
+    setFormData(prev => ({ ...prev, location: e.target.value }));
+  };
+
   const copyGstin = () => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText('29AAMFS1234F1Z5');
@@ -41,6 +48,21 @@ export const CorporateTransfer = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const corporateMsg = `*New Corporate Fleet Enquiry - Siddhu Car Rentals*\n\n` +
+      `• *Company:* ${formData.companyName || 'N/A'}\n` +
+      `• *Contact Person:* ${formData.contactPerson || 'N/A'}${formData.designation ? ` (${formData.designation})` : ''}\n` +
+      `• *Phone:* ${formData.phone || 'N/A'}\n` +
+      `• *Email:* ${formData.email || 'N/A'}\n` +
+      `• *Location / Hub:* ${formData.location || 'Bengaluru'}\n` +
+      `• *Fleet Size:* ${formData.fleetSize || 'N/A'}\n` +
+      `• *Service:* ${formData.serviceType || 'Corporate Rental'}\n` +
+      `• *Start Date:* ${formData.startDate || 'Immediate'}\n` +
+      `• *Billing Cycle:* ${formData.billingCycle || 'Monthly'}\n` +
+      (formData.companyGstin ? `• *GSTIN:* ${formData.companyGstin}\n` : '') +
+      `• *Notes:* ${formData.notes || 'None'}`;
+
+    const waUrl = `https://wa.me/${SITE_CONFIG.whatsapp.phone}?text=${encodeURIComponent(corporateMsg)}`;
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
     setFormSubmitted(true);
   };
 
@@ -450,6 +472,15 @@ export const CorporateTransfer = () => {
                       { value: 'monthly', label: 'Monthly Consolidated Invoicing' },
                       { value: 'quarterly', label: 'Quarterly Consolidated Invoicing' }
                     ]} />
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <LocationAutocompleteInput
+                        label="Primary Office / Tech Park / Pickup Hub (Bengaluru or Outstation)"
+                        placeholder="Type tech park, airport, or area (e.g. Manyata, ITPL, Electronic City, Airport)..."
+                        value={formData.location}
+                        onChange={handleLocationChange}
+                        name="location"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -463,9 +494,40 @@ export const CorporateTransfer = () => {
                   placeholder="e.g. 2 Mercedes S-Class + 4 Innova Crysta for 3-day tech summit, dedicated dispatch manager, GST invoice required..."
                 />
 
-                <PremiumButton variant="gold" size="lg" fullWidth pill icon={ChevronRight} iconPosition="right" style={{ marginTop: '12px' }}>
-                  Submit Corporate Enquiry
-                </PremiumButton>
+                <button
+                  type="submit"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    width: '100%',
+                    padding: '14px 24px',
+                    borderRadius: '9999px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                    color: '#FFFFFF',
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: 700,
+                    fontSize: '0.98rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 8px 24px rgba(37,211,102,0.3)',
+                    transition: 'all 0.2s ease',
+                    marginTop: '8px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 12px 28px rgba(37,211,102,0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'none';
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(37,211,102,0.3)';
+                  }}
+                >
+                  <WhatsAppIcon size={20} />
+                  <span>Submit Corporate Enquiry via WhatsApp</span>
+                  <ChevronRight size={18} />
+                </button>
               </form>
             )}
           </GlassCard>

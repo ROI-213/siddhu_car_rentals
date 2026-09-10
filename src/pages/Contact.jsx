@@ -6,7 +6,10 @@ import { SectionHeader } from '../components/common/SectionHeader';
 import { Badge } from '../components/common/Badge';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { Input } from '../components/common/Input';
+import { LocationAutocompleteInput } from '../components/common/LocationAutocompleteInput';
 import { WhatsAppButton } from '../components/common/WhatsAppButton';
+import { WhatsAppIcon } from '../components/common/WhatsAppEnquiryMenu';
+import { SITE_CONFIG } from '../config/site';
 
 export const Contact = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -29,10 +32,8 @@ export const Contact = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setFormSubmitted(true);
-    setTimeout(() => setFormSubmitted(false), 7000);
+  const handleLocationChange = (field) => (e) => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
   const resetForm = () => {
@@ -50,6 +51,14 @@ export const Contact = () => {
     (tripType === 'outstation' ? `• *Return:* ${formData.returnDate || 'N/A'} at ${formData.returnTime || 'N/A'}\n` : '') +
     `• *Vehicle:* ${formData.vehicleType || 'N/A'}\n` +
     `• *Notes:* ${formData.notes || 'None'}`;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const waUrl = `https://wa.me/${SITE_CONFIG.whatsapp.phone}?text=${encodeURIComponent(whatsappMessage)}`;
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
+    setFormSubmitted(true);
+    setTimeout(() => setFormSubmitted(false), 7000);
+  };
 
   return (
     <div style={{ overflowX: 'hidden' }}>
@@ -258,10 +267,24 @@ export const Contact = () => {
                   <Input label="Phone Number (WhatsApp)" icon={PhoneCall} type="tel" placeholder="+91 98765 43210" value={formData.phone} onChange={handleChange} name="phone" required />
                 </div>
 
-                {/* Row 2: Pickup + Destination */}
+                {/* Row 2: Pickup + Destination with Autocomplete */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
-                  <Input label="Pickup Location" icon={MapPin} placeholder="e.g. Kempegowda Airport / Manyata Tech Park" value={formData.pickup} onChange={handleChange} name="pickup" required />
-                  <Input label="Destination" icon={MapPin} placeholder="e.g. UB City / Coorg / Mysuru" value={formData.drop} onChange={handleChange} name="drop" required />
+                  <LocationAutocompleteInput
+                    label="Pickup Location"
+                    placeholder="Type area, airport, hotel (e.g. Banashankari, Airport)..."
+                    value={formData.pickup}
+                    onChange={handleLocationChange('pickup')}
+                    name="pickup"
+                    required
+                  />
+                  <LocationAutocompleteInput
+                    label="Destination"
+                    placeholder="Type destination, hotel, city (e.g. Bangalore, Mysuru)..."
+                    value={formData.drop}
+                    onChange={handleLocationChange('drop')}
+                    name="drop"
+                    required
+                  />
                 </div>
 
                 {/* Row 3: Date + Time */}
@@ -290,12 +313,43 @@ export const Contact = () => {
                   <Input label="Special Requests (Optional)" icon={FileText} placeholder="e.g. child seat, flight number, extra luggage..." value={formData.notes} onChange={handleChange} name="notes" />
                 </div>
 
-                <PremiumButton variant="gold" size="lg" fullWidth pill icon={ChevronRight} iconPosition="right" style={{ marginTop: '8px' }}>
-                  Send Enquiry — Get Instant Quote
-                </PremiumButton>
+                <button
+                  type="submit"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    width: '100%',
+                    padding: '14px 24px',
+                    borderRadius: '9999px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                    color: '#FFFFFF',
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: 700,
+                    fontSize: '0.98rem',
+                    cursor: 'pointer',
+                    boxShadow: '0 8px 24px rgba(37,211,102,0.3)',
+                    transition: 'all 0.2s ease',
+                    marginTop: '8px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 12px 28px rgba(37,211,102,0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'none';
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(37,211,102,0.3)';
+                  }}
+                >
+                  <WhatsAppIcon size={20} />
+                  <span>Send Enquiry via WhatsApp</span>
+                  <ChevronRight size={18} />
+                </button>
 
                 <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--color-slate-400)' }}>
-                  No account required. We'll reply via WhatsApp or call within minutes.
+                  Instant response via WhatsApp. Direct connection to S.M. Patil & the Siddhu Car Rentals team.
                 </p>
               </form>
             )}
