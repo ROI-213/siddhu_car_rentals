@@ -296,7 +296,7 @@ export const Contact = () => {
                 {/* Return Date/Time — Outstation only */}
                 {tripType === 'outstation' && (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px', padding: '14px 16px', background: 'rgba(2,132,199,0.04)', borderRadius: '10px', border: '1px solid rgba(2,132,199,0.12)' }}>
-                    <Input label="Return Date" icon={Calendar} type="date" value={formData.returnDate} onChange={handleChange} name="returnDate" />
+                    <Input label="Return Date" icon={Calendar} type="date" value={formData.returnDate} onChange={handleChange} name="returnDate" min={formData.date || undefined} />
                     <Input label="Return Time" icon={Clock} type="time" value={formData.returnTime} onChange={handleChange} name="returnTime" />
                   </div>
                 )}

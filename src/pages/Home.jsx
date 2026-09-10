@@ -25,6 +25,14 @@ import { SlideUp, FadeIn } from '../components/common/Motion';
 import { CTASection } from '../components/common/CTASection';
 import { SITE_CONFIG } from '../config/site';
 
+const getTodayDateStr = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const Home = ({ onViewVehicleDetail, onNavigate }) => {
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
@@ -547,7 +555,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                           <div className="datetime-cards-row">
                             <div className="datetime-card">
                               <div className="card-top-tag"><Calendar size={13} className="dt-icon" /><span>TRAVEL DATE</span></div>
-                              <input type="date" value={formData.date} onChange={e => handleInputChange('date', e.target.value)} className="dt-native-input" required />
+                              <input type="date" min={getTodayDateStr()} value={formData.date} onChange={e => handleInputChange('date', e.target.value)} className="dt-native-input" required />
                             </div>
                             <div className="datetime-card">
                               <div className="card-top-tag"><Clock size={13} className="dt-icon" /><span>PICKUP TIME</span></div>
@@ -610,7 +618,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                           <div className="datetime-cards-row">
                             <div className="datetime-card">
                               <div className="card-top-tag"><Calendar size={13} className="dt-icon" /><span>DEPARTURE DATE</span></div>
-                              <input type="date" value={formData.date} onChange={e => handleInputChange('date', e.target.value)} className="dt-native-input" required />
+                              <input type="date" min={getTodayDateStr()} value={formData.date} onChange={e => handleInputChange('date', e.target.value)} className="dt-native-input" required />
                             </div>
                             <div className="datetime-card">
                               <div className="card-top-tag"><Clock size={13} className="dt-icon" /><span>DEPARTURE TIME</span></div>
@@ -621,7 +629,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                           <div className="datetime-cards-row">
                             <div className="datetime-card">
                               <div className="card-top-tag"><Calendar size={13} className="dt-icon" /><span>RETURN DATE</span></div>
-                              <input type="date" value={formData.returnDate} onChange={e => handleInputChange('returnDate', e.target.value)} className="dt-native-input" required />
+                              <input type="date" min={formData.date || getTodayDateStr()} value={formData.returnDate} onChange={e => handleInputChange('returnDate', e.target.value)} className="dt-native-input" required />
                             </div>
                             <div className="datetime-card">
                               <div className="card-top-tag"><Clock size={13} className="dt-icon" /><span>RETURN TIME</span></div>
@@ -694,7 +702,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                           <div className="datetime-cards-row">
                             <div className="datetime-card">
                               <div className="card-top-tag"><Calendar size={13} className="dt-icon" /><span>FLIGHT / TRAVEL DATE</span></div>
-                              <input type="date" value={formData.date} onChange={e => handleInputChange('date', e.target.value)} className="dt-native-input" required />
+                              <input type="date" min={getTodayDateStr()} value={formData.date} onChange={e => handleInputChange('date', e.target.value)} className="dt-native-input" required />
                             </div>
                             <div className="datetime-card">
                               <div className="card-top-tag"><Clock size={13} className="dt-icon" /><span>PICKUP / LANDING TIME</span></div>
@@ -790,7 +798,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                           <div className="datetime-cards-row">
                             <div className="datetime-card">
                               <div className="card-top-tag"><Calendar size={13} className="dt-icon" /><span>TRAVEL DATE</span></div>
-                              <input type="date" value={formData.date} onChange={e => handleInputChange('date', e.target.value)} className="dt-native-input" required />
+                              <input type="date" min={getTodayDateStr()} value={formData.date} onChange={e => handleInputChange('date', e.target.value)} className="dt-native-input" required />
                             </div>
                             <div className="datetime-card">
                               <div className="card-top-tag"><Clock size={13} className="dt-icon" /><span>REPORTING TIME</span></div>
@@ -853,7 +861,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                           <div className="datetime-cards-row">
                             <div className="datetime-card">
                               <div className="card-top-tag"><Calendar size={13} className="dt-icon" /><span>TRAVEL DATE</span></div>
-                              <input type="date" value={formData.date} onChange={e => handleInputChange('date', e.target.value)} className="dt-native-input" required />
+                              <input type="date" min={getTodayDateStr()} value={formData.date} onChange={e => handleInputChange('date', e.target.value)} className="dt-native-input" required />
                             </div>
                             <div className="datetime-card">
                               <div className="card-top-tag"><Clock size={13} className="dt-icon" /><span>PICKUP TIME</span></div>
@@ -909,7 +917,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                           <div className="datetime-cards-row">
                             <div className="datetime-card">
                               <div className="card-top-tag"><Calendar size={13} className="dt-icon" /><span>DEPARTURE DATE</span></div>
-                              <input type="date" value={formData.date} onChange={e => handleInputChange('date', e.target.value)} className="dt-native-input" required />
+                              <input type="date" min={getTodayDateStr()} value={formData.date} onChange={e => handleInputChange('date', e.target.value)} className="dt-native-input" required />
                             </div>
                             <div className="datetime-card">
                               <div className="card-top-tag"><Clock size={13} className="dt-icon" /><span>DEPARTURE TIME</span></div>
@@ -920,7 +928,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                           <div className="datetime-cards-row">
                             <div className="datetime-card">
                               <div className="card-top-tag"><Calendar size={13} className="dt-icon" /><span>RETURN DATE</span></div>
-                              <input type="date" value={formData.returnDate} onChange={e => handleInputChange('returnDate', e.target.value)} className="dt-native-input" required />
+                              <input type="date" min={formData.date || getTodayDateStr()} value={formData.returnDate} onChange={e => handleInputChange('returnDate', e.target.value)} className="dt-native-input" required />
                             </div>
                             <div className="datetime-card">
                               <div className="card-top-tag"><Clock size={13} className="dt-icon" /><span>RETURN TIME</span></div>

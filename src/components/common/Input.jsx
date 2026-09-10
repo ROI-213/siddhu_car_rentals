@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
+const getTodayDateStr = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const Input = ({
   label,
   icon: Icon,
@@ -151,6 +159,7 @@ export const Input = ({
       ) : (
         <input
           type={type}
+          min={type === 'date' ? (restProps.min !== undefined ? restProps.min : getTodayDateStr()) : restProps.min}
           value={currentValue}
           onChange={handleChange}
           onFocus={() => setIsFocused(true)}

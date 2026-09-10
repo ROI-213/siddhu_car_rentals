@@ -5,6 +5,14 @@ import { SITE_CONFIG } from '../../config/site';
 import { WhatsAppIcon } from '../common/WhatsAppEnquiryMenu';
 import { LocationAutocompleteInput } from '../common/LocationAutocompleteInput';
 
+const getTodayDateStr = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const WhatsAppBookingModal = ({
   isOpen,
   onClose,
@@ -361,6 +369,7 @@ export const WhatsAppBookingModal = ({
                     <Calendar size={18} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
                     <input
                       type="date"
+                      min={getTodayDateStr()}
                       name="date"
                       value={formData.date}
                       onChange={handleChange}
@@ -475,6 +484,7 @@ export const WhatsAppBookingModal = ({
                     </label>
                     <input
                       type="date"
+                      min={formData.date || getTodayDateStr()}
                       name="returnDate"
                       value={formData.returnDate}
                       onChange={handleChange}
