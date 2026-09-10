@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Crown, MapPin, Calendar, Clock, PhoneCall, MessageSquare, ChevronRight, ShieldCheck, Award, Car, CheckCircle2, Navigation } from 'lucide-react';
 import { PageHero } from '../components/common/PageHero';
 import { GlassCard } from '../components/common/GlassCard';
@@ -8,11 +8,18 @@ import { Badge } from '../components/common/Badge';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { EnquiryForm } from '../components/common/EnquiryForm';
 import { WhatsAppButton } from '../components/common/WhatsAppButton';
+import { WhatsAppBookingModal } from '../components/modals/WhatsAppBookingModal';
 
 export const Outstation = ({ onEnquireClick }) => {
+  const [selectedRouteModal, setSelectedRouteModal] = useState(null);
+
   const scrollToEnquiry = () => {
     const el = document.getElementById('outstation-enquiry');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSelectRoute = (dest) => {
+    setSelectedRouteModal(dest);
   };
 
   const getTheme = (idx) => {
@@ -30,14 +37,14 @@ export const Outstation = ({ onEnquireClick }) => {
   };
 
   const destinations = [
-    { name: 'Mysuru (Mysore)', distance: '140 Kms', time: '3.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/mysuru.jpg', highlight: 'Royal Palaces & Chamundi Hills' },
-    { name: 'Coorg (Madikeri)', distance: '260 Kms', time: '5.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/coorg.jpg', highlight: 'Coffee Plantations & Waterfalls' },
-    { name: 'Chikmagalur', distance: '240 Kms', time: '5.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/chikmagalur.jpg', highlight: 'Mullayanagiri Peak & Tea Estates' },
-    { name: 'Ooty & Nilgiris', distance: '270 Kms', time: '6.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/ooty.jpg', highlight: 'Pine Forests & Botanical Gardens' },
-    { name: 'Hampi Heritage', distance: '340 Kms', time: '6.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/hampi.jpg', highlight: 'UNESCO Stone Chariots & Ruins' },
-    { name: 'Wayanad Rainforest', distance: '280 Kms', time: '6.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/wayanad.jpg', highlight: 'Wild Sanctuaries & Tea Valleys' },
-    { name: 'Sakleshpur Hills', distance: '220 Kms', time: '4.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/sakleshpur.jpg', highlight: 'Star Fort & Spice Plantations' },
-    { name: 'Chennai Coastal ECR', distance: '350 Kms', time: '6.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/chennai_ecr.jpg', highlight: 'Interstate Business & Marina Beach' }
+    { name: 'Mysuru (Mysore)', distance: '140 Kms', time: '3.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/mysuru.jpg', alt: 'Mysore Palace — Royal Heritage & Chauffeur Tour Mysuru', highlight: 'Royal Palaces & Chamundi Hills' },
+    { name: 'Coorg (Madikeri)', distance: '260 Kms', time: '5.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/coorg.jpg', alt: 'Coorg — Misty Coffee Valleys, Abbey Falls & Madikeri Hills', highlight: 'Coffee Plantations & Waterfalls' },
+    { name: 'Chikmagalur', distance: '240 Kms', time: '5.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/chikmagalur.jpg', alt: 'Chikmagalur — Mullayanagiri Peak & Coffee Plantation Getaway', highlight: 'Mullayanagiri Peak & Tea Estates' },
+    { name: 'Ooty & Nilgiris', distance: '270 Kms', time: '6.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/ooty.jpg', alt: 'Ooty — Queen of Hill Stations & Botanical Gardens Nilgiris', highlight: 'Pine Forests & Botanical Gardens' },
+    { name: 'Hampi Heritage', distance: '340 Kms', time: '6.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/hampi.jpg', alt: 'Hampi — UNESCO Stone Heritage Chariot & Ruins', highlight: 'UNESCO Stone Chariots & Ruins' },
+    { name: 'Wayanad Rainforest', distance: '280 Kms', time: '6.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/wayanad.jpg', alt: 'Wayanad — Western Ghats Rainforest & Sanctuaries', highlight: 'Wild Sanctuaries & Tea Valleys' },
+    { name: 'Sakleshpur Hills', distance: '220 Kms', time: '4.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/sakleshpur.jpg', alt: 'Sakleshpur — Manjarabad Star Fort & Spice Hills', highlight: 'Star Fort & Spice Plantations' },
+    { name: 'Chennai Coastal ECR', distance: '350 Kms', time: '6.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/chennai_ecr.jpg', alt: 'Chennai East Coast Road — Coastal Interstate Scenic Drive', highlight: 'Interstate Business & Marina Beach' }
   ];
 
   return (
@@ -175,8 +182,13 @@ export const Outstation = ({ onEnquireClick }) => {
                     transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
                   }}
                 >
-                  <div className="img-ratio-16-9" style={{ marginBottom: '16px', borderRadius: '14px', overflow: 'hidden', position: 'relative' }}>
-                    <img src={dest.image} alt={dest.name} className="dest-hover-img" style={{ transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }} />
+                  <div
+                    className="img-ratio-16-9"
+                    style={{ marginBottom: '16px', borderRadius: '14px', overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
+                    onClick={() => handleSelectRoute(dest)}
+                    title={`Click to get route quote for ${dest.name}`}
+                  >
+                    <img src={dest.image} alt={dest.alt || `${dest.name} - Luxury Chauffeur Trip`} className="dest-hover-img" style={{ transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }} />
                     <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 5 }}>
                       <Badge variant="glass">{dest.distance}</Badge>
                     </div>
@@ -193,8 +205,8 @@ export const Outstation = ({ onEnquireClick }) => {
                       <span style={{ fontSize: '0.65rem', color: 'var(--color-slate-500)', textTransform: 'uppercase', fontWeight: '600' }}>Starting Rate</span>
                       <div style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--color-slate-900)' }}>{dest.rate}</div>
                     </div>
-                    <PremiumButton variant="glass" size="sm" pill onClick={scrollToEnquiry}>
-                      Book Journey
+                    <PremiumButton variant="glass" size="sm" pill onClick={() => handleSelectRoute(dest)}>
+                      Get Quote
                     </PremiumButton>
                   </div>
                 </GlassCard>
@@ -283,6 +295,18 @@ export const Outstation = ({ onEnquireClick }) => {
           <EnquiryForm title="Book Outstation Highway Journey" subtitle="Instant Per-Km Rate Quote & Driver Confirmation" />
         </div>
       </section>
+
+      {/* Direct WhatsApp Route Enquiry Modal */}
+      <WhatsAppBookingModal
+        isOpen={Boolean(selectedRouteModal)}
+        onClose={() => setSelectedRouteModal(null)}
+        serviceType="outstation"
+        context={{
+          pickup: 'Bengaluru, Karnataka',
+          drop: selectedRouteModal?.name || '',
+          message: `Inquiring for Bangalore to ${selectedRouteModal?.name || ''} (${selectedRouteModal?.distance || ''}) chauffeur outstation trip. Base rate: ${selectedRouteModal?.rate || ''}.`
+        }}
+      />
 
     </div>
   );

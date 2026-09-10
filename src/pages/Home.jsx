@@ -23,6 +23,7 @@ import { TestimonialCard } from '../components/cards/TestimonialCard';
 import { StatCard } from '../components/cards/StatCard';
 import { SlideUp, FadeIn } from '../components/common/Motion';
 import { CTASection } from '../components/common/CTASection';
+import { WhatsAppBookingModal } from '../components/modals/WhatsAppBookingModal';
 import { SITE_CONFIG } from '../config/site';
 
 const getTodayDateStr = () => {
@@ -207,6 +208,45 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const [routeModalDestination, setRouteModalDestination] = useState(null);
+
+  const handleSelectDestination = (dest) => {
+    // 1. Pre-fill Journey Planner form state
+    if (dest.type === 'airport') {
+      setActiveTripType('Airport Transfer');
+      setFormData(prev => ({
+        ...prev,
+        drop: dest.name || 'Kempegowda International Airport Bengaluru (BLR)',
+        pickup: prev.pickup || 'Bengaluru, Karnataka'
+      }));
+    } else {
+      setActiveTripType('Outstation');
+      setFormData(prev => ({
+        ...prev,
+        drop: dest.name,
+        pickup: prev.pickup || 'Bengaluru, Karnataka'
+      }));
+    }
+    setFormStep(2);
+
+    // 2. Dispatch custom event so CarRentalSearch also captures this destination
+    window.dispatchEvent(new CustomEvent('scr_select_destination', {
+      detail: {
+        destination: dest.name,
+        tab: dest.type === 'airport' ? 'airport' : 'outstation'
+      }
+    }));
+
+    // 3. Open the WhatsApp Route Enquiry Modal pre-populated for this route
+    setRouteModalDestination({
+      name: dest.name,
+      distance: dest.dist,
+      rate: dest.rate,
+      image: dest.img,
+      type: dest.type || 'outstation'
+    });
   };
 
   const handleHeroFormSubmit = (e) => {
@@ -2592,39 +2632,105 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
           {/* Staggered Editorial Collage Row */}
           <div className="destination-collage-grid" style={{ marginTop: '48px' }}>
             
-            {/* Featured Hero: Hampi */}
-            <div className="dest-collage-card hero-dest-card" onClick={() => onNavigate && onNavigate('outstation')}>
-              <img src="/images/destinations/hampi.jpg" alt="Hampi UNESCO Stone Heritage" className="dest-img" />
+            {/* Featured Hero: Mysore Palace */}
+            <div
+              className="dest-collage-card hero-dest-card"
+              onClick={() => handleSelectDestination({
+                name: 'Mysuru (Mysore)',
+                dist: '140 km',
+                rate: 'From ₹15/km',
+                img: '/images/destinations/mysuru.jpg',
+                type: 'outstation'
+              })}
+              title="Click to get quote for Bengaluru to Mysuru (Mysore)"
+            >
+              <img
+                src="/images/destinations/mysuru.jpg"
+                alt="Mysore Palace — Royal Heritage & Chauffeur Tour Mysuru"
+                className="dest-img"
+              />
               <div className="dest-glass-label">
-                <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-sky-primary)', fontWeight: '700', marginBottom: '2px' }}>
-                  UNESCO Stone Heritage • 340 km
-                </div>
-                <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.45rem', color: 'var(--color-slate-900)' }}>Hampi Ruins</h4>
-              </div>
-            </div>
-
-            {/* Stacked Right Column: Mysuru & Coorg */}
-            <div className="dest-right-stack">
-              
-              {/* Mysuru */}
-              <div className="dest-collage-card stacked-dest-card" onClick={() => onNavigate && onNavigate('outstation')}>
-                <img src="/images/destinations/mysuru.jpg" alt="Mysuru Palace" className="dest-img" />
-                <div className="dest-glass-label">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-coral-primary)', fontWeight: '700', marginBottom: '2px' }}>
                     Palaces & Silk Heritage • 140 km
                   </div>
-                  <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', color: 'var(--color-slate-900)' }}>Mysuru</h4>
+                  <span style={{ fontSize: '0.72rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 10px', borderRadius: '999px', fontWeight: '700' }}>
+                    Get Quote →
+                  </span>
+                </div>
+                <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.45rem', color: 'var(--color-slate-900)' }}>Mysore Palace (Mysuru)</h4>
+                <div style={{ fontSize: '0.76rem', color: 'var(--color-slate-600)', marginTop: '4px' }}>
+                  Starting from ₹15/km • Uniformed Chauffeur Guaranteed
+                </div>
+              </div>
+            </div>
+
+            {/* Stacked Right Column: Bangalore Airport & Coorg */}
+            <div className="dest-right-stack">
+              
+              {/* Bangalore Airport Kempegowda */}
+              <div
+                className="dest-collage-card stacked-dest-card"
+                onClick={() => handleSelectDestination({
+                  name: 'Kempegowda International Airport (BLR)',
+                  dist: '38 km',
+                  rate: 'Flat Airport Tariff',
+                  img: '/images/destinations/bangalore_airport.jpg',
+                  type: 'airport'
+                })}
+                title="Click to get quote for Bangalore Airport VIP Transfer"
+              >
+                <img
+                  src="/images/destinations/bangalore_airport.jpg"
+                  alt="Bangalore Airport (BLR) — Kempegowda International Airport VIP Chauffeur Transfer"
+                  className="dest-img"
+                />
+                <div className="dest-glass-label">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-sky-primary)', fontWeight: '700', marginBottom: '2px' }}>
+                      VIP Flight Transfers • 38 km
+                    </div>
+                    <span style={{ fontSize: '0.68rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 8px', borderRadius: '999px', fontWeight: '700' }}>
+                      Get Quote →
+                    </span>
+                  </div>
+                  <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', color: 'var(--color-slate-900)' }}>Bangalore Airport (BLR)</h4>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
+                    Flight tracking & punctual luxury chauffeur pickup
+                  </div>
                 </div>
               </div>
 
-              {/* Coorg */}
-              <div className="dest-collage-card stacked-dest-card" onClick={scrollToEnquiry}>
-                <img src="/images/destinations/coorg.jpg" alt="Coorg Western Ghats" className="dest-img" />
+              {/* Coorg Hills */}
+              <div
+                className="dest-collage-card stacked-dest-card"
+                onClick={() => handleSelectDestination({
+                  name: 'Coorg (Madikeri)',
+                  dist: '260 km',
+                  rate: 'From ₹15/km',
+                  img: '/images/destinations/coorg.jpg',
+                  type: 'outstation'
+                })}
+                title="Click to get quote for Bengaluru to Coorg Hills"
+              >
+                <img
+                  src="/images/destinations/coorg.jpg"
+                  alt="Coorg — Misty Coffee Valleys, Abbey Falls & Madikeri Hills"
+                  className="dest-img"
+                />
                 <div className="dest-glass-label">
-                  <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-mint-primary)', fontWeight: '700', marginBottom: '2px' }}>
-                    Misty Coffee Valleys • 260 km
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-mint-primary)', fontWeight: '700', marginBottom: '2px' }}>
+                      Misty Coffee Valleys • 260 km
+                    </div>
+                    <span style={{ fontSize: '0.68rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 8px', borderRadius: '999px', fontWeight: '700' }}>
+                      Get Quote →
+                    </span>
                   </div>
-                  <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', color: 'var(--color-slate-900)' }}>Coorg Hills</h4>
+                  <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', color: 'var(--color-slate-900)' }}>Coorg Hills (Madikeri)</h4>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
+                    Scenic Western Ghats mountain drive with verified driver
+                  </div>
                 </div>
               </div>
 
@@ -2634,30 +2740,35 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
 
           {/* Catalog Carousel Header */}
           <div style={{ marginTop: '56px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.35rem', color: 'var(--color-slate-900)' }}>More Handpicked Journeys</h3>
+            <div>
+              <h3 style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.35rem', color: 'var(--color-slate-900)', margin: 0 }}>More Handpicked Journeys</h3>
+              <p style={{ fontSize: '0.82rem', color: 'var(--color-slate-600)', margin: '4px 0 0 0' }}>Select any destination to instantly configure your route or get a direct quote</p>
+            </div>
             <span style={{ fontSize: '0.8rem', color: 'var(--color-slate-500)', fontWeight: '600' }} className="carousel-swipe-hint">Swipe to explore →</span>
           </div>
 
-          {/* Horizontal Scrolling Ribbon */}
+          {/* Horizontal Scrolling Ribbon — Unique Destinations without duplicates */}
           <div className="dest-scroll-ribbon">
             {[
-              { name: 'Chikmagalur', desc: 'Coffee Estates & Peaks', dist: '240 km', img: '/images/destinations/chikmagalur.jpg', bg: '#F0F9FF', rate: 'From ₹15/km', fare: '300 km/day min' },
-              { name: 'Ooty', desc: 'Botanical Valleys & Lakes', dist: '270 km', img: '/images/destinations/ooty.jpg', bg: '#F5F3FF', rate: 'From ₹15/km', fare: '300 km/day min' },
-              { name: 'Hampi', desc: 'UNESCO Stone Heritage', dist: '340 km', img: '/images/destinations/hampi.jpg', bg: '#FDFBF7', rate: 'From ₹15/km', fare: '300 km/day min' },
-              { name: 'Mysuru', desc: 'Palaces & Silk Heritage', dist: '140 km', img: '/images/destinations/mysuru.jpg', bg: '#FFF7ED', rate: 'From ₹15/km', fare: '300 km/day min' },
-              { name: 'Coorg', desc: 'Misty Coffee Valleys', dist: '260 km', img: '/images/destinations/coorg.jpg', bg: '#F0FDF4', rate: 'From ₹15/km', fare: '300 km/day min' },
-              { name: 'Wayanad', desc: 'Rainforest & Sanctuaries', dist: '280 km', img: '/images/destinations/wayanad.jpg', bg: '#F0FDF4', rate: 'From ₹15/km', fare: '300 km/day min' },
-              { name: 'Sakleshpur', desc: 'Mist & Spice Hills', dist: '220 km', img: '/images/destinations/sakleshpur.jpg', bg: '#FDFBF7', rate: 'From ₹15/km', fare: '300 km/day min' },
-              { name: 'Chennai ECR', desc: 'Coastal Scenic Highway', dist: '350 km', img: '/images/destinations/chennai_ecr.jpg', bg: '#F0F9FF', rate: 'From ₹15/km', fare: '300 km/day min' }
+              { name: 'Hampi Heritage', desc: 'UNESCO Stone Heritage & Ruins', dist: '340 km', img: '/images/destinations/hampi.jpg', alt: 'Hampi UNESCO Stone Heritage Chariot & Ruins', bg: '#FDFBF7', rate: 'From ₹15/km', fare: '300 km/day min', type: 'outstation' },
+              { name: 'Chikmagalur', desc: 'Coffee Estates & Cloud Peaks', dist: '240 km', img: '/images/destinations/chikmagalur.jpg', alt: 'Chikmagalur Mullayanagiri Peak & Coffee Estates', bg: '#F0F9FF', rate: 'From ₹15/km', fare: '300 km/day min', type: 'outstation' },
+              { name: 'Ooty & Nilgiris', desc: 'Botanical Valleys & Pine Lakes', dist: '270 km', img: '/images/destinations/ooty.jpg', alt: 'Ooty Queen of Hill Stations & Botanical Gardens', bg: '#F5F3FF', rate: 'From ₹15/km', fare: '300 km/day min', type: 'outstation' },
+              { name: 'Wayanad', desc: 'Rainforest & Wildlife Sanctuaries', dist: '280 km', img: '/images/destinations/wayanad.jpg', alt: 'Wayanad Western Ghats Rainforest & Sanctuaries', bg: '#F0FDF4', rate: 'From ₹15/km', fare: '300 km/day min', type: 'outstation' },
+              { name: 'Sakleshpur', desc: 'Mist Hills & Spice Trails', dist: '220 km', img: '/images/destinations/sakleshpur.jpg', alt: 'Sakleshpur Manjarabad Star Fort & Spice Hills', bg: '#FDFBF7', rate: 'From ₹15/km', fare: '300 km/day min', type: 'outstation' },
+              { name: 'Chennai ECR', desc: 'Coastal Scenic Interstate Highway', dist: '350 km', img: '/images/destinations/chennai_ecr.jpg', alt: 'Chennai East Coast Road Coastal Interstate Highway', bg: '#F0F9FF', rate: 'From ₹15/km', fare: '300 km/day min', type: 'outstation' },
+              { name: 'Nandi Hills', desc: 'Sunrise Cloud Bed & Historic Fort', dist: '60 km', img: '/images/destinations/nandi_hills.jpg', alt: 'Nandi Hills Sunrise Viewpoint & Tipu Sultan Fortress', bg: '#FFF7ED', rate: 'From ₹15/km', fare: 'Round Trip Local', type: 'outstation' },
+              { name: 'Bangalore Palace', desc: 'Tudor Style Royal Architecture', dist: '15 km', img: '/images/destinations/bangalore_palace.jpg', alt: 'Bangalore Palace Heritage Royal Grounds', bg: '#FDFBF7', rate: 'Local Package', fare: '4h / 8h Local', type: 'local' },
+              { name: 'Lalbagh Gardens', desc: 'Botanical Glass House & Florals', dist: '10 km', img: '/images/destinations/lalbagh_glass_house.jpg', alt: 'Lalbagh Botanical Garden Historic Glass House', bg: '#F0FDF4', rate: 'Local Package', fare: '4h / 8h Local', type: 'local' }
             ].map((d, index) => (
               <div
                 key={index}
                 className="dest-ribbon-card"
-                onClick={() => onNavigate && onNavigate('outstation')}
+                onClick={() => handleSelectDestination(d)}
                 style={{ background: d.bg, cursor: 'pointer' }}
+                title={`Click to get quote for Bengaluru to ${d.name}`}
               >
                 <div className="dest-ribbon-img-wrapper">
-                  <img src={d.img} alt={d.name} className="dest-img" />
+                  <img src={d.img} alt={d.alt} className="dest-img" />
                 </div>
                 <div style={{ padding: '16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
@@ -2667,12 +2778,24 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                   <p style={{ margin: '0 0 12px 0', fontSize: '0.78rem', color: 'var(--color-slate-600)' }}>{d.desc}</p>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
                     <div>
-                      <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-500)', fontWeight: '700' }}>Sedan Starting</div>
+                      <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-500)', fontWeight: '700' }}>Starting Rate</div>
                       <div style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--color-slate-900)' }}>{d.rate}</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-500)', fontWeight: '700' }}>Tariff Rule</div>
-                      <div style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--accent-sky-primary)' }}>{d.fare}</div>
+                      <span style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '3px',
+                        background: '#0284C7',
+                        color: '#FFFFFF',
+                        fontSize: '0.72rem',
+                        fontWeight: '700',
+                        padding: '4px 10px',
+                        borderRadius: '999px',
+                        boxShadow: '0 2px 6px rgba(2, 132, 199, 0.2)'
+                      }}>
+                        Get Quote
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -3281,6 +3404,18 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
           </div>
         </div>
       </section>
+
+      {/* Destination Route Enquiry Modal */}
+      <WhatsAppBookingModal
+        isOpen={Boolean(routeModalDestination)}
+        onClose={() => setRouteModalDestination(null)}
+        serviceType={routeModalDestination?.type || 'outstation'}
+        context={{
+          pickup: 'Bengaluru, Karnataka',
+          drop: routeModalDestination?.name || '',
+          message: `Inquiry for chauffeur-driven route from Bengaluru to ${routeModalDestination?.name || ''} (${routeModalDestination?.distance || ''}). Estimated tariff: ${routeModalDestination?.rate || 'Standard'}.`
+        }}
+      />
 
     </div>
   );

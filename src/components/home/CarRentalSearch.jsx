@@ -17,17 +17,126 @@ const TABS = [
 ];
 
 const COL_1_IMAGES = [
-  { src: '/images/destinations/bangalore_palace.jpg', arClass: 'ar-tall', alt: 'Bangalore Palace' },
-  { src: '/images/destinations/mysuru.jpg',           arClass: 'ar-square', alt: 'Mysore Palace' },
-  { src: '/images/destinations/hampi.jpg',            arClass: 'ar-tall', alt: 'Hampi UNESCO Heritage' },
-  { src: '/images/destinations/ub_city.jpg',          arClass: 'ar-wide', alt: 'UB City Bangalore' },
+  {
+    src: '/images/destinations/bangalore_airport.jpg',
+    arClass: 'ar-wide',
+    alt: 'Bangalore Airport (BLR) — Kempegowda International Airport Chauffeur Service',
+    destinationName: 'Kempegowda International Airport (BLR)',
+    label: 'Bangalore Airport',
+    distance: '38 km',
+    tab: 'airport'
+  },
+  {
+    src: '/images/destinations/mysuru.jpg',
+    arClass: 'ar-square',
+    alt: 'Mysore Palace — Royal Heritage & Chauffeur Tour Mysuru',
+    destinationName: 'Mysuru (Mysore)',
+    label: 'Mysore Palace',
+    distance: '140 km',
+    tab: 'outstation'
+  },
+  {
+    src: '/images/destinations/coorg.jpg',
+    arClass: 'ar-tall',
+    alt: 'Coorg — Misty Coffee Valleys, Abbey Falls & Madikeri Hills',
+    destinationName: 'Coorg (Madikeri)',
+    label: 'Coorg Hills',
+    distance: '260 km',
+    tab: 'outstation'
+  },
+  {
+    src: '/images/destinations/ooty.jpg',
+    arClass: 'ar-wide',
+    alt: 'Ooty — Queen of Hill Stations, Botanical Gardens & Nilgiri Ghats',
+    destinationName: 'Ooty (Nilgiris)',
+    label: 'Ooty & Nilgiris',
+    distance: '270 km',
+    tab: 'outstation'
+  },
+  {
+    src: '/images/destinations/hampi.jpg',
+    arClass: 'ar-tall',
+    alt: 'Hampi — UNESCO Stone Heritage Chariot & Ruins',
+    destinationName: 'Hampi Heritage',
+    label: 'Hampi Heritage',
+    distance: '340 km',
+    tab: 'outstation'
+  },
+  {
+    src: '/images/destinations/ub_city.jpg',
+    arClass: 'ar-square',
+    alt: 'UB City Bengaluru — Luxury Commercial & Dining District',
+    destinationName: 'UB City, Vittal Mallya Road',
+    label: 'UB City Bangalore',
+    distance: 'Central Bangalore',
+    tab: 'local'
+  }
 ];
 
 const COL_2_IMAGES = [
-  { src: '/images/destinations/lalbagh_glass_house.jpg', arClass: 'ar-square', alt: 'Lalbagh Botanical Garden' },
-  { src: '/images/destinations/chikmagalur.jpg',         arClass: 'ar-tall', alt: 'Chikmagalur Coffee Estates' },
-  { src: '/images/destinations/nandi_hills.jpg',         arClass: 'ar-square', alt: 'Nandi Hills Sunrise' },
-  { src: '/images/destinations/coorg.jpg',               arClass: 'ar-tall', alt: 'Coorg Coffee Valleys' },
+  {
+    src: '/images/destinations/bangalore_palace.jpg',
+    arClass: 'ar-tall',
+    alt: 'Bangalore Palace — Royal Heritage Grounds & Tudor Revival Architecture',
+    destinationName: 'Bangalore Palace, Vasanth Nagar',
+    label: 'Bangalore Palace',
+    distance: 'Central Bangalore',
+    tab: 'local'
+  },
+  {
+    src: '/images/destinations/chikmagalur.jpg',
+    arClass: 'ar-wide',
+    alt: 'Chikmagalur — Mullayanagiri Peak & Coffee Plantation Getaway',
+    destinationName: 'Chikmagalur',
+    label: 'Chikmagalur',
+    distance: '240 km',
+    tab: 'outstation'
+  },
+  {
+    src: '/images/destinations/nandi_hills.jpg',
+    arClass: 'ar-square',
+    alt: 'Nandi Hills — Sunrise Cloud Viewpoint & Tipu Sultan Fortress',
+    destinationName: 'Nandi Hills',
+    label: 'Nandi Hills',
+    distance: '60 km',
+    tab: 'outstation'
+  },
+  {
+    src: '/images/destinations/wayanad.jpg',
+    arClass: 'ar-tall',
+    alt: 'Wayanad — Western Ghats Rainforest, Tea Plantations & Sanctuaries',
+    destinationName: 'Wayanad',
+    label: 'Wayanad Rainforest',
+    distance: '280 km',
+    tab: 'outstation'
+  },
+  {
+    src: '/images/destinations/sakleshpur.jpg',
+    arClass: 'ar-square',
+    alt: 'Sakleshpur — Manjarabad Star Fort & Cardamom Mist Hills',
+    destinationName: 'Sakleshpur',
+    label: 'Sakleshpur Hills',
+    distance: '220 km',
+    tab: 'outstation'
+  },
+  {
+    src: '/images/destinations/chennai_ecr.jpg',
+    arClass: 'ar-wide',
+    alt: 'Chennai East Coast Road (ECR) — Coastal Interstate Scenic Drive',
+    destinationName: 'Chennai (ECR)',
+    label: 'Chennai Coast ECR',
+    distance: '350 km',
+    tab: 'outstation'
+  },
+  {
+    src: '/images/destinations/lalbagh_glass_house.jpg',
+    arClass: 'ar-tall',
+    alt: 'Lalbagh Botanical Garden — Historic Glass House & Flower Show',
+    destinationName: 'Lalbagh Botanical Garden',
+    label: 'Lalbagh Gardens',
+    distance: 'South Bangalore',
+    tab: 'local'
+  }
 ];
 
 // ── Expanded location database ───────────────────────────────────────────────
@@ -621,6 +730,51 @@ export const CarRentalSearch = ({ onNavigate }) => {
     }, 350);
   };
 
+  const [selectedRouteNotice, setSelectedRouteNotice] = useState('');
+
+  const handleSelectCollageDestination = (img) => {
+    if (img.tab) {
+      setActiveTab(img.tab);
+    } else {
+      setActiveTab('outstation');
+    }
+    
+    const targetName = img.destinationName || img.label || img.alt;
+    setDropLocation(targetName);
+    
+    if (!pickupLocation) {
+      setPickupLocation('Bengaluru, Karnataka');
+    }
+    
+    setSelectedRouteNotice(`Destination Selected: Bengaluru → ${img.label || targetName} (${img.distance || ''})`);
+    setTimeout(() => setSelectedRouteNotice(''), 7000);
+
+    const el = document.getElementById('journey-planner') || document.getElementById('quick-enquiry') || document.querySelector('.crs-left-panel');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  useEffect(() => {
+    const handleExternalDestinationSelect = (e) => {
+      const { destination, tab } = e.detail || {};
+      if (destination) {
+        if (tab) setActiveTab(tab);
+        else setActiveTab('outstation');
+        setDropLocation(destination);
+        if (!pickupLocation) setPickupLocation('Bengaluru, Karnataka');
+        setSelectedRouteNotice(`Destination Selected: Bengaluru → ${destination}`);
+        setTimeout(() => setSelectedRouteNotice(''), 7000);
+        const el = document.getElementById('journey-planner') || document.getElementById('quick-enquiry');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    };
+    window.addEventListener('scr_select_destination', handleExternalDestinationSelect);
+    return () => window.removeEventListener('scr_select_destination', handleExternalDestinationSelect);
+  }, [pickupLocation]);
+
   const duplicateMarquee = (arr) => [...arr, ...arr];
   const col1Marquee = useMemo(() => duplicateMarquee(COL_1_IMAGES), []);
   const col2Marquee = useMemo(() => duplicateMarquee(COL_2_IMAGES), []);
@@ -669,6 +823,25 @@ export const CarRentalSearch = ({ onNavigate }) => {
             <h2 className="crs-headline">
               Exceptional Journeys, Backed by Uncompromised Luxury.
             </h2>
+            {selectedRouteNotice && (
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                background: '#ECFDF5',
+                border: '1px solid #10B981',
+                color: '#065F46',
+                padding: '6px 14px',
+                borderRadius: '8px',
+                fontSize: '0.82rem',
+                fontWeight: '700',
+                marginTop: '10px',
+                boxShadow: '0 2px 8px rgba(16, 185, 129, 0.15)'
+              }}>
+                <Sparkles size={14} color="#10B981" />
+                <span>{selectedRouteNotice}</span>
+              </div>
+            )}
           </div>
 
           <div className="crs-trust-grid">
@@ -747,11 +920,16 @@ export const CarRentalSearch = ({ onNavigate }) => {
                 <div
                   key={i}
                   className={`crs-image-card ${img.arClass}`}
-                  onClick={() => onNavigate && onNavigate('outstation')}
-                  style={{ cursor: onNavigate ? 'pointer' : 'default' }}
-                  title={`Outstation to ${img.alt}`}
+                  onClick={() => handleSelectCollageDestination(img)}
+                  style={{ cursor: 'pointer' }}
+                  title={`Click to set destination: ${img.label || img.destinationName}`}
                 >
                   <img src={img.src} alt={img.alt} loading="lazy" />
+                  <div className="crs-dest-click-hint">Click to Select</div>
+                  <div className="crs-dest-card-badge">
+                    <span>{img.label}</span>
+                    <small>{img.distance}</small>
+                  </div>
                 </div>
               ))}
             </div>
@@ -760,11 +938,16 @@ export const CarRentalSearch = ({ onNavigate }) => {
                 <div
                   key={i}
                   className={`crs-image-card ${img.arClass}`}
-                  onClick={() => onNavigate && onNavigate('outstation')}
-                  style={{ cursor: onNavigate ? 'pointer' : 'default' }}
-                  title={`Outstation to ${img.alt}`}
+                  onClick={() => handleSelectCollageDestination(img)}
+                  style={{ cursor: 'pointer' }}
+                  title={`Click to set destination: ${img.label || img.destinationName}`}
                 >
                   <img src={img.src} alt={img.alt} loading="lazy" />
+                  <div className="crs-dest-click-hint">Click to Select</div>
+                  <div className="crs-dest-card-badge">
+                    <span>{img.label}</span>
+                    <small>{img.distance}</small>
+                  </div>
                 </div>
               ))}
             </div>
