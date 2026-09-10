@@ -1,6 +1,6 @@
 import React from 'react';
-import { MessageSquare } from 'lucide-react';
 import { SITE_CONFIG } from '../../config/site';
+import { WhatsAppIcon } from './WhatsAppEnquiryMenu';
 
 export const WhatsAppButton = ({
   message,
@@ -29,7 +29,7 @@ export const WhatsAppButton = ({
     >
       {children || (
         <>
-          <MessageSquare size={18} />
+          <WhatsAppIcon size={18} />
           <span>WhatsApp</span>
         </>
       )}

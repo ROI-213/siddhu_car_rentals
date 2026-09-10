@@ -43,7 +43,30 @@ function buildMessage(enquiryType, context = {}) {
   return msg;
 }
 
-export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement = 'bottom-end', triggerLabel, triggerIcon: TriggerIcon }) => {
+export const WhatsAppIcon = ({ size = 20, color = 'currentColor', className = '' }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    style={{ display: 'inline-block', verticalAlign: 'middle', flexShrink: 0 }}
+  >
+    <path
+      d="M17.472 14.382c-.3-.15-1.77-.874-2.044-.974-.275-.1-.475-.15-.675.15-.2.3-.774.974-.95 1.173-.175.2-.35.225-.65.075-.3-.15-1.267-.467-2.414-1.489-.892-.796-1.494-1.78-1.67-2.08-.174-.3-.018-.462.132-.611.136-.134.301-.35.451-.525.15-.175.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.675-1.625-.925-2.225-.243-.585-.49-.506-.675-.515-.175-.009-.375-.011-.575-.011s-.525.075-.8.375c-.275.3-1.05 1.025-1.05 2.5 0 1.475 1.075 2.899 1.225 3.1.15.2 2.115 3.23 5.123 4.531.715.31 1.274.495 1.708.633.718.228 1.372.196 1.888.119.576-.086 1.77-.723 2.02-1.422.25-.7.25-1.3.175-1.423-.075-.123-.275-.198-.575-.348z"
+      fill={color}
+    />
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M12.004 2C6.48 2 2 6.48 2 12.004c0 1.848.502 3.58 1.377 5.071L2 22l5.074-1.332A9.957 9.957 0 0012.004 22c5.524 0 10.004-4.48 10.004-9.996C22.008 6.48 17.528 2 12.004 2zm0 18.293a8.27 8.27 0 01-4.218-1.157l-.302-.18-3.13.821.836-3.05-.197-.314a8.27 8.27 0 01-1.275-4.417c0-4.577 3.725-8.302 8.286-8.302 4.562 0 8.286 3.725 8.286 8.302 0 4.577-3.724 8.297-8.286 8.297z"
+      fill={color}
+    />
+  </svg>
+);
+
+export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement = 'bottom-end', triggerLabel, triggerIcon: TriggerIcon, iconSize = 18 }) => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
   const triggerRef = useRef(null);
@@ -66,8 +89,9 @@ export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement =
     setOpen(false);
   };
 
-  const label = triggerLabel || 'WhatsApp';
-  const Icon = TriggerIcon || MessageSquare;
+  const hasExplicitLabel = triggerLabel !== undefined;
+  const label = hasExplicitLabel ? triggerLabel : 'WhatsApp';
+  const Icon = TriggerIcon || WhatsAppIcon;
 
   return (
     <span style={{ position: 'relative', display: 'inline-flex' }}>
@@ -89,9 +113,10 @@ export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement =
           ...buttonStyle
         }}
         title="Chat on WhatsApp"
+        aria-label="Chat on WhatsApp"
       >
-        <Icon size={16} />
-        <span>{label}</span>
+        <Icon size={iconSize} />
+        {label && <span>{label}</span>}
       </button>
 
       {open && (

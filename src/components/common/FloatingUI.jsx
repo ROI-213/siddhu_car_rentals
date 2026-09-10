@@ -1,12 +1,12 @@
 import React from 'react';
-import { MessageSquare, PhoneCall, ChevronRight, Calendar } from 'lucide-react';
-import { WhatsAppEnquiryMenu } from './WhatsAppEnquiryMenu';
+import { PhoneCall, ChevronRight } from 'lucide-react';
 import { SITE_CONFIG } from '../../config/site';
+import { WhatsAppEnquiryMenu, WhatsAppIcon } from './WhatsAppEnquiryMenu';
 
 export const FloatingUI = ({ onOpenEnquiry }) => {
   return (
     <>
-      {/* Floating Action Cluster (Desktop & Mobile) */}
+      {/* Desktop Floating Action Cluster (Right aligned, subtle, elevated) */}
       <div style={{
         position: 'fixed',
         bottom: '88px',
@@ -42,7 +42,28 @@ export const FloatingUI = ({ onOpenEnquiry }) => {
         </a>
 
         {/* WhatsApp Button */}
-        <WhatsAppEnquiryMenu context={{}} menuPlacement="bottom-end" triggerLabel="" triggerIcon={MessageSquare} />
+        <WhatsAppEnquiryMenu
+          context={{}}
+          menuPlacement="bottom-end"
+          triggerLabel=""
+          triggerIcon={WhatsAppIcon}
+          iconSize={26}
+          buttonStyle={{
+            width: '50px',
+            height: '50px',
+            borderRadius: '50%',
+            background: '#25D366',
+            color: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 8px 24px rgba(37, 211, 102, 0.45)',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+            padding: 0
+          }}
+        />
       </div>
 
       {/* Mobile Bottom Sticky CTA Bar (Shown only on small screens < 768px) */}
@@ -68,7 +89,29 @@ export const FloatingUI = ({ onOpenEnquiry }) => {
           <span>Call Desk</span>
         </a>
 
-        <WhatsAppEnquiryMenu context={{}} menuPlacement="top-end" triggerLabel="WhatsApp" triggerIcon={MessageSquare} />
+        <WhatsAppEnquiryMenu
+          context={{}}
+          menuPlacement="top-end"
+          triggerLabel="WhatsApp"
+          triggerIcon={WhatsAppIcon}
+          iconSize={18}
+          buttonStyle={{
+            flex: 1,
+            height: '46px',
+            borderRadius: '10px',
+            background: '#25D366',
+            color: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px',
+            fontSize: '0.85rem',
+            fontWeight: '700',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '0 12px'
+          }}
+        />
 
         <button
           onClick={onOpenEnquiry}

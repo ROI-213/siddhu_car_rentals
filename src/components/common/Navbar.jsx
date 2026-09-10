@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Crown, PhoneCall, MessageSquare, Menu, X, ChevronRight, Sparkles } from 'lucide-react';
 import { PremiumButton } from './PremiumButton';
 import { WhatsAppButton } from './WhatsAppButton';
-import { WhatsAppEnquiryMenu } from './WhatsAppEnquiryMenu';
+import { WhatsAppEnquiryMenu, WhatsAppIcon } from './WhatsAppEnquiryMenu';
 import { SITE_CONFIG } from '../../config/site';
 
 export const Navbar = ({ activePage = 'home', onNavigate }) => {
@@ -210,7 +210,7 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
             <span className="action-text">Call</span>
           </a>
 
-          <WhatsAppEnquiryMenu context={{}} triggerLabel="WhatsApp" triggerIcon={MessageSquare} />
+          <WhatsAppEnquiryMenu context={{}} triggerLabel="WhatsApp" triggerIcon={WhatsAppIcon} />
 
           <PremiumButton variant="sky" size="sm" pill icon={ChevronRight} iconPosition="right" onClick={() => handleNavClick('contact')}>
             <span style={{ whiteSpace: 'nowrap' }}>Get Quote</span>
