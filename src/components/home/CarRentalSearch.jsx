@@ -661,81 +661,58 @@ export const CarRentalSearch = ({ onNavigate }) => {
       <div className="crs-container" id="quick-enquiry">
         {/* ── LEFT – Feature Highlights & Trust Pillars ───────────────────── */}
         <div className="crs-left-panel">
-          <div className="crs-feature-badge">
-            <ShieldCheck size={14} />
-            <span>Bengaluru Luxury Chauffeur Specialists</span>
+          <div className="crs-header-compact">
+            <div className="crs-feature-badge">
+              <ShieldCheck size={13} />
+              <span>Bengaluru Luxury Chauffeur Specialists</span>
+            </div>
+            <h2 className="crs-headline">
+              Exceptional Journeys, Backed by Uncompromised Luxury.
+            </h2>
           </div>
-
-          <h2 className="crs-headline">
-            Exceptional Journeys, Backed by Uncompromised Luxury.
-          </h2>
-
-          <p className="crs-supporting-desc">
-            Bengaluru’s premier chauffeur-driven fleet for executive airport VIP transfers, full-day corporate mobility, luxury weddings, and serene South India getaways.
-          </p>
 
           <div className="crs-trust-grid">
             <div className="crs-trust-item">
-              <div className="crs-trust-icon-wrap">
-                <ShieldCheck size={18} color="#C5A059" />
-              </div>
-              <div>
-                <div className="crs-trust-title">100% Verified Chauffeurs</div>
-                <div className="crs-trust-text">Uniformed, police-verified, bilingual professionals</div>
-              </div>
+              <ShieldCheck size={16} color="#C5A059" className="crs-trust-icon" />
+              <span className="crs-trust-title">100% Verified Chauffeurs</span>
             </div>
 
             <div className="crs-trust-item">
-              <div className="crs-trust-icon-wrap">
-                <Clock size={18} color="#0284C7" />
-              </div>
-              <div>
-                <div className="crs-trust-title">24/7 Guaranteed Dispatch</div>
-                <div className="crs-trust-text">Punctual Kempegowda Airport pickups & rapid city deployment</div>
-              </div>
+              <Clock size={16} color="#0284C7" className="crs-trust-icon" />
+              <span className="crs-trust-title">24/7 Guaranteed Dispatch</span>
             </div>
 
             <div className="crs-trust-item">
-              <div className="crs-trust-icon-wrap">
-                <FileText size={18} color="#059669" />
-              </div>
-              <div>
-                <div className="crs-trust-title">Transparent GST Billing</div>
-                <div className="crs-trust-text">Fixed rate card, zero surge charges, consolidated corporate invoices</div>
-              </div>
+              <FileText size={16} color="#059669" className="crs-trust-icon" />
+              <span className="crs-trust-title">Transparent GST Billing</span>
             </div>
 
             <div className="crs-trust-item">
-              <div className="crs-trust-icon-wrap">
-                <Crown size={18} color="#D97706" />
-              </div>
-              <div>
-                <div className="crs-trust-title">Flagship Pristine Fleet</div>
-                <div className="crs-trust-text">Mercedes S/E-Class, BMW, Vellfire, Crysta & luxury coaches</div>
-              </div>
+              <Crown size={16} color="#D97706" className="crs-trust-icon" />
+              <span className="crs-trust-title">Flagship Luxury Fleet</span>
             </div>
           </div>
 
           <div className="crs-cta-cluster">
             <WhatsAppEnquiryMenu
               context={{ tripType: 'Concierge Booking' }}
-              triggerLabel="Instant WhatsApp Concierge"
+              triggerLabel="WhatsApp Concierge"
               triggerIcon={WhatsAppIcon}
-              iconSize={16}
+              iconSize={15}
               buttonStyle={{
                 background: '#25D366',
                 color: '#FFFFFF',
                 borderRadius: '999px',
-                padding: '11px 22px',
-                fontSize: '0.88rem',
+                padding: '8px 18px',
+                fontSize: '0.84rem',
                 fontWeight: '700',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '7px',
                 border: 'none',
                 cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(37, 211, 102, 0.3)',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                boxShadow: '0 4px 12px rgba(37, 211, 102, 0.28)',
+                transition: 'transform 0.2s ease'
               }}
             />
 
@@ -743,8 +720,8 @@ export const CarRentalSearch = ({ onNavigate }) => {
               href={`tel:${SITE_CONFIG.contact.phone}`}
               className="crs-btn-call"
             >
-              <PhoneCall size={15} color="#0F172A" />
-              <span>Call Desk: +91 76250 59665</span>
+              <PhoneCall size={14} color="#0F172A" />
+              <span>Call: +91 76250 59665</span>
             </a>
 
             <button
@@ -757,7 +734,7 @@ export const CarRentalSearch = ({ onNavigate }) => {
               }}
             >
               <span>Explore Fleet</span>
-              <ChevronRight size={15} />
+              <ChevronRight size={14} />
             </button>
           </div>
         </div>
