@@ -9,7 +9,7 @@ export const CURATED_LOCATIONS = [
     category: 'airport',
     icon: '✈️',
     subtext: 'Terminals 1 & 2 • Devanahalli, Bengaluru',
-    aliases: ['airport', 'kempegowda', 'blr', 'kia', 'bial', 't1', 't2', 'bangalore airport']
+    aliases: ['airport', 'kempegowda', 'blr', 'kia', 'bial', 't1', 't2', 'bangalore airport', 'aip', 'airp', 'airpot']
   },
   {
     name: 'HAL Bangalore Old Airport',

@@ -25,6 +25,7 @@ import { SlideUp, FadeIn } from '../components/common/Motion';
 import { CTASection } from '../components/common/CTASection';
 import { WhatsAppBookingModal } from '../components/modals/WhatsAppBookingModal';
 import { SITE_CONFIG } from '../config/site';
+import { RouteLocationInput } from '../components/home/RouteLocationInput';
 
 const getTodayDateStr = () => {
   const d = new Date();
@@ -537,12 +538,10 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                             <div className="route-inputs-col">
                               <div className="route-input-group">
                                 <span className="route-sub-label">PICKUP POINT IN BENGALURU</span>
-                                <input
-                                  type="text"
+                                <RouteLocationInput
                                   placeholder="e.g. Indiranagar, JP Nagar, Koramangala..."
                                   value={formData.pickup}
-                                  onChange={e => handleInputChange('pickup', e.target.value)}
-                                  className="route-clean-input"
+                                  onChange={val => handleInputChange('pickup', val)}
                                   required
                                 />
                               </div>
@@ -556,12 +555,10 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                               <div className="route-divider-rule"></div>
                               <div className="route-input-group">
                                 <span className="route-sub-label">DESTINATION / LOCAL CITY COVERAGE</span>
-                                <input
-                                  type="text"
+                                <RouteLocationInput
                                   placeholder="e.g. Bengaluru City / Multiple Stops / Electronic City"
                                   value={formData.drop}
-                                  onChange={e => handleInputChange('drop', e.target.value)}
-                                  className="route-clean-input"
+                                  onChange={val => handleInputChange('drop', val)}
                                   required
                                 />
                               </div>
@@ -617,12 +614,10 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                             <div className="route-inputs-col">
                               <div className="route-input-group">
                                 <span className="route-sub-label">ORIGIN PICKUP CITY / ADDRESS</span>
-                                <input
-                                  type="text"
+                                <RouteLocationInput
                                   placeholder="e.g. Bengaluru / Mysuru / Hubballi"
                                   value={formData.pickup}
-                                  onChange={e => handleInputChange('pickup', e.target.value)}
-                                  className="route-clean-input"
+                                  onChange={val => handleInputChange('pickup', val)}
                                   required
                                 />
                               </div>
@@ -636,12 +631,10 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                               <div className="route-divider-rule"></div>
                               <div className="route-input-group">
                                 <span className="route-sub-label">OUTSTATION DESTINATION CITY</span>
-                                <input
-                                  type="text"
+                                <RouteLocationInput
                                   placeholder="e.g. Coorg / Mysuru / Chikmagalur / Ooty / Kabini"
                                   value={formData.drop}
-                                  onChange={e => handleInputChange('drop', e.target.value)}
-                                  className="route-clean-input"
+                                  onChange={val => handleInputChange('drop', val)}
                                   required
                                 />
                               </div>
@@ -711,12 +704,10 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                                 <span className="route-sub-label">
                                   {formData.airportTransferType === 'Airport Pickup' ? 'AIRPORT ORIGIN' : 'CITY PICKUP ADDRESS'}
                                 </span>
-                                <input
-                                  type="text"
+                                <RouteLocationInput
                                   placeholder={formData.airportTransferType === 'Airport Pickup' ? 'Kempegowda International Airport (BLR)' : 'e.g. Hotel / Residence in Indiranagar'}
                                   value={formData.airportTransferType === 'Airport Pickup' ? 'Kempegowda International Airport (BLR)' : formData.pickup}
-                                  onChange={e => formData.airportTransferType !== 'Airport Pickup' && handleInputChange('pickup', e.target.value)}
-                                  className="route-clean-input"
+                                  onChange={val => formData.airportTransferType !== 'Airport Pickup' && handleInputChange('pickup', val)}
                                   readOnly={formData.airportTransferType === 'Airport Pickup'}
                                   required
                                 />
@@ -726,12 +717,10 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                                 <span className="route-sub-label">
                                   {formData.airportTransferType === 'Airport Pickup' ? 'CITY DROP DESTINATION' : 'AIRPORT DESTINATION'}
                                 </span>
-                                <input
-                                  type="text"
+                                <RouteLocationInput
                                   placeholder={formData.airportTransferType === 'Airport Pickup' ? 'e.g. Hotel Taj West End / Residence in Koramangala' : 'Kempegowda International Airport (BLR)'}
                                   value={formData.airportTransferType === 'Airport Drop' ? 'Kempegowda International Airport (BLR)' : formData.drop}
-                                  onChange={e => formData.airportTransferType !== 'Airport Drop' && handleInputChange('drop', e.target.value)}
-                                  className="route-clean-input"
+                                  onChange={val => formData.airportTransferType !== 'Airport Drop' && handleInputChange('drop', val)}
                                   readOnly={formData.airportTransferType === 'Airport Drop'}
                                   required
                                 />
@@ -804,12 +793,10 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                             <div className="route-inputs-col">
                               <div className="route-input-group">
                                 <span className="route-sub-label">OFFICE / TECH PARK PICKUP POINT</span>
-                                <input
-                                  type="text"
+                                <RouteLocationInput
                                   placeholder="e.g. Manyata Tech Park / UB City"
                                   value={formData.pickup}
-                                  onChange={e => handleInputChange('pickup', e.target.value)}
-                                  className="route-clean-input"
+                                  onChange={val => handleInputChange('pickup', val)}
                                   required
                                 />
                               </div>
@@ -823,12 +810,10 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                               <div className="route-divider-rule"></div>
                               <div className="route-input-group">
                                 <span className="route-sub-label">DESTINATION / MEETING VENUE</span>
-                                <input
-                                  type="text"
+                                <RouteLocationInput
                                   placeholder="e.g. Hotel Leela Palace / Client HQ"
                                   value={formData.drop}
-                                  onChange={e => handleInputChange('drop', e.target.value)}
-                                  className="route-clean-input"
+                                  onChange={val => handleInputChange('drop', val)}
                                   required
                                 />
                               </div>
@@ -860,12 +845,10 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                             <div className="route-inputs-col">
                               <div className="route-input-group">
                                 <span className="route-sub-label">ONE WAY PICKUP LOCATION</span>
-                                <input
-                                  type="text"
+                                <RouteLocationInput
                                   placeholder="e.g. Bengaluru / Kempegowda Airport"
                                   value={formData.pickup}
-                                  onChange={e => handleInputChange('pickup', e.target.value)}
-                                  className="route-clean-input"
+                                  onChange={val => handleInputChange('pickup', val)}
                                   required
                                 />
                               </div>
@@ -879,12 +862,10 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                               <div className="route-divider-rule"></div>
                               <div className="route-input-group">
                                 <span className="route-sub-label">ONE WAY DROP DESTINATION</span>
-                                <input
-                                  type="text"
+                                <RouteLocationInput
                                   placeholder="e.g. Mysuru / Hassan / Tumakuru / Hosur"
                                   value={formData.drop}
-                                  onChange={e => handleInputChange('drop', e.target.value)}
-                                  className="route-clean-input"
+                                  onChange={val => handleInputChange('drop', val)}
                                   required
                                 />
                               </div>
@@ -923,24 +904,20 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                             <div className="route-inputs-col">
                               <div className="route-input-group">
                                 <span className="route-sub-label">ORIGIN PICKUP LOCATION</span>
-                                <input
-                                  type="text"
+                                <RouteLocationInput
                                   placeholder="e.g. Bengaluru City"
                                   value={formData.pickup}
-                                  onChange={e => handleInputChange('pickup', e.target.value)}
-                                  className="route-clean-input"
+                                  onChange={val => handleInputChange('pickup', val)}
                                   required
                                 />
                               </div>
                               <div className="route-divider-rule"></div>
                               <div className="route-input-group">
                                 <span className="route-sub-label">OUTSTATION DESTINATION (ROUND TRIP)</span>
-                                <input
-                                  type="text"
+                                <RouteLocationInput
                                   placeholder="e.g. Coorg / Mysuru / Ooty"
                                   value={formData.drop}
-                                  onChange={e => handleInputChange('drop', e.target.value)}
-                                  className="route-clean-input"
+                                  onChange={val => handleInputChange('drop', val)}
                                   required
                                 />
                               </div>
@@ -1172,58 +1149,6 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                   </div>
 
                 </div>
-
-                {/* RIGHT COLUMN: 100% DYNAMIC "YOUR JOURNEY OVERVIEW" PANEL */}
-                <div className="planner-right-summary-pane">
-                  <div className="summary-board-card">
-                    {/* LIVE SELECTED VEHICLE PREVIEW CARD */}
-                    {(() => {
-                      const selectedCar = plannerVehicles.find(v => v.id === formData.vehicle) || plannerVehicles[0];
-                      return (
-                        <div className="summary-vehicle-preview">
-                          <div className="preview-vehicle-image-wrap">
-                            <img
-                              src={selectedCar.img}
-                              alt={selectedCar.name}
-                              className="preview-car-image"
-                            />
-                          </div>
-                          <div className="preview-vehicle-details">
-                            <div className="preview-model-title">
-                              {selectedCar.name}
-                            </div>
-                            <div className="preview-sub-title">
-                              {selectedCar.subtitle} • {selectedCar.seats}
-                            </div>
-                            <div className="preview-specs-chips">
-                              <span className="spec-chip">✓ AC Cabin</span>
-                              <span className="spec-chip">✓ Verified Chauffeur</span>
-                              <span className="spec-chip">✓ Sanitized</span>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })()}
-
-                    {/* INCLUDED PREMIUM GUARANTEES */}
-                    <div className="summary-guarantees-list">
-                      <div className="guarantee-line">
-                        <Check size={13} className="g-check" />
-                        <span>Free flexible cancellation up to 4 hours before pickup</span>
-                      </div>
-                      <div className="guarantee-line">
-                        <Check size={13} className="g-check" />
-                        <span>24/7 dedicated dispatch & live tracking assistance</span>
-                      </div>
-                      <div className="guarantee-line">
-                        <Check size={13} className="g-check" />
-                        <span>Transparent billing with zero surprise surcharges</span>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-
               </div>
             )}
           </div>
@@ -1467,18 +1392,19 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             background: #059669;
           }
 
-          /* 2-COLUMN WORKSPACE GRID */
+          /* JOURNEY WORKSPACE CONTAINER */
           .journey-grid-workspace {
-            display: grid;
-            grid-template-columns: 1.18fr 0.82fr;
-            gap: 44px;
-            align-items: flex-start;
+            display: block;
+            max-width: 840px;
+            margin: 0 auto;
+            width: 100%;
           }
 
-          /* LEFT CONFIGURATOR PANE */
+          /* CONFIGURATOR PANE */
           .planner-left-form-pane {
             display: flex;
             flex-direction: column;
+            width: 100%;
           }
           .step-pane-content {
             display: flex;
