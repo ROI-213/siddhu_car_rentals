@@ -3575,41 +3575,17 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
               </div>
             </GlassCard>
 
-            {/* Live Interactive Map Glass Container */}
-            <GlassCard variant="standard" style={{ padding: '14px', height: '100%', minHeight: '360px', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <MapPin size={16} color="#0284C7" />
-                  <span style={{ fontWeight: '700', fontSize: '0.88rem', color: '#0F172A' }}>JP Nagar 5th Phase, Bengaluru</span>
-                </div>
-                <a
-                  href="https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+Bengaluru"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    fontSize: '0.76rem',
-                    fontWeight: '700',
-                    color: '#0284C7',
-                    background: 'rgba(2, 132, 199, 0.08)',
-                    padding: '5px 12px',
-                    borderRadius: '8px',
-                    textDecoration: 'none',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}
-                >
-                  Open in Google Maps ↗
-                </a>
-              </div>
+            {/* Google Map Glass Container */}
+            <GlassCard variant="standard" style={{ padding: '12px', height: '100%', minHeight: '340px' }}>
               <iframe
                 title="Siddhu Car Rentals Location Bengaluru"
-                src="https://www.openstreetmap.org/export/embed.html?bbox=77.5810%2C12.9020%2C77.5950%2C12.9130&layer=mapnik&marker=12.9077%2C77.5878"
+                src="https://maps.google.com/maps?q=siddhu%20car%20rentals%20%23314%2C%2012th%20Main%2C%2015th%20Cross%2C%20JP%20Nagar%205th%20Phase%2C%20Bengaluru%20-%20560078&t=&z=16&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="320"
-                style={{ border: '1px solid rgba(226, 232, 240, 0.8)', borderRadius: '12px', flex: 1, minHeight: '280px' }}
+                style={{ border: 0, borderRadius: '12px' }}
                 allowFullScreen=""
                 loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
               />
             </GlassCard>
           </div>
