@@ -914,10 +914,11 @@ export const CarRentalSearch = ({ onNavigate }) => {
             <a
               href={`tel:${SITE_CONFIG.contact.phone}`}
               className="crs-btn-call"
+              title={`Call: ${SITE_CONFIG.contact.phone}`}
+              aria-label="Call Dispatch Desk"
             >
-              <PhoneCall size={14} color="#0F172A" />
+              <PhoneCall size={15} color="#0F172A" />
               <span className="crs-text-full">Call: +91 76250 59665</span>
-              <span className="crs-text-short">Call Desk</span>
             </a>
 
             <button
