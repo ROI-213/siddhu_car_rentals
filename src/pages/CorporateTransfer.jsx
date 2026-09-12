@@ -14,6 +14,7 @@ import { LocationAutocompleteInput } from '../components/common/LocationAutocomp
 import { WhatsAppButton } from '../components/common/WhatsAppButton';
 import { WhatsAppIcon } from '../components/common/WhatsAppEnquiryMenu';
 import { SITE_CONFIG } from '../config/site';
+import './CorporateTransfer.css';
 
 export const CorporateTransfer = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -958,15 +959,9 @@ export const CorporateTransfer = () => {
       {/* 7. VENDOR ONBOARDING & COMPLIANCE SECTION */}
       <section className="section-padding" style={{ background: 'var(--bg-foundation-alt)' }}>
         <div className="container">
-          <div style={{
-            background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
-            borderRadius: '20px',
-            padding: '36px',
-            color: '#FFFFFF',
-            border: '1px solid rgba(197, 160, 89, 0.4)'
-          }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '32px', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ flex: '1 1 340px' }}>
+          <div className="corp-vendor-card">
+            <div className="corp-vendor-flex">
+              <div className="corp-vendor-content">
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(197, 160, 89, 0.15)', color: '#E6CA85', padding: '4px 14px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>
                   <Handshake size={13} />
                   <span>Enterprise Vendor Empanelment</span>
@@ -978,7 +973,7 @@ export const CorporateTransfer = () => {
                   We are pre-equipped for enterprise vendor onboarding with all required documentation — GST registration, PAN, commercial insurance certificates, driver police verification records, and NDA templates. Share your vendor empanelment form and we will complete it within 24 hours.
                 </p>
 
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '18px', alignItems: 'center', fontSize: '0.84rem', color: 'rgba(255,255,255,0.85)' }}>
+                <div className="corp-vendor-meta">
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                     <strong style={{ color: '#E6CA85' }}>GSTIN:</strong>
                     <span style={{ fontFamily: 'monospace', fontSize: '0.88rem', letterSpacing: '0.04em' }}>29AAMFS1234F1Z5</span>
@@ -1003,51 +998,25 @@ export const CorporateTransfer = () => {
                       <span>{copiedGstin ? 'Copied' : 'Copy'}</span>
                     </button>
                   </span>
-                  <span style={{ color: 'rgba(255,255,255,0.3)' }}>|</span>
+                  <span className="corp-meta-sep" style={{ color: 'rgba(255,255,255,0.3)' }}>|</span>
                   <span><strong>Billing:</strong> Monthly Consolidated / Net-30 Credit</span>
-                  <span style={{ color: 'rgba(255,255,255,0.3)' }}>|</span>
+                  <span className="corp-meta-sep" style={{ color: 'rgba(255,255,255,0.3)' }}>|</span>
                   <span><strong>Fleet:</strong> 100% KA Commercial Yellow Board</span>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div className="corp-vendor-actions">
                 <a
                   href="/siddhu_car_rentals_corporate_profile.pdf"
                   download="Siddhu_Car_Rentals_Corporate_Profile.pdf"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '10px',
-                    padding: '14px 28px',
-                    borderRadius: '9999px',
-                    background: 'linear-gradient(135deg, #C5A059 0%, #B38E47 100%)',
-                    color: '#0F172A',
-                    fontWeight: '800',
-                    fontSize: '0.95rem',
-                    textDecoration: 'none',
-                    whiteSpace: 'nowrap'
-                  }}
+                  className="corp-btn-download"
                 >
                   <Download size={18} />
                   <span>Download Company Profile (PDF)</span>
                 </a>
                 <WhatsAppButton
                   message="Hello Siddhu Car Rentals, we would like to set up a Corporate Account for our organization."
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '10px',
-                    padding: '14px 28px',
-                    borderRadius: '9999px',
-                    background: 'rgba(255,255,255,0.08)',
-                    color: '#FFFFFF',
-                    fontWeight: '700',
-                    fontSize: '0.95rem',
-                    border: '1px solid rgba(255,255,255,0.2)',
-                    whiteSpace: 'nowrap'
-                  }}
+                  className="corp-btn-desk"
                 >
                   <PhoneCall size={18} color="#C5A059" />
                   <span>Contact Corporate Desk</span>

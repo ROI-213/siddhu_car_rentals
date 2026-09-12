@@ -1,0 +1,152 @@
+/* Corporate Transfer Page Responsive Styles */
+
+.corp-vendor-card {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  border-radius: 20px;
+  padding: 36px;
+  color: #FFFFFF;
+  border: 1px solid rgba(197, 160, 89, 0.4);
+}
+
+.corp-vendor-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.corp-vendor-content {
+  flex: 1 1 340px;
+}
+
+.corp-vendor-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 18px;
+  align-items: center;
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.corp-vendor-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.corp-btn-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #C5A059 0%, #B38E47 100%);
+  color: #0F172A;
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px rgba(197, 160, 89, 0.25);
+  box-sizing: border-box;
+}
+
+.corp-btn-download:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(197, 160, 89, 0.35);
+}
+
+.corp-btn-desk {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.corp-btn-desk:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .corp-vendor-card {
+    padding: 24px 18px !important;
+    border-radius: 16px !important;
+  }
+
+  .corp-vendor-flex {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 22px !important;
+  }
+
+  .corp-vendor-content {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+  }
+
+  .corp-vendor-actions {
+    width: 100% !important;
+    max-width: 380px !important;
+    margin: 8px auto 0 auto !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .corp-btn-download,
+  .corp-btn-desk {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 13px 20px !important;
+    font-size: 0.88rem !important;
+    text-align: center !important;
+    justify-content: center !important;
+    display: flex !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+    white-space: normal !important;
+    line-height: 1.3 !important;
+    margin: 0 auto !important;
+  }
+
+  .corp-meta-sep {
+    display: none !important;
+  }
+
+  .corp-vendor-meta {
+    gap: 10px !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .corp-vendor-card {
+    padding: 20px 14px !important;
+  }
+
+  .corp-vendor-actions {
+    width: 100% !important;
+    margin: 6px auto 0 auto !important;
+  }
+
+  .corp-btn-download,
+  .corp-btn-desk {
+    padding: 12px 14px !important;
+    font-size: 0.84rem !important;
+    gap: 8px !important;
+  }
+}
