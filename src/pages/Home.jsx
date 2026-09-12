@@ -2849,7 +2849,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                 </div>
                 <h4 className="dest-title" style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.45rem', color: 'var(--color-slate-900)' }}>Mysore Palace (Mysuru)</h4>
                 <div className="dest-desc" style={{ fontSize: '0.76rem', color: 'var(--color-slate-600)', marginTop: '4px' }}>
-                  Starting from ₹15/km • Uniformed Chauffeur Guaranteed
+                  Uniformed Chauffeur Guaranteed • On-Time Pickup
                 </div>
               </div>
             </div>
@@ -2965,11 +2965,10 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                     <span style={{ fontSize: '0.7rem', color: 'var(--color-slate-500)', fontWeight: '700' }}>{d.dist}</span>
                   </div>
                   <p style={{ margin: '0 0 12px 0', fontSize: '0.78rem', color: 'var(--color-slate-600)' }}>{d.desc}</p>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-                    <div>
-                      <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-slate-500)', fontWeight: '700' }}>Starting Rate</div>
-                      <div style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--color-slate-900)' }}>{d.rate}</div>
-                    </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '600', color: 'var(--color-slate-500)' }}>
+                      Premium Chauffeur
+                    </span>
                     <div style={{ textAlign: 'right' }}>
                       <span style={{
                         display: 'inline-flex',
@@ -2977,13 +2976,13 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                         gap: '3px',
                         background: '#0284C7',
                         color: '#FFFFFF',
-                        fontSize: '0.72rem',
+                        fontSize: '0.74rem',
                         fontWeight: '700',
-                        padding: '4px 10px',
+                        padding: '5px 12px',
                         borderRadius: '999px',
                         boxShadow: '0 2px 6px rgba(2, 132, 199, 0.2)'
                       }}>
-                        Get Quote
+                        Get Quote →
                       </span>
                     </div>
                   </div>
@@ -3625,7 +3624,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             <GlassCard variant="standard" style={{ padding: '12px', height: '100%', minHeight: '340px' }}>
               <iframe
                 title="Siddhu Car Rentals Location Bengaluru"
-                src="https://maps.google.com/maps?q=siddhu%20car%20rentals%20%23314%2C%2012th%20Main%2C%2015th%20Cross%2C%20JP%20Nagar%205th%20Phase%2C%20Bengaluru%20-%20560078&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.854673894723!2d77.5852!3d12.9077!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae156541f534bb%3A0x2db4fb6c18512dd4!2sJP%20Nagar%205th%20Phase%2C%20Bengaluru%2C%20Karnataka%20560078!5e0!3m2!1sen!2sin!4v1709900000000!5m2!1sen!2sin"
                 width="100%"
                 height="320"
                 style={{ border: 0, borderRadius: '12px' }}
