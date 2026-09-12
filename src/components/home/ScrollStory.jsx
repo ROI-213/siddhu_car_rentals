@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import './ScrollStory.css';
 
 const storyData = [
@@ -42,10 +43,7 @@ const storyData = [
 ];
 
 const StoryItem = ({ item, index, progress }) => {
-  // 6 items total. Centers at 0.0, 0.2, 0.4, 0.6, 0.8, 1.0
   const center = index * 0.2;
-  
-
 
   const opacity = useTransform(progress, (p) => {
     const dist = Math.abs(p - center);
@@ -71,8 +69,6 @@ const StoryItem = ({ item, index, progress }) => {
   });
   
   const filter = useTransform(blurValue, (v) => `blur(${v}px)`);
-
-  // Is active logic for pointer events (so invisible items can't be selected)
   const pointerEvents = useTransform(opacity, (val) => val > 0.5 ? 'auto' : 'none');
 
   return (
@@ -101,7 +97,37 @@ const StoryItem = ({ item, index, progress }) => {
 
 export const ScrollStory = () => {
   const containerRef = useRef(null);
-  
+  const [activeStoryIdx, setActiveStoryIdx] = useState(0);
+  const touchStartX = useRef(null);
+
+  // Auto-advance story on mobile view
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveStoryIdx((prev) => (prev + 1) % storyData.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handlePrev = () => {
+    setActiveStoryIdx((prev) => (prev === 0 ? storyData.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setActiveStoryIdx((prev) => (prev + 1) % storyData.length);
+  };
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (diff > 40) handleNext();
+    else if (diff < -40) handlePrev();
+    touchStartX.current = null;
+  };
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
@@ -109,7 +135,6 @@ export const ScrollStory = () => {
 
   // Image Parallax / Scale
   const imageScale = useTransform(scrollYProgress, [0, 1], [1.0, 1.04]);
-  const badgeY = useTransform(scrollYProgress, [0, 0.5, 1], [0, -10, 0]);
 
   // Step indicator active number logic
   const activeNumber = useTransform(scrollYProgress, (p) => {
@@ -118,50 +143,135 @@ export const ScrollStory = () => {
   });
 
   return (
-    <section ref={containerRef} className="story-section-wrapper">
-      <div className="sticky-story-container">
-        
-        <div className="story-container">
-          
-          {/* LEFT: STATIC STICKY IMAGE AREA */}
-          <div className="story-left-pane">
-            <div className="story-image-viewport">
-              <motion.img 
-                src="/images/premium_fleet_v2.jpg" 
-                alt="Premium Chauffeur Travel" 
-                className="story-img"
-                style={{ scale: imageScale }}
-              />
-              <div className="story-img-gradient"></div>
-
+    <>
+      {/* 1. MOBILE RESPONSIVE CAROUSEL (Eliminates all dead vertical gaps and text clipping) */}
+      <section 
+        className="story-mobile-section"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div className="story-mobile-inner">
+          {/* Top Image Viewport */}
+          <div className="story-mobile-image-card">
+            <img 
+              src="/images/premium_fleet_v2.jpg" 
+              alt="Premium Chauffeur Travel" 
+              className="story-mobile-img"
+            />
+            <div className="story-mobile-badge">
+              <span className="story-mobile-badge-curr">{storyData[activeStoryIdx].id}</span>
+              <span className="story-mobile-badge-sep">/</span>
+              <span className="story-mobile-badge-total">06</span>
             </div>
           </div>
 
-          {/* RIGHT: SCROLL-LINKED ABSOLUTE CONTENT AREA */}
-          <div className="story-right-pane-wrapper">
-            <div className="story-content-viewport">
-              {storyData.map((item, index) => (
-                <StoryItem 
-                  key={item.id} 
-                  item={item} 
-                  index={index} 
-                  progress={scrollYProgress} 
-                />
-              ))}
-            </div>
+          {/* Story Content Card - Fully visible, guaranteed zero text cut-off */}
+          <div className="story-mobile-card">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={storyData[activeStoryIdx].id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.22 }}
+                className="story-mobile-content"
+              >
+                <div className="story-category-label">
+                  <span>{storyData[activeStoryIdx].id}</span>
+                  <span className="dot">•</span>
+                  <span>{storyData[activeStoryIdx].label}</span>
+                </div>
 
-            {/* Vertical Progress Indicator */}
-            <div className="story-step-indicator">
-              <div className="step-line"></div>
-              <motion.div className="step-active-number">
-                {activeNumber}
+                <h3 className="story-mobile-heading">
+                  {storyData[activeStoryIdx].title.split('\n').map((line, i) => (
+                    <span key={i} className="story-heading-line">{line}</span>
+                  ))}
+                </h3>
+
+                <p className="story-mobile-desc">
+                  {storyData[activeStoryIdx].desc}
+                </p>
               </motion.div>
-              <div className="step-total-number">/ 06</div>
+            </AnimatePresence>
+
+            {/* Navigation Dots and Arrow Controls */}
+            <div className="story-mobile-controls">
+              <button 
+                type="button" 
+                onClick={handlePrev} 
+                className="story-mobile-arrow"
+                aria-label="Previous story"
+              >
+                <ChevronLeft size={16} />
+              </button>
+
+              <div className="story-mobile-dots">
+                {storyData.map((item, idx) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setActiveStoryIdx(idx)}
+                    className={`story-mobile-dot ${idx === activeStoryIdx ? 'active' : ''}`}
+                    aria-label={`Go to story ${item.id}`}
+                  />
+                ))}
+              </div>
+
+              <button 
+                type="button" 
+                onClick={handleNext} 
+                className="story-mobile-arrow"
+                aria-label="Next story"
+              >
+                <ChevronRight size={16} />
+              </button>
             </div>
           </div>
-          
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* 2. DESKTOP STICKY SCROLL STORY (Preserved for screens > 768px) */}
+      <section ref={containerRef} className="story-section-wrapper story-desktop-section">
+        <div className="sticky-story-container">
+          <div className="story-container">
+            {/* LEFT: STATIC STICKY IMAGE AREA */}
+            <div className="story-left-pane">
+              <div className="story-image-viewport">
+                <motion.img 
+                  src="/images/premium_fleet_v2.jpg" 
+                  alt="Premium Chauffeur Travel" 
+                  className="story-img"
+                  style={{ scale: imageScale }}
+                />
+                <div className="story-img-gradient"></div>
+              </div>
+            </div>
+
+            {/* RIGHT: SCROLL-LINKED ABSOLUTE CONTENT AREA */}
+            <div className="story-right-pane-wrapper">
+              <div className="story-content-viewport">
+                {storyData.map((item, index) => (
+                  <StoryItem 
+                    key={item.id} 
+                    item={item} 
+                    index={index} 
+                    progress={scrollYProgress} 
+                  />
+                ))}
+              </div>
+
+              {/* Vertical Progress Indicator */}
+              <div className="story-step-indicator">
+                <div className="step-line"></div>
+                <motion.div className="step-active-number">
+                  {activeNumber}
+                </motion.div>
+                <div className="step-total-number">/ 06</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 };
