@@ -1,0 +1,247 @@
+/* ==========================================================================
+   CONTACT PAGE RESPONSIVE STYLES
+   ========================================================================== */
+
+/* Hero Action Cluster */
+.contact-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+  align-items: center;
+}
+
+.contact-hero-btn-call {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0.95rem 1.75rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  background: #FFFFFF;
+  color: #0F172A;
+  border: none;
+  text-decoration: none;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.contact-hero-btn-call:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.18);
+}
+
+.contact-hero-btn-wa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0.95rem 1.75rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  background: #25D366;
+  color: #FFFFFF;
+  border: none;
+  text-decoration: none;
+  box-shadow: 0 4px 18px rgba(37, 211, 102, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.contact-hero-btn-wa:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(37, 211, 102, 0.45);
+}
+
+/* Stats Banner */
+.contact-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+}
+
+.contact-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 22px 12px;
+  gap: 6px;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  box-sizing: border-box;
+}
+
+.contact-stat-item:last-child {
+  border-right: none;
+}
+
+.contact-stat-val {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  font-family: var(--font-editorial);
+  text-align: center;
+}
+
+.contact-stat-lbl {
+  font-size: 0.67rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+/* Main Form & Sidebar 2-col Grid */
+.contact-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+.contact-form-card {
+  padding: 34px !important;
+}
+
+/* Trip Type Selector */
+.contact-trip-types {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.contact-trip-btn {
+  padding: 11px 6px;
+  border: 1.5px solid;
+  border-radius: 10px;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+/* Locations & Map Grid */
+.contact-locations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.contact-map-card {
+  padding: 16px !important;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-map-iframe {
+  border: 0;
+  border-radius: 14px;
+  min-height: 400px;
+  flex: 1;
+  width: 100%;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVE RULES (<= 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .contact-hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .contact-hero-btn-call,
+  .contact-hero-btn-wa {
+    width: 100%;
+    justify-content: center;
+    padding: 0.85rem 1.25rem;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+  }
+
+  /* Stats: 2-column clean wrap on mobile */
+  .contact-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contact-stat-item {
+    padding: 14px 8px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .contact-stat-item:nth-child(odd) {
+    border-right: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .contact-stat-item:last-child {
+    grid-column: span 2;
+    border-bottom: none;
+  }
+
+  .contact-stat-val {
+    font-size: 1.05rem;
+  }
+
+  .contact-stat-lbl {
+    font-size: 0.62rem;
+  }
+
+  /* Form & Sidebar: Stack vertically on mobile */
+  .contact-main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+
+  .contact-form-card {
+    padding: 20px 16px !important;
+    border-radius: 16px !important;
+  }
+
+  /* Trip Type buttons on mobile: 2x2 grid */
+  .contact-trip-types {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px;
+  }
+
+  .contact-trip-btn {
+    padding: 10px 8px;
+    font-size: 0.82rem;
+  }
+
+  /* Locations & Map Grid */
+  .contact-locations-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+
+  .contact-map-card {
+    padding: 14px !important;
+    min-height: 380px !important;
+  }
+
+  .contact-map-iframe {
+    min-height: 320px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-form-card {
+    padding: 18px 12px !important;
+  }
+
+  .contact-hero-btn-call,
+  .contact-hero-btn-wa {
+    font-size: 0.88rem;
+    padding: 0.78rem 1rem;
+  }
+}

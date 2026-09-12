@@ -12,6 +12,7 @@ import { LocationAutocompleteInput } from '../components/common/LocationAutocomp
 import { WhatsAppButton } from '../components/common/WhatsAppButton';
 import { WhatsAppIcon } from '../components/common/WhatsAppEnquiryMenu';
 import { SITE_CONFIG } from '../config/site';
+import './Contact.css';
 
 export const Contact = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -44,15 +45,15 @@ export const Contact = () => {
   };
 
   const whatsappMessage = `*New Enquiry - Siddhu Car Rentals*\n\n` +
-    `â€¢ *Name:* ${formData.name || 'N/A'}\n` +
-    `â€¢ *Phone:* ${formData.phone || 'N/A'}\n` +
-    `â€¢ *Trip Type:* ${tripType}\n` +
-    `â€¢ *Pickup:* ${formData.pickup || 'N/A'}\n` +
-    `â€¢ *Destination:* ${formData.drop || 'N/A'}\n` +
-    `â€¢ *Date:* ${formData.date || 'N/A'} at ${formData.time || 'N/A'}\n` +
-    (tripType === 'outstation' ? `â€¢ *Return:* ${formData.returnDate || 'N/A'} at ${formData.returnTime || 'N/A'}\n` : '') +
-    `â€¢ *Vehicle:* ${formData.vehicleType || 'N/A'}\n` +
-    `â€¢ *Notes:* ${formData.notes || 'None'}`;
+    `• *Name:* ${formData.name || 'N/A'}\n` +
+    `• *Phone:* ${formData.phone || 'N/A'}\n` +
+    `• *Trip Type:* ${tripType}\n` +
+    `• *Pickup:* ${formData.pickup || 'N/A'}\n` +
+    `• *Destination:* ${formData.drop || 'N/A'}\n` +
+    `• *Date:* ${formData.date || 'N/A'} at ${formData.time || 'N/A'}\n` +
+    (tripType === 'outstation' ? `• *Return:* ${formData.returnDate || 'N/A'} at ${formData.returnTime || 'N/A'}\n` : '') +
+    `• *Vehicle:* ${formData.vehicleType || 'N/A'}\n` +
+    `• *Notes:* ${formData.notes || 'None'}`;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -71,33 +72,21 @@ export const Contact = () => {
         badgeIcon={Headphones}
         title="We're Here to Drive"
         titleHighlight="Your Journey"
-        description="Premium chauffeur-driven car rentals across Bengaluru. Airport transfers, outstation trips, corporate fleets & luxury rides â€” one call away, 24/7."
+        description="Premium chauffeur-driven car rentals across Bengaluru. Airport transfers, outstation trips, corporate fleets & luxury rides — one call away, 24/7."
         breadcrumbs={['Contact Us']}
         image="/images/siddhu_white_car_bengaluru_road.jpg"
       >
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', marginTop: '28px', alignItems: 'center' }}>
+        <div className="contact-hero-actions">
           <a
             href="tel:+917625059665"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: '10px',
-              padding: '0.95rem 1.75rem', fontSize: '1.05rem', fontWeight: '700',
-              borderRadius: '9999px', background: '#FFFFFF', color: '#0F172A',
-              border: 'none', textDecoration: 'none',
-              boxShadow: '0 4px 18px rgba(0,0,0,0.12)'
-            }}
+            className="contact-hero-btn-call"
           >
             <PhoneCall size={18} color="#C5A059" />
             <span>+91 76250 59665</span>
           </a>
           <WhatsAppButton
             message="Hello Siddhu Car Rentals, I would like to enquire about your car rental services."
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: '10px',
-              padding: '0.95rem 1.75rem', fontSize: '1.05rem', fontWeight: '700',
-              borderRadius: '9999px', background: '#25D366', color: '#FFFFFF',
-              border: 'none', textDecoration: 'none',
-              boxShadow: '0 4px 18px rgba(37,211,102,0.3)'
-            }}
+            className="contact-hero-btn-wa"
           >
             <MessageSquare size={18} />
             <span>WhatsApp Now</span>
@@ -108,29 +97,25 @@ export const Contact = () => {
       {/* 2. STATS BANNER */}
       <div style={{ background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)', borderBottom: '1px solid rgba(197,160,89,0.3)' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0' }}>
+          <div className="contact-stats-grid">
             {[
               { icon: Clock, value: '24/7', label: 'Always Available' },
               { icon: Zap, value: '< 15 Min', label: 'Quote Response' },
-              { icon: Star, value: '4.9 â˜…', label: 'Customer Rating' },
+              { icon: Star, value: '4.9 ★', label: 'Customer Rating' },
               { icon: Car, value: '20+ Vehicles', label: 'Ready Fleet' },
               { icon: ShieldCheck, value: '100%', label: 'Verified Drivers' },
             ].map((stat, i) => (
-              <div key={i} style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                padding: '22px 12px', gap: '6px',
-                borderRight: i < 4 ? '1px solid rgba(255,255,255,0.07)' : 'none'
-              }}>
+              <div key={i} className="contact-stat-item">
                 <stat.icon size={20} color="#C5A059" />
-                <div style={{ fontSize: '1.15rem', fontWeight: '800', color: '#FFFFFF', fontFamily: 'var(--font-editorial)', textAlign: 'center' }}>{stat.value}</div>
-                <div style={{ fontSize: '0.67rem', fontWeight: '600', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center' }}>{stat.label}</div>
+                <div className="contact-stat-val">{stat.value}</div>
+                <div className="contact-stat-lbl">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* 3. ENQUIRY FORM â€” First section, directly below hero */}
+      {/* 3. ENQUIRY FORM */}
       <section className="section-padding" id="contact-form" style={{ background: '#FAFAF8' }}>
         <div className="container">
           <SectionHeader
@@ -142,49 +127,46 @@ export const Contact = () => {
             align="center"
           />
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 320px', gap: '24px', alignItems: 'start' }}>
+          <div className="contact-main-grid">
 
             {/* Form Card */}
-            <GlassCard variant="glowing" style={{ padding: '34px' }}>
+            <GlassCard variant="glowing" className="contact-form-card">
               {formSubmitted ? (
-                <div style={{ textAlign: 'center', padding: '52px 24px', background: 'rgba(37,211,102,0.06)', borderRadius: '20px', border: '1px solid rgba(37,211,102,0.25)' }}>
-                  <div style={{ width: '72px', height: '72px', background: 'rgba(37,211,102,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-                    <CheckCircle2 size={38} color="#128C7E" />
+                <div style={{ textAlign: 'center', padding: '40px 18px', background: 'rgba(37,211,102,0.06)', borderRadius: '20px', border: '1px solid rgba(37,211,102,0.25)' }}>
+                  <div style={{ width: '64px', height: '64px', background: 'rgba(37,211,102,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                    <CheckCircle2 size={34} color="#128C7E" />
                   </div>
-                  <h3 style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.6rem', color: '#128C7E', marginBottom: '10px' }}>Enquiry Sent!</h3>
-                  <p style={{ fontSize: '0.94rem', color: '#475569', maxWidth: '460px', margin: '0 auto 28px', lineHeight: '1.7' }}>
+                  <h3 style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.5rem', color: '#128C7E', marginBottom: '10px' }}>Enquiry Sent!</h3>
+                  <p style={{ fontSize: '0.92rem', color: '#475569', maxWidth: '460px', margin: '0 auto 24px', lineHeight: '1.65' }}>
                     Thank you, <strong>{formData.name || 'valued guest'}</strong>. Our dispatch team will WhatsApp you a quote within <strong>15 minutes</strong>.
                   </p>
                   <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                    <WhatsAppButton message={whatsappMessage} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 26px', borderRadius: '9999px', background: '#25D366', color: '#FFFFFF', fontWeight: '700', boxShadow: '0 4px 14px rgba(37,211,102,0.3)', fontSize: '0.9rem' }}>
+                    <WhatsAppButton message={whatsappMessage} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '9999px', background: '#25D366', color: '#FFFFFF', fontWeight: '700', boxShadow: '0 4px 14px rgba(37,211,102,0.3)', fontSize: '0.9rem' }}>
                       <MessageSquare size={17} /><span>Chat on WhatsApp</span>
                     </WhatsAppButton>
-                    <button type="button" onClick={resetForm} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 26px', borderRadius: '9999px', background: '#FFFFFF', color: '#334155', fontWeight: '600', border: '1px solid rgba(0,0,0,0.12)', cursor: 'pointer', fontSize: '0.9rem' }}>
+                    <button type="button" onClick={resetForm} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 24px', borderRadius: '9999px', background: '#FFFFFF', color: '#334155', fontWeight: '600', border: '1px solid rgba(0,0,0,0.12)', cursor: 'pointer', fontSize: '0.9rem' }}>
                       New Enquiry
                     </button>
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
 
                   {/* Trip Type */}
                   <div>
                     <div style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#C5A059', marginBottom: '10px' }}>Select Trip Type</div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                    <div className="contact-trip-types">
                       {[
                         { id: 'local', label: 'Local' },
                         { id: 'airport', label: 'Airport' },
                         { id: 'outstation', label: 'Outstation' },
                         { id: 'corporate', label: 'Corporate' }
                       ].map(t => (
-                        <button key={t.id} type="button" onClick={() => setTripType(t.id)} style={{
-                          padding: '11px 6px', border: '1.5px solid',
+                        <button key={t.id} type="button" onClick={() => setTripType(t.id)} className="contact-trip-btn" style={{
                           borderColor: tripType === t.id ? '#C5A059' : 'rgba(0,0,0,0.1)',
-                          borderRadius: '10px', fontFamily: 'var(--font-ui)', fontSize: '0.8rem',
                           fontWeight: tripType === t.id ? '700' : '500',
                           background: tripType === t.id ? 'rgba(197,160,89,0.08)' : '#FFFFFF',
                           color: tripType === t.id ? '#9A7B2C' : '#64748B',
-                          cursor: 'pointer', transition: 'all 0.2s ease', textAlign: 'center'
                         }}>
                           {t.label}
                         </button>
@@ -192,29 +174,29 @@ export const Contact = () => {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '14px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
                     <Input label="Your Name" icon={User} placeholder="e.g. Ananth Sharma" value={formData.name} onChange={handleChange} name="name" required />
                     <Input label="Phone (WhatsApp)" icon={PhoneCall} type="tel" placeholder="+91 98765 43210" value={formData.phone} onChange={handleChange} name="phone" required />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '14px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
                     <LocationAutocompleteInput label="Pickup Location" placeholder="Area, airport, hotel, landmark..." value={formData.pickup} onChange={handleLocationChange('pickup')} name="pickup" required />
                     <LocationAutocompleteInput label="Destination" placeholder="Drop area, city, hotel..." value={formData.drop} onChange={handleLocationChange('drop')} name="drop" required />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '14px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '14px' }}>
                     <Input label="Travel Date" icon={Calendar} type="date" value={formData.date} onChange={handleChange} name="date" required />
                     <Input label="Pickup Time" icon={Clock} type="time" value={formData.time} onChange={handleChange} name="time" required />
                   </div>
 
                   {tripType === 'outstation' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '14px', padding: '14px 16px', background: 'rgba(197,160,89,0.05)', borderRadius: '12px', border: '1px solid rgba(197,160,89,0.2)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '14px', padding: '14px 16px', background: 'rgba(197,160,89,0.05)', borderRadius: '12px', border: '1px solid rgba(197,160,89,0.2)' }}>
                       <Input label="Return Date" icon={Calendar} type="date" value={formData.returnDate} onChange={handleChange} name="returnDate" min={formData.date || undefined} />
                       <Input label="Return Time" icon={Clock} type="time" value={formData.returnTime} onChange={handleChange} name="returnTime" />
                     </div>
                   )}
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '14px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
                     <Input label="Vehicle / Category" icon={Crown} value={formData.vehicleType} onChange={handleChange} name="vehicleType" options={[
                       { value: 'sedan', label: 'Luxury Sedan (E-Class / Accord)' },
                       { value: 'premium-sedan', label: 'Premium Sedan (S-Class / 7-Series)' },
@@ -229,10 +211,10 @@ export const Contact = () => {
                     type="submit"
                     style={{
                       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      gap: '10px', width: '100%', padding: '15px 24px', borderRadius: '9999px',
+                      gap: '10px', width: '100%', padding: '14px 20px', borderRadius: '9999px',
                       border: 'none', background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
                       color: '#FFFFFF', fontFamily: 'var(--font-heading)', fontWeight: 700,
-                      fontSize: '1rem', cursor: 'pointer',
+                      fontSize: '0.98rem', cursor: 'pointer',
                       boxShadow: '0 8px 24px rgba(37,211,102,0.3)', transition: 'all 0.22s ease', marginTop: '4px'
                     }}
                     onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 14px 32px rgba(37,211,102,0.4)'; }}
@@ -294,7 +276,7 @@ export const Contact = () => {
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
                     <Navigation size={15} color="#94A3B8" style={{ marginTop: '2px', flexShrink: 0 }} />
                     <p style={{ fontSize: '0.84rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
-                      #314, 12th Main, 15th Cross,<br />JP Nagar 5th Phase,<br />Bengaluru â€“ 560 078
+                      #314, 12th Main, 15th Cross,<br />JP Nagar 5th Phase,<br />Bengaluru – 560 078
                     </p>
                   </div>
                   <a href="https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+5th+Phase+Bengaluru" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.78rem', fontWeight: '700', color: '#2563EB', textDecoration: 'none', padding: '6px 12px', borderRadius: '7px', background: 'rgba(37,99,235,0.07)', width: 'fit-content' }}>
@@ -304,22 +286,22 @@ export const Contact = () => {
                     <Clock size={14} color="#C5A059" />
                     <div>
                       <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0F172A' }}>Open 24 hours</div>
-                      <div style={{ fontSize: '0.71rem', color: '#94A3B8' }}>7 days Â· 365 days a year</div>
+                      <div style={{ fontSize: '0.71rem', color: '#94A3B8' }}>7 days · 365 days a year</div>
                     </div>
                   </div>
                 </div>
               </GlassCard>
 
               <GlassCard variant="standard" style={{ padding: '18px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '9px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                   {[
                     { icon: ShieldCheck, label: 'Verified Drivers', color: '#10B981' },
                     { icon: Car, label: 'KA Yellow Board', color: '#3B82F6' },
                     { icon: Building2, label: 'GST Invoicing', color: '#8B5CF6' }
                   ].map((badge, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '11px 6px', borderRadius: '10px', background: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.06)', gap: '5px', textAlign: 'center' }}>
-                      <badge.icon size={19} color={badge.color} />
-                      <div style={{ fontSize: '0.68rem', fontWeight: '700', color: '#475569' }}>{badge.label}</div>
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px 4px', borderRadius: '10px', background: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.06)', gap: '5px', textAlign: 'center' }}>
+                      <badge.icon size={18} color={badge.color} />
+                      <div style={{ fontSize: '0.66rem', fontWeight: '700', color: '#475569', lineHeight: 1.2 }}>{badge.label}</div>
                     </div>
                   ))}
                 </div>
@@ -342,7 +324,7 @@ export const Contact = () => {
             align="center"
           />
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+          <div className="contact-locations-grid">
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <GlassCard variant="interactive">
@@ -352,7 +334,7 @@ export const Contact = () => {
                   </div>
                   <div style={{ flex: 1 }}>
                     <h4 style={{ margin: '0 0 6px', fontSize: '0.94rem', fontWeight: '700', color: '#0F172A' }}>Office Address</h4>
-                    <p style={{ fontSize: '0.86rem', color: '#64748B', lineHeight: '1.6', margin: '0 0 8px' }}>#314, 12th Main, 15th Cross, JP Nagar 5th Phase, Bengaluru â€“ 560 078</p>
+                    <p style={{ fontSize: '0.86rem', color: '#64748B', lineHeight: '1.6', margin: '0 0 8px' }}>#314, 12th Main, 15th Cross, JP Nagar 5th Phase, Bengaluru – 560 078</p>
                     <a href="https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+5th+Phase+Bengaluru" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: '700', color: '#2563EB', textDecoration: 'none', padding: '5px 12px', borderRadius: '7px', background: 'rgba(37,99,235,0.07)' }}>
                       <MapPin size={13} /> Get Directions
                     </a>
@@ -400,7 +382,7 @@ export const Contact = () => {
               </GlassCard>
             </div>
 
-            <GlassCard variant="standard" style={{ padding: '16px', minHeight: '500px', display: 'flex', flexDirection: 'column' }}>
+            <GlassCard variant="standard" className="contact-map-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                 <span style={{ fontWeight: '700', fontSize: '0.88rem', color: '#0F172A' }}>📍 JP Nagar 5th Phase, Bengaluru</span>
                 <a href="https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+5th+Phase+Bengaluru" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.76rem', fontWeight: '700', color: '#2563EB', textDecoration: 'none', padding: '4px 10px', borderRadius: '7px', background: 'rgba(37,99,235,0.07)' }}>
@@ -410,9 +392,7 @@ export const Contact = () => {
               <iframe
                 title="Siddhu Car Rentals Location"
                 src="https://maps.google.com/maps?q=siddhu%20car%20rentals%20%23314%2C%2012th%20Main%2C%2015th%20Cross%2C%20JP%20Nagar%205th%20Phase%2C%20Bengaluru%20-%20560078&t=&z=16&ie=UTF8&iwloc=&output=embed"
-                width="100%"
-                height="100%"
-                style={{ border: 0, borderRadius: '14px', minHeight: '420px', flex: 1 }}
+                className="contact-map-iframe"
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
