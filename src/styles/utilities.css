@@ -28,6 +28,13 @@
   padding-bottom: var(--space-16);
 }
 
+@media (max-width: 768px) {
+  .section-padding {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
+}
+
 @media (min-width: 1024px) {
   .section-padding {
     padding-top: var(--space-24);

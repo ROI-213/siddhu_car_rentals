@@ -2804,7 +2804,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
 
 
       {/* 6. POPULAR DESTINATIONS (Asymmetric Travel Catalog) */}
-      <section className="section-padding" style={{ background: '#FAF9F6', overflow: 'hidden' }}>
+      <section className="section-padding" id="destinations-section" style={{ background: '#FAF9F6', overflow: 'hidden' }}>
         <div className="container">
           <SectionHeader
             badge="Outstation Luxury Routes"
@@ -3179,19 +3179,19 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             
             {/* Left: Section Header & Highlights */}
             <div className="testimonials-intro-panel">
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', background: 'rgba(79, 70, 229, 0.08)', borderRadius: '999px', border: '1px solid rgba(79, 70, 229, 0.15)', marginBottom: '24px' }}>
+              <div className="testimonials-badge-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', background: 'rgba(79, 70, 229, 0.08)', borderRadius: '999px', border: '1px solid rgba(79, 70, 229, 0.15)', marginBottom: '24px' }}>
                 <Star size={14} color="var(--accent-indigo-primary)" />
                 <span style={{ fontSize: '0.72rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-indigo-primary)' }}>
                   Verified Client Experience
                 </span>
               </div>
               
-              <h2 className="text-display" style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2.2rem, 4.5vw, 3.25rem)', lineHeight: '1.15', color: 'var(--color-slate-900)', margin: '0 0 20px 0' }}>
+              <h2 className="text-display testimonials-intro-heading" style={{ fontFamily: 'var(--font-editorial)', fontSize: 'clamp(2.2rem, 4.5vw, 3.25rem)', lineHeight: '1.15', color: 'var(--color-slate-900)', margin: '0 0 20px 0' }}>
                 Trusted by Corporate Leaders &<br />
                 <span style={{ color: 'var(--accent-indigo-primary)' }}>VIP Guests</span>
               </h2>
 
-              <p style={{ fontSize: '0.95rem', color: 'var(--color-slate-600)', lineHeight: '1.7', margin: '0 0 32px 0', maxWidth: '420px' }}>
+              <p className="testimonials-intro-desc" style={{ fontSize: '0.95rem', color: 'var(--color-slate-600)', lineHeight: '1.7', margin: '0 0 32px 0', maxWidth: '420px' }}>
                 See why executives across Manyata Tech Park, UB City, and Whitefield choose Siddhu Car Rentals for their critical transportation needs.
               </p>
 
@@ -3458,8 +3458,35 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
           }
 
           @media (max-width: 768px) {
+            #destinations-section {
+              padding-top: 32px !important;
+              padding-bottom: 16px !important;
+            }
+            #testimonials-section {
+              padding-top: 16px !important;
+              padding-bottom: 28px !important;
+            }
+            .editorial-testimonials-grid {
+              gap: 12px !important;
+            }
+            .testimonials-badge-pill {
+              margin-bottom: 10px !important;
+            }
+            .testimonials-intro-heading {
+              margin-bottom: 8px !important;
+            }
+            .testimonials-intro-desc {
+              margin-bottom: 0px !important;
+            }
             .testimonials-trust-metric {
               display: none !important;
+            }
+            .editorial-quote-card {
+              padding: 20px 18px !important;
+              border-radius: 18px !important;
+            }
+            .testimonials-cards-panel {
+              gap: 12px !important;
             }
           }
         `}</style>
