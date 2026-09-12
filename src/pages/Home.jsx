@@ -3456,6 +3456,12 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                 padding: 0 20px;
               }
           }
+
+          @media (max-width: 768px) {
+            .testimonials-trust-metric {
+              display: none !important;
+            }
+          }
         `}</style>
       </section>
 
