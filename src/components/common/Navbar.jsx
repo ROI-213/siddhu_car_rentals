@@ -481,28 +481,6 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
             );
           })}
 
-          <button
-            onClick={() => handleNavClick('admin')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              width: '100%',
-              padding: '12px 16px',
-              borderRadius: '12px',
-              background: 'rgba(197, 160, 89, 0.1)',
-              border: '1px solid rgba(197, 160, 89, 0.4)',
-              color: '#C5A059',
-              fontSize: '0.90rem',
-              fontWeight: '700',
-              cursor: 'pointer',
-              textAlign: 'left',
-              marginTop: '6px'
-            }}
-          >
-            <span>⚙️ Admin Tariff Portal</span>
-            <ChevronRight size={16} />
-          </button>
         </div>
 
         {/* Sticky Bottom Actions inside Drawer */}
