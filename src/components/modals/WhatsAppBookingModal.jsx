@@ -43,6 +43,21 @@ export const WhatsAppBookingModal = ({
         if (e.key === 'Escape') onClose();
       };
       window.addEventListener('keydown', handleKeyDown);
+
+      // Pre-fill / sync formData whenever modal opens with new context
+      setFormData(prev => ({
+        ...prev,
+        pickup: context.pickup !== undefined ? context.pickup : (prev.pickup || 'Bengaluru, Karnataka'),
+        drop: context.drop !== undefined ? context.drop : prev.drop,
+        date: context.date || prev.date || getTodayDateStr(),
+        time: context.time || prev.time || '10:00',
+        returnDate: context.returnDate || prev.returnDate || '',
+        returnTime: context.returnTime || prev.returnTime || '18:00',
+        passengers: context.passengers || prev.passengers || '2',
+        packageDuration: context.packageDuration || prev.packageDuration || '8h',
+        notes: context.message !== undefined ? context.message : prev.notes
+      }));
+
       return () => {
         document.body.style.overflow = 'unset';
         window.removeEventListener('keydown', handleKeyDown);
@@ -50,34 +65,42 @@ export const WhatsAppBookingModal = ({
     } else {
       document.body.style.overflow = 'unset';
     }
-  }, [isOpen, onClose]);
-
-  // Synchronize incoming context values when modal is opened or changes
-  useEffect(() => {
-    if (isOpen) {
-      setFormData(prev => ({
-        ...prev,
-        pickup: context.pickup !== undefined ? context.pickup : (prev.pickup || 'Bengaluru, Karnataka'),
-        drop: context.drop !== undefined ? context.drop : prev.drop,
-        date: context.date !== undefined ? context.date : prev.date,
-        time: context.time !== undefined ? context.time : (prev.time || '10:00'),
-        returnDate: context.returnDate !== undefined ? context.returnDate : prev.returnDate,
-        returnTime: context.returnTime !== undefined ? context.returnTime : prev.returnTime,
-        passengers: context.passengers !== undefined ? context.passengers : prev.passengers,
-        notes: context.message !== undefined ? context.message : prev.notes
-      }));
-    }
-  }, [isOpen, context.pickup, context.drop, context.date, context.time, context.returnDate, context.returnTime, context.passengers, context.message]);
+  }, [isOpen, onClose, context]);
 
   if (!isOpen) return null;
 
-  const typeId = typeof serviceType === 'string' ? serviceType : (serviceType?.id || 'general');
-  const typeLabel = typeof serviceType === 'string'
-    ? (serviceType === 'airport' ? 'Airport Transfer' : serviceType === 'outstation' ? 'Outstation Trip' : serviceType === 'local' ? 'Local Rental' : serviceType)
-    : (serviceType?.label || (context.drop ? `Route Enquiry — ${context.drop}` : 'General Enquiry'));
-  const typeIcon = typeof serviceType === 'string'
-    ? (serviceType === 'airport' ? '✈️' : serviceType === 'outstation' ? '🛣️' : serviceType === 'local' ? '📍' : '💬')
-    : (serviceType?.icon || '💬');
+  const typeId = typeof serviceType === 'string'
+    ? serviceType
+    : (serviceType?.id || 'general');
+
+  const typeLabels = {
+    airport: 'Airport VIP Transfer',
+    local: 'Local City Rental',
+    outstation: 'Outstation Trip',
+    luxury: 'Luxury Car Booking',
+    corporate: 'Corporate Booking',
+    wedding: 'Wedding / Event',
+    general: 'General Enquiry'
+  };
+
+  const typeIcons = {
+    airport: '✈️',
+    local: '📍',
+    outstation: '🛣️',
+    luxury: '✨',
+    corporate: '💼',
+    wedding: '💒',
+    general: '💬'
+  };
+
+  const typeLabel = (typeof serviceType === 'object' && serviceType?.label)
+    ? serviceType.label
+    : (typeLabels[typeId] || 'General Enquiry');
+
+  const typeIcon = (typeof serviceType === 'object' && serviceType?.icon)
+    ? serviceType.icon
+    : (typeIcons[typeId] || '💬');
+
   const vehicleName = context.vehicleName || '';
 
   const handleChange = (e) => {
@@ -229,7 +252,7 @@ export const WhatsAppBookingModal = ({
                 color: '#FFFFFF',
                 letterSpacing: '-0.01em'
               }}>
-                {context.drop ? `Quote for ${context.drop}` : typeLabel}
+                {typeLabel}
               </h3>
             </div>
           </div>

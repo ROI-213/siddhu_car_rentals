@@ -44,7 +44,7 @@ export const FloatingUI = ({ onOpenEnquiry }) => {
         {/* WhatsApp Button */}
         <WhatsAppEnquiryMenu
           context={{}}
-          menuPlacement="bottom-end"
+          menuPlacement="top-end"
           triggerLabel=""
           triggerIcon={WhatsAppIcon}
           iconSize={26}
@@ -158,8 +158,7 @@ export const FloatingUI = ({ onOpenEnquiry }) => {
             display: flex !important;
           }
           .floating-actions-desktop {
-            bottom: 74px !important;
-            right: 16px !important;
+            display: none !important;
           }
         }
       `}</style>

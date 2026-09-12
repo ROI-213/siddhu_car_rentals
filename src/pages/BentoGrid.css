@@ -98,12 +98,89 @@
 
 @media (max-width: 768px) {
   .bento-trip-grid {
-    grid-template-columns: 1fr;
-    grid-auto-rows: 180px;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: auto;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 24px;
   }
-  .bento-local, .bento-outstation, .bento-airport, .bento-corporate, .bento-oneway, .bento-roundtrip {
-    grid-column: span 1;
-    grid-row: span 1;
+
+  /* 1 Bigger Card on Top */
+  .bento-local {
+    grid-column: span 6 !important;
+    grid-row: span 1 !important;
+    height: 190px !important;
+    border-radius: 18px;
+  }
+  .bento-local .bento-overlay {
+    padding: 20px 18px;
+  }
+  .bento-local .bento-title {
+    font-size: 1.45rem;
+    font-weight: 800;
+  }
+  .bento-local .bento-desc {
+    font-size: 0.82rem;
+  }
+
+  /* 2 Cards Below */
+  .bento-outstation,
+  .bento-airport {
+    grid-column: span 3 !important;
+    grid-row: span 1 !important;
+    height: 135px !important;
+    border-radius: 16px;
+  }
+  .bento-outstation .bento-overlay,
+  .bento-airport .bento-overlay {
+    padding: 12px 14px;
+  }
+  .bento-outstation .bento-title,
+  .bento-airport .bento-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    margin-bottom: 2px;
+  }
+  .bento-outstation .bento-desc,
+  .bento-airport .bento-desc {
+    font-size: 0.7rem;
+    line-height: 1.3;
+  }
+
+  /* 3 Cards Below */
+  .bento-corporate,
+  .bento-oneway,
+  .bento-roundtrip {
+    grid-column: span 2 !important;
+    grid-row: span 1 !important;
+    height: 110px !important;
+    border-radius: 14px;
+  }
+  .bento-corporate .bento-overlay,
+  .bento-oneway .bento-overlay,
+  .bento-roundtrip .bento-overlay {
+    padding: 10px 8px;
+  }
+  .bento-corporate .bento-title,
+  .bento-oneway .bento-title,
+  .bento-roundtrip .bento-title {
+    font-size: 0.72rem;
+    font-weight: 800;
+    margin-bottom: 2px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bento-corporate .bento-desc,
+  .bento-oneway .bento-desc,
+  .bento-roundtrip .bento-desc {
+    font-size: 0.6rem;
+    line-height: 1.2;
+    opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 

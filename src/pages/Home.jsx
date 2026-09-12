@@ -26,6 +26,8 @@ import { CTASection } from '../components/common/CTASection';
 import { WhatsAppBookingModal } from '../components/modals/WhatsAppBookingModal';
 import { SITE_CONFIG } from '../config/site';
 import { RouteLocationInput } from '../components/home/RouteLocationInput';
+import { WhatsAppIcon } from '../components/common/WhatsAppEnquiryMenu';
+import { testimonialsData } from '../data/testimonialsData';
 
 const getTodayDateStr = () => {
   const d = new Date();
@@ -41,9 +43,12 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
   const heroRef = useRef(null);
 
   const [enquirySuccess, setEnquirySuccess] = useState(false);
+  const [lastWaUrl, setLastWaUrl] = useState('');
+  const [lastGuestName, setLastGuestName] = useState('');
   const [activeTripType, setActiveTripType] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const fleetSliderRef = useRef(null);
+  const categoryTabsRef = useRef(null);
   const [formStep, setFormStep] = useState(1);
 
   // Initial Load Animation Sequence Trigger
@@ -101,6 +106,13 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
     if (fleetSliderRef.current) {
       const scrollAmount = direction === 'left' ? -380 : 380;
       fleetSliderRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const scrollCategoryTabs = (direction) => {
+    if (categoryTabsRef.current) {
+      const scrollAmount = direction === 'left' ? -200 : 200;
+      categoryTabsRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
@@ -214,26 +226,8 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
   const [routeModalDestination, setRouteModalDestination] = useState(null);
 
   const handleSelectDestination = (dest) => {
-    // 1. Pre-fill Journey Planner form state so it is ready if user accesses it
-    if (dest.type === 'airport') {
-      setActiveTripType('Airport Transfer');
-      setFormData(prev => ({
-        ...prev,
-        drop: dest.name || 'Kempegowda International Airport (BLR)',
-        pickup: prev.pickup || 'Bengaluru, Karnataka'
-      }));
-    } else {
-      setActiveTripType('Outstation');
-      setFormData(prev => ({
-        ...prev,
-        drop: dest.name,
-        pickup: prev.pickup || 'Bengaluru, Karnataka'
-      }));
-    }
-    setFormStep(2);
-    setIsFormOpen(true);
-
-    // 2. Open the dedicated instant Route Enquiry Modal right here with destination auto-displayed
+    // Open the WhatsApp Route Enquiry Modal pre-populated for this route
+    // Stays directly in place without scrolling up
     setRouteModalDestination({
       name: dest.name,
       distance: dest.dist,
@@ -249,7 +243,85 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
   };
 
   const handleEnquirySubmit = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+
+    if (!formData.name || !formData.mobile) {
+      alert('Please enter your full name and mobile number.');
+      setFormStep(1);
+      return;
+    }
+
+    const selectedVehicleObj = plannerVehicles.find(v => v.id === formData.vehicle);
+    const vehicleTitle = selectedVehicleObj
+      ? `${selectedVehicleObj.name} (${selectedVehicleObj.subtitle})`
+      : (formData.vehicle || 'Luxury Fleet Vehicle');
+
+    const lines = [
+      `*NEW JOURNEY ENQUIRY - SIDDHU CAR RENTALS*`,
+      `----------------------------------------`,
+      `🛎️ *Service Type:* ${(activeTripType || 'Car Rental').toUpperCase()}`,
+      `🚘 *Selected Fleet:* ${vehicleTitle}`,
+      `👤 *Guest Name:* ${formData.name}`,
+      `📱 *Mobile / WhatsApp:* ${formData.mobile}`,
+    ];
+
+    if (formData.email) {
+      lines.push(`✉️ *Email:* ${formData.email}`);
+    }
+
+    if (activeTripType === 'Corporate' && formData.companyName) {
+      lines.push(`🏢 *Company:* ${formData.companyName}`);
+    }
+
+    if (activeTripType === 'Airport Transfer' || activeTripType === 'Airport') {
+      lines.push(`✈️ *Transfer Type:* ${formData.airportTransferType || 'Airport Transfer'}`);
+      if (formData.airportTransferType === 'Airport Pickup') {
+        lines.push(`📍 *Pickup:* Kempegowda International Airport (BLR)`);
+        lines.push(`🎯 *Drop Address:* ${formData.drop || 'Bengaluru City'}`);
+      } else {
+        lines.push(`📍 *Pickup Address:* ${formData.pickup || 'Bengaluru City'}`);
+        lines.push(`🎯 *Drop:* Kempegowda International Airport (BLR)`);
+      }
+      if (formData.flightNumber) {
+        lines.push(`🛫 *Flight Number:* ${formData.flightNumber}`);
+      }
+    } else {
+      lines.push(`📍 *Pickup Location:* ${formData.pickup || 'Bengaluru'}`);
+      lines.push(`🎯 *Destination:* ${formData.drop || 'As per itinerary'}`);
+    }
+
+    if (activeTripType === 'Local') {
+      lines.push(`⏱️ *Rental Package:* ${formData.localPackage || '8h / 80km Full Day'}`);
+    }
+
+    if (formData.date) {
+      lines.push(`📅 *Travel Date:* ${formData.date}${formData.time ? ` at ${formData.time}` : ''}`);
+    }
+
+    if ((activeTripType === 'Round Trip' || activeTripType === 'Outstation') && formData.returnDate) {
+      lines.push(`🔄 *Return Date:* ${formData.returnDate}${formData.returnTime ? ` at ${formData.returnTime}` : ''}`);
+    }
+
+    if (formData.passengers) {
+      lines.push(`👥 *Passengers:* ${formData.passengers} Pax`);
+    }
+
+    if (formData.message) {
+      lines.push(`📝 *Special Instructions:* ${formData.message}`);
+    }
+
+    lines.push(`----------------------------------------`);
+    lines.push(`Please confirm vehicle availability and send exact quote. Thank you!`);
+
+    const fullMessage = lines.join('\n');
+    const waUrl = `https://wa.me/${SITE_CONFIG.whatsapp.phone}?text=${encodeURIComponent(fullMessage)}`;
+
+    setLastWaUrl(waUrl);
+    setLastGuestName(formData.name);
+
+    // Direct redirect to WhatsApp
+    window.open(waUrl, '_blank', 'noopener,noreferrer');
+
     setEnquirySuccess(true);
     setFormData({
       name: '',
@@ -272,7 +344,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
       message: ''
     });
     setFormStep(1);
-    setTimeout(() => setEnquirySuccess(false), 7000);
+    setTimeout(() => setEnquirySuccess(false), 12000);
   };
 
   return (
@@ -402,7 +474,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                 </div>
                 <h3 className="success-heading">Journey Enquiry Received!</h3>
                 <p className="success-description">
-                  Thank you, <strong>{formData.name || 'Valued Guest'}</strong>! Our 24/7 concierge desk is calculating your exact journey quote for <strong>{activeTripType.toUpperCase()}</strong> service. You will receive an instant confirmation via WhatsApp and SMS within 5 minutes.
+                  Thank you, <strong>{lastGuestName || 'Valued Guest'}</strong>! Your enquiry has been redirected to our 24/7 WhatsApp concierge desk for <strong>{(activeTripType || 'Car Rental').toUpperCase()}</strong> service. You can also chat directly below anytime.
                 </p>
                 <div className="success-action-row">
                   <button 
@@ -416,12 +488,14 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                     Plan Another Journey
                   </button>
                   <a 
-                    href={`https://wa.me/${SITE_CONFIG.whatsapp.phone}`} 
+                    href={lastWaUrl || `https://wa.me/${SITE_CONFIG.whatsapp.phone}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="btn-success-whatsapp"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
                   >
-                    Instant WhatsApp Dispatch
+                    <WhatsAppIcon size={18} color="#FFFFFF" />
+                    <span>Open WhatsApp Chat</span>
                   </a>
                 </div>
               </div>
@@ -1135,7 +1209,8 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                       </button>
                     ) : (
                       <button type="button" onClick={handleEnquirySubmit} className="btn-planner-submit">
-                        <span>CONFIRM & GET INSTANT QUOTE</span>
+                        <WhatsAppIcon size={18} color="#FFFFFF" />
+                        <span>SUBMIT ENQUIRY VIA WHATSAPP</span>
                         <ChevronRight size={16} />
                       </button>
                     )}
@@ -1803,22 +1878,22 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: #EA580C;
+            background: #25D366;
             color: #FFFFFF;
             border: none;
             padding: 14px 28px;
             border-radius: 12px;
-            font-size: 0.84rem;
-            font-weight: 900;
-            letter-spacing: 0.06em;
+            font-size: 0.86rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
             cursor: pointer;
             transition: all 0.25s ease;
-            box-shadow: 0 6px 18px rgba(234, 88, 12, 0.4);
+            box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35);
           }
           .btn-planner-submit:hover {
-            background: #C2410C;
+            background: #1EBE5D;
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(234, 88, 12, 0.5);
+            box-shadow: 0 8px 24px rgba(37, 211, 102, 0.45);
           }
 
           /* RIGHT SUMMARY BOARD */
@@ -2345,46 +2420,70 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             </div>
           </div>
 
-          {/* Interactive Category Filter Pills */}
-          <div style={{
-            display: 'flex',
-            gap: '10px',
-            overflowX: 'auto',
-            paddingBottom: '16px',
-            marginBottom: '20px',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none'
-          }}>
-            {[
-              { id: 'all', label: 'All Showroom Fleet' },
-              { id: 'luxury', label: 'VIP Luxury Sedans' },
-              { id: 'mpv', label: 'Executive MPVs' },
-              { id: 'suv', label: 'Luxury SUVs' },
-              { id: 'coach', label: 'VIP Vans & Coaches' }
-            ].map(tab => {
-              const active = showroomFilter === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setShowroomFilter(tab.id)}
-                  style={{
-                    padding: '8px 18px',
-                    borderRadius: '9999px',
-                    border: active ? '1.5px solid var(--accent-gold-primary)' : '1px solid rgba(203, 213, 225, 0.9)',
-                    background: active ? 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)' : '#FFFFFF',
-                    color: active ? '#FDE047' : 'var(--color-slate-700)',
-                    fontWeight: active ? '800' : '600',
-                    fontSize: '0.82rem',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    boxShadow: active ? '0 4px 14px rgba(15, 23, 42, 0.15)' : '0 1px 3px rgba(0,0,0,0.02)',
-                    transition: 'all 0.25s ease'
-                  }}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
+          {/* Interactive Category Filter Pills with Scroll Controls */}
+          <div className="fleet-category-scroll-wrapper" style={{ position: 'relative', marginBottom: '22px' }}>
+            <button
+              type="button"
+              onClick={() => scrollCategoryTabs('left')}
+              className="cat-scroll-arrow-btn cat-scroll-arrow-left"
+              aria-label="Scroll Categories Left"
+            >
+              <ChevronLeft size={16} />
+            </button>
+
+            <div
+              ref={categoryTabsRef}
+              className="fleet-category-scroll-strip"
+              style={{
+                display: 'flex',
+                gap: '10px',
+                overflowX: 'auto',
+                paddingBottom: '12px',
+                WebkitOverflowScrolling: 'touch',
+                scrollBehavior: 'smooth'
+              }}
+            >
+              {[
+                { id: 'all', label: 'All Showroom Fleet' },
+                { id: 'luxury', label: 'VIP Luxury Sedans' },
+                { id: 'mpv', label: 'Executive MPVs' },
+                { id: 'suv', label: 'Luxury SUVs' },
+                { id: 'coach', label: 'VIP Vans & Coaches' }
+              ].map(tab => {
+                const active = showroomFilter === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setShowroomFilter(tab.id)}
+                    style={{
+                      padding: '8px 18px',
+                      borderRadius: '9999px',
+                      border: active ? '1.5px solid var(--accent-gold-primary)' : '1px solid rgba(203, 213, 225, 0.9)',
+                      background: active ? 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)' : '#FFFFFF',
+                      color: active ? '#FDE047' : 'var(--color-slate-700)',
+                      fontWeight: active ? '800' : '600',
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                      boxShadow: active ? '0 4px 14px rgba(15, 23, 42, 0.15)' : '0 1px 3px rgba(0,0,0,0.02)',
+                      transition: 'all 0.25s ease'
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => scrollCategoryTabs('right')}
+              className="cat-scroll-arrow-btn cat-scroll-arrow-right"
+              aria-label="Scroll Categories Right"
+            >
+              <ChevronRight size={16} />
+            </button>
           </div>
 
           {/* Showroom Horizontal Carousel Container */}
@@ -2462,7 +2561,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             </div>
 
           {/* Showroom Bottom Bar: Counter & Quick Price List Link */}
-          <div style={{
+          <div className="showroom-bottom-bar" style={{
             display: 'flex',
             flexWrap: 'wrap',
             justifyContent: 'space-between',
@@ -2504,6 +2603,52 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
         </div>
 
         <style>{`
+          .fleet-category-scroll-wrapper {
+            position: relative;
+            width: 100%;
+          }
+          .cat-scroll-arrow-btn {
+            display: none;
+            position: absolute;
+            top: calc(50% - 6px);
+            transform: translateY(-50%);
+            z-index: 10;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 1.5px solid rgba(203, 213, 225, 0.95);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+            color: #0F172A;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+            transition: all 0.2s ease;
+          }
+          .cat-scroll-arrow-btn:active {
+            transform: translateY(-50%) scale(0.92);
+            background: #F1F5F9;
+          }
+          .cat-scroll-arrow-left {
+            left: -6px;
+          }
+          .cat-scroll-arrow-right {
+            right: -6px;
+          }
+
+          .fleet-category-scroll-strip::-webkit-scrollbar {
+            height: 4px;
+          }
+          .fleet-category-scroll-strip::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.03);
+            border-radius: 9999px;
+          }
+          .fleet-category-scroll-strip::-webkit-scrollbar-thumb {
+            background: rgba(197, 160, 89, 0.45);
+            border-radius: 9999px;
+          }
+
           .fleet-scroll-container::-webkit-scrollbar {
             height: 6px;
           }
@@ -2518,12 +2663,134 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
           .fleet-scroll-container::-webkit-scrollbar-thumb:hover {
             background: rgba(2, 132, 199, 0.3);
           }
+
+          @media (min-width: 768px) {
+            .spec-text-short, .vc-btn-short {
+              display: none !important;
+            }
+            .spec-text-full, .vc-btn-full {
+              display: inline !important;
+            }
+          }
+
           @media (max-width: 767px) {
+            .cat-scroll-arrow-btn {
+              display: flex !important;
+            }
+            .fleet-category-scroll-strip {
+              padding-left: 28px !important;
+              padding-right: 28px !important;
+              scrollbar-width: thin !important;
+            }
             .showroom-slider-controls {
               display: none !important;
             }
+            .showroom-bottom-bar {
+              display: none !important;
+            }
+            .fleet-scroll-container {
+              display: grid !important;
+              grid-template-columns: repeat(2, 1fr) !important;
+              gap: 12px 10px !important;
+              padding-left: 0 !important;
+              padding-right: 0 !important;
+            }
             .showroom-card-wrapper {
-              flex: 0 0 calc(100vw - 48px) !important;
+              width: 100% !important;
+              flex: none !important;
+            }
+
+            /* Responsive 2x2 VehicleCard Styles */
+            .vehicle-card-root {
+              border-radius: 14px !important;
+              box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06) !important;
+            }
+            .vehicle-card-img-box {
+              min-height: 105px !important;
+              max-height: 125px !important;
+              aspect-ratio: 16/10 !important;
+              padding: 4px !important;
+            }
+            .vehicle-card-badge {
+              top: 6px !important;
+              left: 6px !important;
+              padding: 2px 6px !important;
+              font-size: 0.56rem !important;
+              border-radius: 4px !important;
+              letter-spacing: 0.03em !important;
+            }
+            .vehicle-card-body {
+              padding: 10px 8px 10px 8px !important;
+            }
+            .vehicle-card-title {
+              font-size: 0.85rem !important;
+              min-height: 2.2rem !important;
+              line-height: 1.22 !important;
+              margin-bottom: 6px !important;
+            }
+            .vehicle-card-specs {
+              gap: 4px !important;
+              margin-bottom: 8px !important;
+            }
+            .vehicle-spec-pill {
+              font-size: 0.62rem !important;
+              padding: 3px 5px !important;
+              border-radius: 4px !important;
+              gap: 3px !important;
+            }
+            .vehicle-card-suited {
+              display: none !important;
+            }
+            .vehicle-card-footer {
+              padding-top: 8px !important;
+              margin-top: 4px !important;
+            }
+            .vehicle-price-row {
+              display: flex !important;
+              flex-direction: column !important;
+              align-items: flex-start !important;
+              gap: 2px !important;
+              margin-bottom: 8px !important;
+            }
+            .vehicle-price-label-box {
+              display: flex !important;
+              align-items: center !important;
+              gap: 4px !important;
+            }
+            .vehicle-price-label {
+              font-size: 0.58rem !important;
+            }
+            .vehicle-price-sub {
+              font-size: 0.60rem !important;
+              color: #64748B !important;
+            }
+            .vehicle-price-val-box {
+              text-align: left !important;
+            }
+            .vehicle-price-num {
+              font-size: 1.15rem !important;
+            }
+            .vehicle-price-period {
+              font-size: 0.68rem !important;
+            }
+            .vehicle-card-actions {
+              display: grid !important;
+              grid-template-columns: 1fr 1fr !important;
+              gap: 6px !important;
+            }
+            .vehicle-specs-btn,
+            .vehicle-quote-btn {
+              height: 32px !important;
+              font-size: 0.68rem !important;
+              border-radius: 7px !important;
+              padding: 0 4px !important;
+              gap: 4px !important;
+            }
+            .spec-text-full, .vc-btn-full {
+              display: none !important;
+            }
+            .spec-text-short, .vc-btn-short {
+              display: inline !important;
             }
           }
         `}</style>
@@ -2569,37 +2836,18 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                 className="dest-img"
               />
               <div className="dest-glass-label">
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-coral-primary)', fontWeight: '800', marginBottom: '2px' }}>
+                <div className="dest-tag-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div className="dest-tag" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-coral-primary)', fontWeight: '700', marginBottom: '2px' }}>
                     Palaces & Silk Heritage • 140 km
                   </div>
-                  <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.35rem', color: 'var(--color-slate-900)' }}>Mysore Palace (Mysuru)</h4>
-                  <div style={{ fontSize: '0.74rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
-                    Starting from ₹15/km • Uniformed Chauffeur Guaranteed
-                  </div>
+                  <span className="dest-quote-btn" style={{ fontSize: '0.72rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 10px', borderRadius: '999px', fontWeight: '700' }}>
+                    Get Quote →
+                  </span>
                 </div>
-                <button
-                  type="button"
-                  className="btn-dest-quote"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    background: '#0284C7',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    fontSize: '0.82rem',
-                    fontWeight: '700',
-                    padding: '8px 18px',
-                    borderRadius: '999px',
-                    cursor: 'pointer',
-                    boxShadow: '0 2px 8px rgba(2, 132, 199, 0.3)',
-                    flexShrink: 0,
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  Get Quote →
-                </button>
+                <h4 className="dest-title" style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.45rem', color: 'var(--color-slate-900)' }}>Mysore Palace (Mysuru)</h4>
+                <div className="dest-desc" style={{ fontSize: '0.76rem', color: 'var(--color-slate-600)', marginTop: '4px' }}>
+                  Starting from ₹15/km • Uniformed Chauffeur Guaranteed
+                </div>
               </div>
             </div>
 
@@ -2624,37 +2872,18 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                   className="dest-img"
                 />
                 <div className="dest-glass-label">
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-sky-primary)', fontWeight: '800', marginBottom: '2px' }}>
+                  <div className="dest-tag-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className="dest-tag" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-sky-primary)', fontWeight: '700', marginBottom: '2px' }}>
                       VIP Flight Transfers • 38 km
                     </div>
-                    <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.02rem', color: 'var(--color-slate-900)', lineHeight: '1.2' }}>Bangalore Airport (BLR)</h4>
-                    <div style={{ fontSize: '0.66rem', color: 'var(--color-slate-600)', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      Flight tracking & punctual luxury chauffeur pickup
-                    </div>
+                    <span className="dest-quote-btn" style={{ fontSize: '0.68rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 8px', borderRadius: '999px', fontWeight: '700' }}>
+                      Get Quote →
+                    </span>
                   </div>
-                  <button
-                    type="button"
-                    className="btn-dest-quote"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      background: '#0284C7',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      fontSize: '0.80rem',
-                      fontWeight: '700',
-                      padding: '6px 14px',
-                      borderRadius: '999px',
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 8px rgba(2, 132, 199, 0.3)',
-                      flexShrink: 0,
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    Get Quote →
-                  </button>
+                  <h4 className="dest-title" style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', color: 'var(--color-slate-900)' }}>Bangalore Airport (BLR)</h4>
+                  <div className="dest-desc" style={{ fontSize: '0.72rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
+                    Flight tracking & punctual luxury chauffeur pickup
+                  </div>
                 </div>
               </div>
 
@@ -2676,37 +2905,18 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                   className="dest-img"
                 />
                 <div className="dest-glass-label">
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-mint-primary)', fontWeight: '800', marginBottom: '2px' }}>
+                  <div className="dest-tag-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className="dest-tag" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-mint-primary)', fontWeight: '700', marginBottom: '2px' }}>
                       Misty Coffee Valleys • 260 km
                     </div>
-                    <h4 style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.02rem', color: 'var(--color-slate-900)', lineHeight: '1.2' }}>Coorg Hills (Madikeri)</h4>
-                    <div style={{ fontSize: '0.66rem', color: 'var(--color-slate-600)', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      Scenic Western Ghats mountain drive with verified driver
-                    </div>
+                    <span className="dest-quote-btn" style={{ fontSize: '0.68rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 8px', borderRadius: '999px', fontWeight: '700' }}>
+                      Get Quote →
+                    </span>
                   </div>
-                  <button
-                    type="button"
-                    className="btn-dest-quote"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      background: '#0284C7',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      fontSize: '0.80rem',
-                      fontWeight: '700',
-                      padding: '6px 14px',
-                      borderRadius: '999px',
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 8px rgba(2, 132, 199, 0.3)',
-                      flexShrink: 0,
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    Get Quote →
-                  </button>
+                  <h4 className="dest-title" style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', color: 'var(--color-slate-900)' }}>Coorg Hills (Madikeri)</h4>
+                  <div className="dest-desc" style={{ fontSize: '0.72rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
+                    Scenic Western Ghats mountain drive with verified driver
+                  </div>
                 </div>
               </div>
 
@@ -2819,35 +3029,17 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
           
           .dest-glass-label {
             position: absolute;
-            bottom: 16px;
-            left: 16px;
-            right: 16px;
-            background: rgba(255, 255, 255, 0.90);
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
             WebkitBackdropFilter: blur(12px);
-            padding: 12px 18px;
+            padding: 12px 20px;
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.95);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
             z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-          }
-
-          .stacked-dest-card .dest-glass-label {
-            bottom: 10px;
-            left: 10px;
-            right: 10px;
-            padding: 8px 12px;
-            border-radius: 12px;
-          }
-
-          .btn-dest-quote:hover {
-            background: #0369A1 !important;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4) !important;
           }
           
           .dest-img {
@@ -2911,19 +3103,70 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             .destination-collage-grid {
               display: flex;
               flex-direction: column;
-              gap: 20px;
+              gap: 16px;
             }
-            .hero-dest-card, .dest-right-stack, .stacked-dest-card {
-              height: 280px !important;
+            .hero-dest-card, .stacked-dest-card {
+              height: 240px !important;
               width: 100% !important;
+            }
+            .dest-right-stack {
+              height: auto !important;
+              width: 100% !important;
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 16px !important;
+            }
+            .dest-glass-label {
+              bottom: 10px !important;
+              left: 10px !important;
+              right: 10px !important;
+              padding: 8px 12px !important;
+              border-radius: 12px !important;
+              background: rgba(255, 255, 255, 0.90) !important;
+              backdrop-filter: blur(10px) !important;
+              WebkitBackdropFilter: blur(10px) !important;
+              box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+            }
+            .dest-tag {
+              font-size: 0.58rem !important;
+              letter-spacing: 0.05em !important;
+            }
+            .dest-quote-btn {
+              font-size: 0.62rem !important;
+              padding: 2px 8px !important;
+            }
+            .dest-title {
+              font-size: 1.02rem !important;
+              line-height: 1.25 !important;
+              margin: 2px 0 !important;
+            }
+            .dest-desc {
+              font-size: 0.66rem !important;
+              margin-top: 2px !important;
+              white-space: nowrap !important;
+              overflow: hidden !important;
+              text-overflow: ellipsis !important;
             }
           }
           @media (max-width: 480px) {
             .carousel-swipe-hint {
               display: none !important;
             }
-            .hero-dest-card, .dest-right-stack, .stacked-dest-card {
-              height: 200px !important;
+            .hero-dest-card, .stacked-dest-card {
+              height: 230px !important;
+            }
+            .dest-glass-label {
+              bottom: 8px !important;
+              left: 8px !important;
+              right: 8px !important;
+              padding: 7px 10px !important;
+              border-radius: 10px !important;
+            }
+            .dest-title {
+              font-size: 0.96rem !important;
+            }
+            .dest-desc {
+              font-size: 0.64rem !important;
             }
           }
         `}</style>
@@ -2981,23 +3224,23 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                       ))}
                     </div>
                     <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#1A73E8', background: 'rgba(26, 115, 232, 0.08)', padding: '2px 8px', borderRadius: '6px' }}>
-                      Google Verified Review
+                      Verified Client Experience
                     </span>
                   </div>
                   <p className="quote-text-large">
-                    We had availed their Luxury Car Rental Service on Valentine's. It was absolutely surreal and peaceful. Seamless booking, Driver arrived on time, Car Superclean and stylish. Even the rates, I believe were attractive. We had fantastic experience. Siddhu Ji and Rudresh Ji made it a memorable experience for us.
+                    Siddhu Car Rentals handled our international board delegation with complete perfection. The Mercedes S-Class was pristine and the chauffeur was impeccably punctual.
                   </p>
                   <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#0F766E', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.95rem' }}>
-                        R
+                        A
                       </div>
                       <div>
-                        <div className="quote-author">RIHA GOYAL</div>
-                        <div className="quote-author-title">7 reviews · 1 photo • Google Review</div>
+                        <div className="quote-author">Ananth Narayan</div>
+                        <div className="quote-author-title">Managing Director • Global Tech Capital</div>
                       </div>
                     </div>
-                    <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--accent-indigo-primary)', background: 'rgba(79,70,229,0.08)', padding: '4px 10px', borderRadius: '6px' }}>Luxury Rental</span>
+                    <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--accent-indigo-primary)', background: 'rgba(79,70,229,0.08)', padding: '4px 10px', borderRadius: '6px' }}>VIP Guest</span>
                   </div>
                 </div>
               </div>
@@ -3006,135 +3249,49 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
               <div className="testimonial-marquee-wrapper">
                 <div className="testimonial-marquee-track">
                   <div className="marquee-set">
-                    {/* Sub-Card 1: Shreevatsa Kulkarni */}
-                    <div className="editorial-quote-card card-sub" style={{ background: '#F0F9FF', borderLeft: '3px solid #0284C7' }}>
-                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
-                        ))}
+                    {testimonialsData.filter(t => t.id !== 1).map((item) => (
+                      <div
+                        key={item.id}
+                        className="editorial-quote-card card-sub"
+                        style={{ background: item.bg || '#F8FAFC', borderLeft: `3px solid ${item.borderLeft || '#0284C7'}` }}
+                      >
+                        <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                          {[...Array(item.rating || 5)].map((_, i) => (
+                            <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
+                          ))}
+                        </div>
+                        <p className="quote-text-small">
+                          {item.review}
+                        </p>
+                        <div style={{ marginTop: '16px' }}>
+                          <div className="quote-author-sub">{item.name}</div>
+                          <div className="quote-author-title-sub">{item.title}{item.company ? ` • ${item.company}` : ''}</div>
+                        </div>
                       </div>
-                      <p className="quote-text-small">
-                        Cleaniness and timing is at the peak with very luxurious car maintenance. High class vehicles available at a cheaper cost.
-                      </p>
-                      <div style={{ marginTop: '16px' }}>
-                        <div className="quote-author-sub">Shreevatsa Kulkarni</div>
-                        <div className="quote-author-title-sub">2 reviews · 3 photos • Google Review</div>
-                      </div>
-                    </div>
-
-                    {/* Sub-Card 2: Ram Ghatge */}
-                    <div className="editorial-quote-card card-sub" style={{ background: '#F0FDF4', borderLeft: '3px solid #16A34A' }}>
-                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
-                        ))}
-                      </div>
-                      <p className="quote-text-small">
-                        Cars Mentainance is very well. Drivers reaches ON TIME. Whenever i visit Bangalore i prefer SIDDHU car rentals. Thank u
-                      </p>
-                      <div style={{ marginTop: '16px' }}>
-                        <div className="quote-author-sub">Ram Ghatge</div>
-                        <div className="quote-author-title-sub">Local Guide · 26 reviews • Google Review</div>
-                      </div>
-                    </div>
-
-                    {/* Sub-Card 3: Ashish Bhat */}
-                    <div className="editorial-quote-card card-sub" style={{ background: '#FFFBEB', borderLeft: '3px solid #D97706' }}>
-                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
-                        ))}
-                      </div>
-                      <p className="quote-text-small">
-                        Don Jacob was excellent driver , very friendly and helped us in a 6 day tour
-                      </p>
-                      <div style={{ marginTop: '16px' }}>
-                        <div className="quote-author-sub">Ashish Bhat</div>
-                        <div className="quote-author-title-sub">Local Guide · 10 reviews • Google Review</div>
-                      </div>
-                    </div>
-
-                    {/* Sub-Card 4: William Brown */}
-                    <div className="editorial-quote-card card-sub" style={{ background: '#FAF5FF', borderLeft: '3px solid #9333EA' }}>
-                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
-                        ))}
-                      </div>
-                      <p className="quote-text-small">
-                        I have travelled in ciaz car to ooty and we enjoyed a lot with the service of the driver very honest ..polite ..services thank you siddu car rentals team ..all the best ..i give u 7stars.
-                      </p>
-                      <div style={{ marginTop: '16px' }}>
-                        <div className="quote-author-sub">William Brown</div>
-                        <div className="quote-author-title-sub">1 review • Google Review</div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
 
                   <div className="marquee-set">
-                    {/* Sub-Card 1: Shreevatsa Kulkarni */}
-                    <div className="editorial-quote-card card-sub" style={{ background: '#F0F9FF', borderLeft: '3px solid #0284C7' }}>
-                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
-                        ))}
+                    {testimonialsData.filter(t => t.id !== 1).map((item) => (
+                      <div
+                        key={`dup-${item.id}`}
+                        className="editorial-quote-card card-sub"
+                        style={{ background: item.bg || '#F8FAFC', borderLeft: `3px solid ${item.borderLeft || '#0284C7'}` }}
+                      >
+                        <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                          {[...Array(item.rating || 5)].map((_, i) => (
+                            <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
+                          ))}
+                        </div>
+                        <p className="quote-text-small">
+                          {item.review}
+                        </p>
+                        <div style={{ marginTop: '16px' }}>
+                          <div className="quote-author-sub">{item.name}</div>
+                          <div className="quote-author-title-sub">{item.title}{item.company ? ` • ${item.company}` : ''}</div>
+                        </div>
                       </div>
-                      <p className="quote-text-small">
-                        Cleaniness and timing is at the peak with very luxurious car maintenance. High class vehicles available at a cheaper cost.
-                      </p>
-                      <div style={{ marginTop: '16px' }}>
-                        <div className="quote-author-sub">Shreevatsa Kulkarni</div>
-                        <div className="quote-author-title-sub">2 reviews · 3 photos • Google Review</div>
-                      </div>
-                    </div>
-
-                    {/* Sub-Card 2: Ram Ghatge */}
-                    <div className="editorial-quote-card card-sub" style={{ background: '#F0FDF4', borderLeft: '3px solid #16A34A' }}>
-                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
-                        ))}
-                      </div>
-                      <p className="quote-text-small">
-                        Cars Mentainance is very well. Drivers reaches ON TIME. Whenever i visit Bangalore i prefer SIDDHU car rentals. Thank u
-                      </p>
-                      <div style={{ marginTop: '16px' }}>
-                        <div className="quote-author-sub">Ram Ghatge</div>
-                        <div className="quote-author-title-sub">Local Guide · 26 reviews • Google Review</div>
-                      </div>
-                    </div>
-
-                    {/* Sub-Card 3: Ashish Bhat */}
-                    <div className="editorial-quote-card card-sub" style={{ background: '#FFFBEB', borderLeft: '3px solid #D97706' }}>
-                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
-                        ))}
-                      </div>
-                      <p className="quote-text-small">
-                        Don Jacob was excellent driver , very friendly and helped us in a 6 day tour
-                      </p>
-                      <div style={{ marginTop: '16px' }}>
-                        <div className="quote-author-sub">Ashish Bhat</div>
-                        <div className="quote-author-title-sub">Local Guide · 10 reviews • Google Review</div>
-                      </div>
-                    </div>
-
-                    {/* Sub-Card 4: William Brown */}
-                    <div className="editorial-quote-card card-sub" style={{ background: '#FAF5FF', borderLeft: '3px solid #9333EA' }}>
-                      <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
-                        ))}
-                      </div>
-                      <p className="quote-text-small">
-                        I have travelled in ciaz car to ooty and we enjoyed a lot with the service of the driver very honest ..polite ..services thank you siddu car rentals team ..all the best ..i give u 7stars.
-                      </p>
-                      <div style={{ marginTop: '16px' }}>
-                        <div className="quote-author-sub">William Brown</div>
-                        <div className="quote-author-title-sub">1 review • Google Review</div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -3198,13 +3355,13 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
           }
           
           .quote-text-large {
-            font-family: var(--font-editorial);
-            font-style: italic;
-            font-size: 1.25rem;
+            font-family: inherit;
+            font-style: normal;
+            font-size: 1.1rem;
             line-height: 1.65;
             color: var(--color-slate-800);
             margin: 0 0 24px 0;
-            letter-spacing: -0.01em;
+            font-weight: 500;
           }
           
           .quote-author {
@@ -3231,7 +3388,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
               display: flex;
               gap: 24px;
               width: max-content;
-              animation: marqueeSlide 15s linear infinite;
+              animation: marqueeSlide 36s linear infinite;
             }
             .testimonial-marquee-track:hover {
               animation-play-state: paused;
@@ -3403,7 +3560,13 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
       <WhatsAppBookingModal
         isOpen={Boolean(routeModalDestination)}
         onClose={() => setRouteModalDestination(null)}
-        serviceType={routeModalDestination?.type || 'outstation'}
+        serviceType={{
+          id: routeModalDestination?.type || 'outstation',
+          label: routeModalDestination?.type === 'airport'
+            ? 'Airport VIP Transfer'
+            : (routeModalDestination?.type === 'local' ? 'Local City Rental' : 'Outstation Trip'),
+          icon: routeModalDestination?.type === 'airport' ? '✈️' : (routeModalDestination?.type === 'local' ? '📍' : '🛣️')
+        }}
         context={{
           pickup: 'Bengaluru, Karnataka',
           drop: routeModalDestination?.name || '',

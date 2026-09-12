@@ -486,54 +486,242 @@
 .crs-image-card.ar-square { aspect-ratio: 1/1; }
 .crs-image-card.ar-wide { aspect-ratio: 4/3; }
 
-/* RESPONSIVE */
+/* RESPONSIVE: 50% CONTENT & 50% IMAGE ON MOBILE / TABLET */
 @media (max-width: 992px) {
   .crs-container {
-    flex-direction: column;
-    height: auto;
+    flex-direction: row !important;
+    height: 6cm !important;
+    min-height: 227px;
+    max-height: 6cm !important;
+    overflow: hidden !important;
+    display: flex !important;
+    width: 100% !important;
   }
-  
+
+  /* ── 50% LEFT: CONTENT ── */
+  .crs-left-panel {
+    flex: 0 0 50% !important;
+    width: 50% !important;
+    max-width: 50% !important;
+    min-width: 0 !important;
+    padding: 10px 8px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .crs-header-compact {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+
+  .crs-feature-badge {
+    font-size: 0.52rem !important;
+    padding: 2px 6px !important;
+    margin-bottom: 2px !important;
+    white-space: nowrap !important;
+    gap: 3px !important;
+    letter-spacing: 0.04em !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .crs-headline {
+    font-size: clamp(0.74rem, 2.3vw, 0.86rem) !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+    letter-spacing: -0.01em !important;
+  }
+
+  .crs-trust-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 3px 5px !important;
+    padding: 4px 6px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 6px !important;
+    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .crs-trust-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+    min-width: 0 !important;
+  }
+
+  .crs-trust-icon {
+    width: 12px !important;
+    height: 12px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .crs-trust-title {
+    font-size: 0.56rem !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.15 !important;
+  }
+
+  .crs-cta-cluster {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    align-items: center !important;
+    gap: 4px !important;
+    width: 100% !important;
+    margin-top: 2px !important;
+    box-sizing: border-box !important;
+  }
+
+  .crs-btn-whatsapp-concierge,
+  .crs-cta-cluster > span {
+    width: 100% !important;
+    display: flex !important;
+  }
+
+  .crs-btn-whatsapp-concierge button,
+  .crs-cta-cluster button {
+    width: 100% !important;
+    height: 28px !important;
+    font-size: 0.64rem !important;
+    padding: 0 4px !important;
+    border-radius: 6px !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    box-sizing: border-box !important;
+  }
+
+  .crs-btn-call {
+    width: 100% !important;
+    height: 28px !important;
+    font-size: 0.64rem !important;
+    padding: 0 4px !important;
+    border-radius: 6px !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+  }
+
+  .crs-btn-explore {
+    display: none !important;
+  }
+
+  /* ── 50% RIGHT: IMAGE COLLAGE ── */
   .crs-right-panel {
-    flex: none;
-    height: 180px;
-    border-left: none;
-    border-top: 1px solid #F3F4F6;
+    flex: 0 0 50% !important;
+    width: 50% !important;
+    max-width: 50% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    border-left: 1px solid rgba(226, 232, 240, 0.9) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    display: block !important;
+    box-sizing: border-box !important;
   }
   
   .crs-collage-wrapper {
-    flex-direction: column; /* Need horizontal scrolling */
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 12px 0;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+    padding: 0 6px !important;
+    height: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   
   .crs-marquee-col {
-    flex-direction: row;
+    flex: 1 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
   }
   
   .crs-marquee-col.col-1 {
-    animation: crsScrollHorizontal 10s linear infinite;
-  }
-  .crs-marquee-col.col-2 {
-    display: none; /* Hide second column on mobile for simplicity, or animate horizontally */
-  }
-
-  @keyframes crsScrollHorizontal {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    display: flex !important;
+    animation: crsScrollVertical 10s linear infinite !important;
   }
   
-  .crs-image-card {
-    height: 140px;
-    width: auto;
-    aspect-ratio: auto;
+  .crs-marquee-col.col-2 {
+    display: flex !important;
+    animation: crsScrollVertical 13s linear infinite !important;
+    margin-top: -30px !important;
   }
+
+  .crs-image-card {
+    width: 100% !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
+  }
+
+  .crs-image-card.ar-tall { aspect-ratio: 3/4 !important; }
+  .crs-image-card.ar-square { aspect-ratio: 1/1 !important; }
+  .crs-image-card.ar-wide { aspect-ratio: 4/3 !important; }
+  
   .crs-image-card img {
-    width: auto;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  .crs-dest-click-hint {
+    display: none !important;
+  }
+
+  .crs-dest-card-badge {
+    padding: 2px 4px !important;
+    bottom: 4px !important;
+    left: 4px !important;
+    right: 4px !important;
+    border-radius: 4px !important;
+  }
+
+  .crs-dest-card-badge span {
+    font-size: 0.52rem !important;
+  }
+
+  .crs-dest-card-badge small {
+    font-size: 0.46rem !important;
+  }
+
+  .crs-text-full {
+    display: none !important;
+  }
+  .crs-text-short {
+    display: inline !important;
+  }
+}
+
+@media (min-width: 993px) {
+  .crs-text-short {
+    display: none !important;
+  }
+  .crs-text-full {
+    display: inline !important;
   }
 }
 
 @media (max-width: 768px) {
+  .car-rental-search-section {
+    padding: 0 12px 28px 12px !important;
+  }
+
   .crs-search-bar {
     flex-wrap: wrap;
     height: auto;
@@ -564,8 +752,44 @@
     margin-left: 0;
   }
 
+  .car-rental-search-section {
+    padding: 0 12px 30px 12px;
+    margin-top: 16px;
+  }
+
   .crs-left-panel {
-    padding: 20px;
+    padding: 10px 12px !important;
+  }
+
+  .crs-headline {
+    font-size: clamp(0.8rem, 2.7vw, 1.05rem) !important;
+  }
+
+  .crs-trust-grid {
+    gap: 3px 6px !important;
+    padding: 4px 6px !important;
+  }
+
+  .crs-trust-title {
+    font-size: 0.62rem !important;
+  }
+
+  .crs-cta-cluster {
+    gap: 6px !important;
+  }
+
+  .crs-cta-cluster > * {
+    font-size: 0.72rem !important;
+    padding: 5px 9px !important;
+  }
+
+  .crs-btn-call {
+    font-size: 0.72rem !important;
+    padding: 5px 9px !important;
+  }
+
+  .crs-btn-explore {
+    display: none !important;
   }
 }
 

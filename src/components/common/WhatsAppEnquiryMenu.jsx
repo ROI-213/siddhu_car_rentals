@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { MessageSquare } from 'lucide-react';
 import { SITE_CONFIG } from '../../config/site';
 import { WhatsAppBookingModal } from '../modals/WhatsAppBookingModal';
@@ -67,23 +68,96 @@ export const WhatsAppIcon = ({ size = 20, color = 'currentColor', className = ''
   </svg>
 );
 
-export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement = 'bottom-end', triggerLabel, triggerIcon: TriggerIcon, iconSize = 18, children, className = '', ...restProps }) => {
+export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement = 'bottom-start', triggerLabel, triggerIcon: TriggerIcon, iconSize = 18, children, className = '', ...restProps }) => {
   const [open, setOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [coords, setCoords] = useState({ top: 'auto', bottom: 'auto', left: 'auto', right: 'auto' });
   const menuRef = useRef(null);
   const triggerRef = useRef(null);
 
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const menuWidth = 260;
+    const menuHeight = 360;
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    // Vertical placement logic
+    let placeAbove = false;
+    if (menuPlacement === 'top' || menuPlacement === 'top-start' || menuPlacement === 'top-end') {
+      placeAbove = true;
+    } else if (menuPlacement === 'bottom' || menuPlacement === 'bottom-start' || menuPlacement === 'bottom-end') {
+      // If bottom requested, only flip above if space below is really constrained (< 150px)
+      if (spaceBelow < 150 && spaceAbove > spaceBelow) {
+        placeAbove = true;
+      } else {
+        placeAbove = false;
+      }
+    } else {
+      placeAbove = spaceBelow < menuHeight && spaceAbove > spaceBelow;
+    }
+
+    // Horizontal placement logic
+    const alignRight = menuPlacement?.endsWith('end');
+    let leftStyle = 'auto';
+    let rightStyle = 'auto';
+
+    if (alignRight) {
+      const rightCoord = window.innerWidth - rect.right;
+      const clampedRight = Math.max(12, Math.min(rightCoord, window.innerWidth - menuWidth - 12));
+      rightStyle = `${clampedRight}px`;
+    } else {
+      const clampedLeft = Math.max(12, Math.min(rect.left, window.innerWidth - menuWidth - 12));
+      leftStyle = `${clampedLeft}px`;
+    }
+
+    setCoords({
+      top: placeAbove ? 'auto' : `${rect.bottom + 8}px`,
+      bottom: placeAbove ? `${window.innerHeight - rect.top + 8}px` : 'auto',
+      left: leftStyle,
+      right: rightStyle,
+    });
+  }, [menuPlacement]);
+
   useEffect(() => {
+    if (!open) return;
+    updatePosition();
+
+    const onScroll = () => updatePosition();
+    const onResize = () => updatePosition();
+
+    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [open, updatePosition]);
+
+  useEffect(() => {
+    if (!open) return;
     const handler = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target) &&
-          triggerRef.current && !triggerRef.current.contains(e.target)) {
+      if (
+        menuRef.current && !menuRef.current.contains(e.target) &&
+        triggerRef.current && !triggerRef.current.contains(e.target)
+      ) {
         setOpen(false);
       }
     };
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [open]);
 
   const handleSelect = (typeId) => {
     const serviceObj = ENQUIRY_TYPES.find(t => t.id === typeId) || { id: typeId, label: typeId, icon: '💬' };
@@ -125,6 +199,7 @@ export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement =
         }}
         title="Chat on WhatsApp"
         aria-label="Chat on WhatsApp"
+        aria-expanded={open}
         {...restProps}
       >
         {children || (
@@ -135,21 +210,25 @@ export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement =
         )}
       </button>
 
-      {open && (
+      {open && typeof document !== 'undefined' && createPortal(
         <div
           ref={menuRef}
           className="wa-enquiry-menu"
           style={{
-            position: 'absolute',
-            bottom: menuPlacement === 'bottom-end' ? 'calc(100% + 8px)' : 'auto',
-            top: menuPlacement === 'top-end' ? 'calc(100% + 8px)' : 'auto',
-            right: 0,
+            position: 'fixed',
+            top: coords.top,
+            bottom: coords.bottom,
+            left: coords.left,
+            right: coords.right,
             background: '#FFFFFF',
             borderRadius: '14px',
-            boxShadow: '0 12px 40px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06)',
-            zIndex: 9999,
-            minWidth: '240px',
+            boxShadow: '0 14px 44px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06)',
+            zIndex: 999999,
+            width: '260px',
             padding: '6px',
+            boxSizing: 'border-box',
+            maxHeight: 'min(380px, calc(100vh - 24px))',
+            overflowY: 'auto',
             animation: 'waMenuIn 0.18s ease-out',
           }}
         >
@@ -173,7 +252,7 @@ export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement =
                 alignItems: 'center',
                 gap: '10px',
                 width: '100%',
-                padding: '10px 12px',
+                padding: '9px 12px',
                 border: 'none',
                 background: 'transparent',
                 borderRadius: '10px',
@@ -193,7 +272,8 @@ export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement =
               <span style={{ marginLeft: 'auto', color: '#25D366', fontSize: '0.7rem' }}>›</span>
             </button>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
 
       {isModalOpen && (
@@ -207,7 +287,7 @@ export const WhatsAppEnquiryMenu = ({ context = {}, buttonStyle, menuPlacement =
 
       <style>{`
         @keyframes waMenuIn {
-          from { opacity: 0; transform: translateY(6px) scale(0.97); }
+          from { opacity: 0; transform: translateY(4px) scale(0.98); }
           to   { opacity: 1; transform: translateY(0) scale(1); }
         }
       `}</style>

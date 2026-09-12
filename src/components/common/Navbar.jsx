@@ -212,6 +212,7 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
 
           <WhatsAppEnquiryMenu
             context={{}}
+            menuPlacement="bottom-end"
             triggerLabel=""
             triggerIcon={WhatsAppIcon}
             iconSize={20}

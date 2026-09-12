@@ -212,7 +212,11 @@ export const LocalTransfer = () => {
       {/* 4. LOCAL ENQUIRY FORM */}
       <section className="section-padding" style={{ background: 'var(--bg-foundation-alt)' }} id="local-enquiry">
         <div className="container">
-          <EnquiryForm title="Book Local Hourly City Chauffeur" subtitle="Instant Hourly Package Tariff Confirmation" />
+          <EnquiryForm 
+            title="Book Local Hourly City Chauffeur" 
+            subtitle="Instant Hourly Package Tariff Confirmation" 
+            fixedTripType="local" 
+          />
         </div>
       </section>
 

@@ -9,9 +9,18 @@ import { PremiumButton } from '../components/common/PremiumButton';
 import { EnquiryForm } from '../components/common/EnquiryForm';
 import { WhatsAppButton } from '../components/common/WhatsAppButton';
 import { WhatsAppBookingModal } from '../components/modals/WhatsAppBookingModal';
+import { TariffEnquiryModal } from '../components/modals/TariffEnquiryModal';
+import { DEFAULT_OUTSTATION_TARIFFS } from '../services/tariffApi';
 
 export const Outstation = ({ onEnquireClick }) => {
   const [selectedRouteModal, setSelectedRouteModal] = useState(null);
+  const [selectedTariffForModal, setSelectedTariffForModal] = useState(null);
+  const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
+
+  const handleOpenTariffEnquiry = (tariffItem) => {
+    setSelectedTariffForModal(tariffItem);
+    setIsEnquiryModalOpen(true);
+  };
 
   const scrollToEnquiry = () => {
     const el = document.getElementById('outstation-enquiry');
@@ -82,78 +91,8 @@ export const Outstation = ({ onEnquireClick }) => {
         </div>
       </PageHero>
 
-      {/* 2. TRIP TYPES & MODES */}
-      <section className="section-padding" style={{ background: 'var(--bg-foundation-alt)' }}>
-        <div className="container">
-          <SectionHeader
-            badge="Flexible Highway Journeys"
-            badgeIcon={Car}
-            title="Outstation Travel"
-            titleHighlight="Options"
-            description="One-way drops, round trips, and multi-city journeys with driver. Available for all destinations across South India."
-            align="center"
-          />
-
-          <div className="grid-showcase">
-            <GlassCard variant="interactive">
-              <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
-                🔀 One-Way Intercity Drops
-              </div>
-              <p className="text-small">
-                Pay only for the distance traveled. Flat one-way rates for Mysuru, Chennai, Hyderabad, and major tier-1 cities.
-              </p>
-            </GlassCard>
-
-            <GlassCard variant="interactive">
-              <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
-                🔄 Round-Trip Vacation Packages
-              </div>
-              <p className="text-small">
-                Chauffeur remains with your family throughout the trip for sightseeing, dining, and local hill station exploration.
-              </p>
-            </GlassCard>
-
-            <GlassCard variant="interactive">
-              <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
-                ✈️ Airport to Outstation Express
-              </div>
-              <p className="text-small">
-                Direct pickup from Kempegowda International Airport terminal to Mysuru, Coorg, or Chikmagalur without entering city traffic.
-              </p>
-            </GlassCard>
-
-            <GlassCard variant="interactive">
-              <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
-                👨‍👩‍👧‍👦 Family & Group Road Trips
-              </div>
-              <p className="text-small">
-                Spacious 7-seater Toyota Innova Crysta VIP and 12-seater Force Urbania vans with captain seats and large luggage boots.
-              </p>
-            </GlassCard>
-
-            <GlassCard variant="interactive">
-              <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
-                🌿 Weekend Hill Station Getaways
-              </div>
-              <p className="text-small">
-                Curated weekend getaways to Ooty, Wayanad, Sakleshpur, and Coorg with drivers experienced in ghat mountain driving.
-              </p>
-            </GlassCard>
-
-            <GlassCard variant="interactive">
-              <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
-                🏛️ Heritage & Temple Convoys
-              </div>
-              <p className="text-small">
-                Comfortable long-distance travel to UNESCO Hampi stone ruins, Belur-Halebid, and Tirupati with zero driver hassle.
-              </p>
-            </GlassCard>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. POPULAR OUTSTATION DESTINATIONS */}
-      <section className="section-padding">
+      {/* 2. POPULAR OUTSTATION DESTINATIONS */}
+      <section className="section-padding" style={{ background: '#FFFFFF' }}>
         <div className="container">
           <SectionHeader
             badge="Top Highway Routes"
@@ -222,7 +161,200 @@ export const Outstation = ({ onEnquireClick }) => {
         </div>
       </section>
 
-      {/* 4. TRANSPARENT OUTSTATION TARIFF TABLE */}
+      {/* 3. ENQUIRY FORM SECTION */}
+      <section className="section-padding" id="outstation-enquiry" style={{ background: 'var(--bg-foundation-alt)' }}>
+        <div className="container">
+          <EnquiryForm 
+            title="Book Outstation Highway Journey" 
+            subtitle="Instant Per-Km Rate Quote & Driver Confirmation" 
+            fixedTripType="outstation" 
+          />
+        </div>
+      </section>
+
+      {/* 4. TRIP TYPES & MODES - CONTINUOUS SLIDING MARQUEE */}
+      <section className="section-padding" style={{ background: '#FFFFFF', overflow: 'hidden' }}>
+        <div className="container" style={{ marginBottom: '32px' }}>
+          <SectionHeader
+            badge="Flexible Highway Journeys"
+            badgeIcon={Car}
+            title="Outstation Travel"
+            titleHighlight="Options"
+            description="One-way drops, round trips, and multi-city journeys with driver. Available for all destinations across South India."
+            align="center"
+          />
+        </div>
+
+        {/* Continuous Sliding in One Row */}
+        <div className="outstation-options-marquee-wrapper">
+          <div className="outstation-options-marquee-track">
+            <div className="outstation-options-set">
+              {[
+                {
+                  icon: '🔀',
+                  title: 'One-Way Intercity Drops',
+                  desc: 'Pay only for the distance traveled. Flat one-way rates for Mysuru, Chennai, Hyderabad, and major tier-1 cities.'
+                },
+                {
+                  icon: '🔄',
+                  title: 'Round-Trip Vacation Packages',
+                  desc: 'Chauffeur remains with your family throughout the trip for sightseeing, dining, and local hill station exploration.'
+                },
+                {
+                  icon: '✈️',
+                  title: 'Airport to Outstation Express',
+                  desc: 'Direct pickup from Kempegowda International Airport terminal to Mysuru, Coorg, or Chikmagalur without entering city traffic.'
+                },
+                {
+                  icon: '👨‍👩‍👧‍👦',
+                  title: 'Family & Group Road Trips',
+                  desc: 'Spacious 7-seater Toyota Innova Crysta VIP and 12-seater Force Urbania vans with captain seats and large luggage boots.'
+                },
+                {
+                  icon: '🌿',
+                  title: 'Weekend Hill Station Getaways',
+                  desc: 'Curated weekend getaways to Ooty, Wayanad, Sakleshpur, and Coorg with drivers experienced in ghat mountain driving.'
+                },
+                {
+                  icon: '🏛️',
+                  title: 'Heritage & Temple Convoys',
+                  desc: 'Comfortable long-distance travel to UNESCO Hampi stone ruins, Belur-Halebid, and Tirupati with zero driver hassle.'
+                }
+              ].map((opt, i) => (
+                <div key={`opt1-${i}`} className="outstation-option-slide-card">
+                  <div className="option-slide-icon">{opt.icon}</div>
+                  <div className="option-slide-title">{opt.title}</div>
+                  <p className="option-slide-desc">{opt.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="outstation-options-set" aria-hidden="true">
+              {[
+                {
+                  icon: '🔀',
+                  title: 'One-Way Intercity Drops',
+                  desc: 'Pay only for the distance traveled. Flat one-way rates for Mysuru, Chennai, Hyderabad, and major tier-1 cities.'
+                },
+                {
+                  icon: '🔄',
+                  title: 'Round-Trip Vacation Packages',
+                  desc: 'Chauffeur remains with your family throughout the trip for sightseeing, dining, and local hill station exploration.'
+                },
+                {
+                  icon: '✈️',
+                  title: 'Airport to Outstation Express',
+                  desc: 'Direct pickup from Kempegowda International Airport terminal to Mysuru, Coorg, or Chikmagalur without entering city traffic.'
+                },
+                {
+                  icon: '👨‍👩‍👧‍👦',
+                  title: 'Family & Group Road Trips',
+                  desc: 'Spacious 7-seater Toyota Innova Crysta VIP and 12-seater Force Urbania vans with captain seats and large luggage boots.'
+                },
+                {
+                  icon: '🌿',
+                  title: 'Weekend Hill Station Getaways',
+                  desc: 'Curated weekend getaways to Ooty, Wayanad, Sakleshpur, and Coorg with drivers experienced in ghat mountain driving.'
+                },
+                {
+                  icon: '🏛️',
+                  title: 'Heritage & Temple Convoys',
+                  desc: 'Comfortable long-distance travel to UNESCO Hampi stone ruins, Belur-Halebid, and Tirupati with zero driver hassle.'
+                }
+              ].map((opt, i) => (
+                <div key={`opt2-${i}`} className="outstation-option-slide-card">
+                  <div className="option-slide-icon">{opt.icon}</div>
+                  <div className="option-slide-title">{opt.title}</div>
+                  <p className="option-slide-desc">{opt.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <style>{`
+          .outstation-options-marquee-wrapper {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            padding: 10px 0 20px 0;
+            mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+          }
+          .outstation-options-marquee-track {
+            display: flex;
+            width: max-content;
+            animation: outstationOptionsMarquee 30s linear infinite;
+          }
+          .outstation-options-marquee-track:hover {
+            animation-play-state: paused;
+          }
+          .outstation-options-set {
+            display: flex;
+            gap: 24px;
+            padding-right: 24px;
+          }
+          .outstation-option-slide-card {
+            width: 350px;
+            flex-shrink: 0;
+            padding: 26px 24px;
+            border-radius: 18px;
+            background: #FFFFFF;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 24px -10px rgba(15, 23, 42, 0.06);
+            display: flex;
+            flex-direction: column;
+            justifyContent: flex-start;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: default;
+          }
+          .outstation-option-slide-card:hover {
+            transform: translateY(-4px);
+            border-color: #C5A059;
+            box-shadow: 0 16px 32px -10px rgba(197, 160, 89, 0.22);
+          }
+          .option-slide-icon {
+            font-size: 1.75rem;
+            margin-bottom: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(197, 160, 89, 0.1);
+          }
+          .option-slide-title {
+            font-size: 1.18rem;
+            font-weight: 700;
+            color: var(--color-charcoal-900);
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+          }
+          .option-slide-desc {
+            font-size: 0.88rem;
+            line-height: 1.55;
+            color: var(--color-charcoal-600);
+            margin: 0;
+          }
+          @keyframes outstationOptionsMarquee {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          @media (max-width: 640px) {
+            .outstation-option-slide-card {
+              width: 290px;
+              padding: 20px 18px;
+            }
+          }
+        `}</style>
+      </section>
+
+      {/* 5. TRANSPARENT OUTSTATION TARIFF TABLE */}
       <section className="section-padding" style={{ background: 'var(--bg-foundation-alt)' }}>
         <div className="container">
           <SectionHeader
@@ -234,65 +366,72 @@ export const Outstation = ({ onEnquireClick }) => {
             align="center"
           />
 
-          <GlassCard variant="standard" style={{ maxWidth: '880px', margin: '0 auto', padding: '0', overflow: 'hidden' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr 1.1fr', background: '#12151C', color: '#C5A059', padding: '14px 20px', fontWeight: '700', fontSize: '0.82rem', textTransform: 'uppercase' }}>
+          <GlassCard variant="standard" style={{ maxWidth: '960px', margin: '0 auto', padding: '0', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr 1.1fr 0.9fr', background: '#12151C', color: '#C5A059', padding: '14px 20px', fontWeight: '700', fontSize: '0.82rem', textTransform: 'uppercase', alignItems: 'center' }}>
               <div>Vehicle Model & Class</div>
               <div>Min. Kms / Day</div>
               <div>Per Km Rate</div>
               <div>Driver Night Allowance</div>
+              <div style={{ textAlign: 'right' }}>Action</div>
             </div>
 
-            {[
-              { id: 'sedan-dzire', name: "Sedan (Dzire / Etios / Amaze)" },
-              { id: 'innova', name: "Innova / Ertiga / Kia Carens" },
-              { id: 'innova-crysta', name: "Toyota Innova Crysta VIP (7-Seater)" },
-              { id: 'innova-hycross', name: "Toyota Innova Hycross Hybrid" },
-              { id: 'toyota-fortuner', name: "Toyota Fortuner (Latest Model)" },
-              { id: 'toyota-camry', name: "Toyota Camry Hybrid / Accord" },
-              { id: 'bmw-5-series', name: "BMW 5 Series / Merc E-Class / Audi A6" },
-              { id: 'mercedes-s-class', name: "Mercedes S-Class / BMW 7 / Audi A8 (Latest)" },
-              { id: 'toyota-vellfire', name: "Toyota Vellfire Executive Lounge" },
-              { id: 'tempo-traveller', name: "Tempo Traveller A/C (12-Seater)" },
-              { id: 'urbania', name: "Force Urbania Luxury Van (16+1)" },
-              { id: 'mini-bus-21', name: "Mini Bus 21 Seater A/C" },
-              { id: 'mini-bus-25', name: "Mini Bus 25 Seater A/C" },
-              { id: 'bus-32', name: "32 Seater A/C Bus" },
-              { id: 'bus-45', name: "45 Seater A/C Luxury Bus" },
-              { id: 'bus-49', name: "49 Seater A/C Luxury Bus" }
-            ].map((v, idx) => {
-              const tariff = pricingService.getOutstationTariff(v.id);
-              return (
-                <div
-                  key={v.id}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1.4fr 1fr 1fr 1.1fr',
-                    padding: '14px 20px',
-                    borderBottom: '1px solid rgba(0,0,0,0.06)',
-                    fontSize: '0.88rem',
-                    background: idx % 2 === 1 ? 'rgba(197,160,89,0.04)' : 'transparent',
-                    alignItems: 'center'
-                  }}
-                >
-                  <div style={{ fontWeight: '700', color: 'var(--color-charcoal-900)' }}>{v.name}</div>
-                  <div style={{ color: 'var(--color-charcoal-600)' }}>{tariff?.minimum_km_per_day ? `${tariff.minimum_km_per_day} km/day` : '300 km/day'}</div>
-                  <div style={{ color: 'var(--accent-gold-primary)', fontWeight: '700' }}>
-                    {tariff?.rate_per_km ? `₹${tariff.rate_per_km} / km` : 'On Request'}
-                  </div>
-                  <div style={{ color: 'var(--color-charcoal-700)' }}>
-                    {tariff?.driver_allowance ? `₹${tariff.driver_allowance} / day` : 'On Request'}
-                  </div>
+            {DEFAULT_OUTSTATION_TARIFFS.map((t, idx) => (
+              <div
+                key={t.id}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1.4fr 1fr 1fr 1.1fr 0.9fr',
+                  padding: '14px 20px',
+                  borderBottom: '1px solid rgba(0,0,0,0.06)',
+                  fontSize: '0.88rem',
+                  background: idx % 2 === 1 ? 'rgba(197,160,89,0.04)' : 'transparent',
+                  alignItems: 'center'
+                }}
+              >
+                <div style={{ fontWeight: '700', color: 'var(--color-charcoal-900)' }}>{t.vehicle_variant}</div>
+                <div style={{ color: 'var(--color-charcoal-600)' }}>{t.minimum_km_per_day} km/day</div>
+                <div style={{ color: 'var(--accent-gold-primary)', fontWeight: '700' }}>
+                  ₹{t.rate_per_km} / km
                 </div>
-              );
-            })}
+                <div style={{ color: 'var(--color-charcoal-700)' }}>
+                  ₹{t.driver_allowance} / day
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <button
+                    onClick={() => handleOpenTariffEnquiry(t)}
+                    style={{
+                      padding: '7px 16px',
+                      borderRadius: '9999px',
+                      background: 'linear-gradient(135deg, #12151C 0%, #1E232E 100%)',
+                      color: '#C5A059',
+                      border: '1px solid #C5A059',
+                      fontSize: '0.8rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = '#C5A059';
+                      e.currentTarget.style.color = '#12151C';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #12151C 0%, #1E232E 100%)';
+                      e.currentTarget.style.color = '#C5A059';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    <span>Enquire</span>
+                    <ChevronRight size={13} />
+                  </button>
+                </div>
+              </div>
+            ))}
           </GlassCard>
-        </div>
-      </section>
-
-      {/* 5. ENQUIRY FORM SECTION */}
-      <section className="section-padding" id="outstation-enquiry">
-        <div className="container">
-          <EnquiryForm title="Book Outstation Highway Journey" subtitle="Instant Per-Km Rate Quote & Driver Confirmation" />
         </div>
       </section>
 
@@ -305,6 +444,16 @@ export const Outstation = ({ onEnquireClick }) => {
           pickup: 'Bengaluru, Karnataka',
           drop: selectedRouteModal?.name || '',
           message: `Inquiring for Bangalore to ${selectedRouteModal?.name || ''} (${selectedRouteModal?.distance || ''}) chauffeur outstation trip. Base rate: ${selectedRouteModal?.rate || ''}.`
+        }}
+      />
+
+      {/* Modal for direct per-row Outstation Tariff Enquiry */}
+      <TariffEnquiryModal
+        tariff={selectedTariffForModal}
+        isOpen={isEnquiryModalOpen}
+        onClose={() => {
+          setIsEnquiryModalOpen(false);
+          setSelectedTariffForModal(null);
         }}
       />
 

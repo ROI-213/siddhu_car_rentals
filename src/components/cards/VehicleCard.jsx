@@ -81,6 +81,7 @@ export const VehicleCard = ({
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      className="vehicle-card-root"
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -99,7 +100,7 @@ export const VehicleCard = ({
       }}
     >
       {/* 1. VEHICLE PHOTOGRAPH CONTAINER */}
-      <div style={{
+      <div className="vehicle-card-img-box" style={{
         position: 'relative',
         width: '100%',
         aspectRatio: '16/10',
@@ -113,6 +114,7 @@ export const VehicleCard = ({
           src={image}
           alt={name}
           loading="lazy"
+          className="vehicle-card-img"
           style={{
             width: '100%',
             height: '100%',
@@ -123,7 +125,7 @@ export const VehicleCard = ({
           }}
         />
         {/* Category Tag Top Left */}
-        <div style={{
+        <div className="vehicle-card-badge" style={{
           position: 'absolute',
           top: '12px',
           left: '12px',
@@ -143,7 +145,7 @@ export const VehicleCard = ({
       </div>
 
       {/* 2. VEHICLE DETAILS BODY */}
-      <div style={{
+      <div className="vehicle-card-body" style={{
         padding: '20px',
         display: 'flex',
         flexDirection: 'column',
@@ -152,7 +154,7 @@ export const VehicleCard = ({
       }}>
         <div>
           {/* Vehicle Name */}
-          <h3 style={{
+          <h3 className="vehicle-card-title" style={{
             fontFamily: 'var(--font-ui)',
             fontSize: '1.15rem',
             fontWeight: '800',
@@ -168,14 +170,14 @@ export const VehicleCard = ({
           </h3>
 
           {/* Useful Specs Pills */}
-          <div style={{
+          <div className="vehicle-card-specs" style={{
             display: 'flex',
             flexWrap: 'wrap',
             gap: '6px',
             marginBottom: '10px'
           }}>
-            {/* Passenger Capacity: X Passengers + Chauffeur */}
-            <span style={{
+            {/* Passenger Capacity */}
+            <span className="vehicle-spec-pill" style={{
               fontSize: '0.72rem',
               fontWeight: '700',
               color: 'var(--color-slate-800)',
@@ -188,11 +190,12 @@ export const VehicleCard = ({
               gap: '4px'
             }}>
               <Users size={12} color="#0284C7" />
-              {displayPassengers}
+              <span className="spec-text-full">{displayPassengers}</span>
+              <span className="spec-text-short">{passengerCapacity} Seats</span>
             </span>
 
             {/* Luggage Capacity */}
-            <span style={{
+            <span className="vehicle-spec-pill" style={{
               fontSize: '0.72rem',
               fontWeight: '700',
               color: 'var(--color-slate-800)',
@@ -205,11 +208,12 @@ export const VehicleCard = ({
               gap: '4px'
             }}>
               <Briefcase size={12} color="#64748B" />
-              {displayLuggage}
+              <span className="spec-text-full">{displayLuggage}</span>
+              <span className="spec-text-short">{luggageCapacity} Bags</span>
             </span>
 
             {/* Chauffeur Included Tag */}
-            <span style={{
+            <span className="vehicle-spec-pill chauffeur-pill" style={{
               fontSize: '0.70rem',
               fontWeight: '700',
               color: '#15803D',
@@ -222,12 +226,13 @@ export const VehicleCard = ({
               gap: '4px'
             }}>
               <ShieldCheck size={12} color="#15803D" />
-              Chauffeur Included
+              <span className="spec-text-full">Chauffeur Included</span>
+              <span className="spec-text-short">Chauffeur</span>
             </span>
           </div>
 
           {/* Best Suited For Row */}
-          <div style={{
+          <div className="vehicle-card-suited" style={{
             fontSize: '0.71rem',
             color: 'var(--color-slate-600)',
             lineHeight: '1.4',
@@ -243,28 +248,28 @@ export const VehicleCard = ({
         </div>
 
         {/* 3. TARIFF FOOTER & DUAL ACTION BUTTONS */}
-        <div style={{
+        <div className="vehicle-card-footer" style={{
           borderTop: '1px solid rgba(226, 232, 240, 0.8)',
           paddingTop: '14px',
           marginTop: '6px'
         }}>
           {/* Price Header Row */}
-          <div style={{
+          <div className="vehicle-price-row" style={{
             display: 'flex',
             alignItems: 'baseline',
             justifyContent: 'space-between',
             marginBottom: '14px'
           }}>
-            <div>
-              <div style={{ fontSize: '0.68rem', color: 'var(--color-slate-500)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '700' }}>
+            <div className="vehicle-price-label-box">
+              <div className="vehicle-price-label" style={{ fontSize: '0.68rem', color: 'var(--color-slate-500)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '700' }}>
                 Official Package
               </div>
-              <div style={{ fontSize: '0.74rem', color: 'var(--color-slate-600)', fontWeight: '600' }}>
+              <div className="vehicle-price-sub" style={{ fontSize: '0.74rem', color: 'var(--color-slate-600)', fontWeight: '600' }}>
                 Garage to Garage
               </div>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <span style={{
+            <div className="vehicle-price-val-box" style={{ textAlign: 'right' }}>
+              <span className="vehicle-price-num" style={{
                 fontSize: '1.4rem',
                 fontWeight: '900',
                 color: 'var(--color-slate-900)',
@@ -272,14 +277,14 @@ export const VehicleCard = ({
               }}>
                 ₹{price}
               </span>
-              <span style={{ fontSize: '0.78rem', color: 'var(--color-slate-500)', fontWeight: '600', marginLeft: '3px' }}>
+              <span className="vehicle-price-period" style={{ fontSize: '0.78rem', color: 'var(--color-slate-500)', fontWeight: '600', marginLeft: '3px' }}>
                 /{period}
               </span>
             </div>
           </div>
 
           {/* Action Buttons (Dual Pill Layout) */}
-          <div style={{
+          <div className="vehicle-card-actions" style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: '8px'
@@ -287,6 +292,7 @@ export const VehicleCard = ({
             {/* Secondary CTA: Explore Specs & Gallery */}
             <button
               onClick={onExplore}
+              className="vehicle-specs-btn"
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -314,17 +320,17 @@ export const VehicleCard = ({
                 e.currentTarget.style.color = 'var(--color-slate-800)';
               }}
             >
-              <Eye size={14} />
-              <span>View Specs</span>
+              <Eye size={13} />
+              <span className="vc-btn-full">View Specs</span>
+              <span className="vc-btn-short">Specs</span>
             </button>
 
             {/* Primary CTA: Get Quote */}
             <WhatsAppEnquiryMenu
               context={{ vehicleName: name, vehicleCategory: category, price: price }}
               menuPlacement="bottom-end"
-              triggerLabel="Get Quote"
-              triggerIcon={WhatsAppIcon}
-              iconSize={15}
+              className="vehicle-quote-btn"
+              iconSize={13}
               buttonStyle={{
                 width: '100%',
                 height: '40px',
@@ -336,7 +342,7 @@ export const VehicleCard = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '6px',
+                gap: '5px',
                 border: 'none',
                 cursor: 'pointer',
                 boxShadow: '0 2px 6px rgba(37, 211, 102, 0.25)',
@@ -351,7 +357,11 @@ export const VehicleCard = ({
                 e.currentTarget.style.background = '#25D366';
                 e.currentTarget.style.boxShadow = '0 2px 6px rgba(37, 211, 102, 0.25)';
               }}
-            />
+            >
+              <WhatsAppIcon size={13} />
+              <span className="vc-btn-full">Get Quote</span>
+              <span className="vc-btn-short">Quote</span>
+            </WhatsAppEnquiryMenu>
           </div>
         </div>
       </div>

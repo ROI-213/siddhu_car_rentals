@@ -28,6 +28,7 @@ import { SectionHeader } from '../components/common/SectionHeader';
 import { tariffApi, formatCurrency } from '../services/tariffApi';
 import { SITE_CONFIG } from '../config/site';
 import { WhatsAppButton } from '../components/common/WhatsAppButton';
+import { TariffEnquiryModal } from '../components/modals/TariffEnquiryModal';
 
 export const Tariff = ({ onSelectVehicleForBooking }) => {
   const [activeCategory, setActiveCategory] = useState('disposal'); // 'disposal' | 'outstation'
@@ -37,6 +38,8 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [capacityFilter, setCapacityFilter] = useState('all');
   const [viewMode, setViewMode] = useState('table'); // 'table' | 'cards'
+  const [selectedTariffForModal, setSelectedTariffForModal] = useState(null);
+  const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
 
   useEffect(() => {
     fetchTariffsAndTerms();
@@ -65,7 +68,7 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
       return v.includes('zire') || v.includes('amaze') || v.includes('indigo') || v.includes('etios') || v.includes('camry') || v.includes('accord') || v.includes('class') || v.includes('5"') || v.includes('7"') || v.includes('a6') || v.includes('a8');
     }
     if (capacityFilter === 'suv') {
-      return v.includes('innova') || v.includes('ertiga') || v.includes('carnes') || v.includes('crysta') || v.includes('hycross') || v.includes('fortuner') || v.includes('q7') || v.includes('vellfie');
+      return v.includes('innova') || v.includes('ertiga') || v.includes('carnes') || v.includes('carens') || v.includes('crysta') || v.includes('hycross') || v.includes('fortuner') || v.includes('q7') || v.includes('vellfie') || v.includes('vellfire');
     }
     if (capacityFilter === 'tempo_bus') {
       return v.includes('traveller') || v.includes('urbania') || v.includes('commuter') || v.includes('bus');
@@ -81,11 +84,18 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
     return matchesSearch && matchesCapacity;
   });
 
-  const handleBookVehicle = (variant) => {
-    if (onSelectVehicleForBooking) {
-      onSelectVehicleForBooking(variant);
-    } else {
-      window.open(`https://wa.me/${SITE_CONFIG.whatsapp.phone}?text=Hello%20Siddhu%20Car%20Rentals,%20I%20would%20like%20to%20enquire%20about%20tariff%20and%20booking%20for%20${encodeURIComponent(variant)}%20(${activeCategory.toUpperCase()}%20Bangalore).`, '_blank');
+  const handleBookVehicle = (tariffItem) => {
+    if (tariffItem && typeof tariffItem === 'object') {
+      setSelectedTariffForModal(tariffItem);
+      setIsEnquiryModalOpen(true);
+    } else if (typeof tariffItem === 'string') {
+      const match = tariffs.find(t => t.vehicle_variant.toLowerCase() === tariffItem.toLowerCase()) || {
+        vehicle_variant: tariffItem,
+        usage_type: activeCategory,
+        service_type: 'Garage to Garage'
+      };
+      setSelectedTariffForModal(match);
+      setIsEnquiryModalOpen(true);
     }
   };
 
@@ -385,7 +395,7 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
                               </td>
                               <td style={{ padding: '16px 20px', textAlign: 'center' }}>
                                 <button
-                                  onClick={() => handleBookVehicle(t.vehicle_variant)}
+                                  onClick={() => handleBookVehicle(t)}
                                   style={{
                                     padding: '6px 14px',
                                     borderRadius: '8px',
@@ -463,7 +473,7 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
                               </td>
                               <td style={{ padding: '16px 20px', textAlign: 'center' }}>
                                 <button
-                                  onClick={() => handleBookVehicle(t.vehicle_variant)}
+                                  onClick={() => handleBookVehicle(t)}
                                   style={{
                                     padding: '6px 14px',
                                     borderRadius: '8px',
@@ -594,7 +604,7 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
                         fullWidth
                         icon={ChevronRight}
                         iconPosition="right"
-                        onClick={() => handleBookVehicle(t.vehicle_variant)}
+                        onClick={() => handleBookVehicle(t)}
                       >
                         Reserve & Get Quote
                       </PremiumButton>
@@ -715,6 +725,13 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
           animation: spin 1s linear infinite;
         }
       `}</style>
+
+      {/* Interactive Enquiry Form Modal for both Local & Outstation */}
+      <TariffEnquiryModal
+        tariff={selectedTariffForModal}
+        isOpen={isEnquiryModalOpen}
+        onClose={() => setIsEnquiryModalOpen(false)}
+      />
 
     </div>
   );

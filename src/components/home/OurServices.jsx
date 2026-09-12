@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Plane, MapPin, Briefcase, RefreshCw, ArrowRight, ShieldCheck, Clock, User, Car, Users } from 'lucide-react';
+import { ServiceJourneyModal } from '../modals/ServiceJourneyModal';
 import './OurServices.css';
 
 const SERVICES = [
@@ -62,6 +63,15 @@ const SERVICES = [
 ];
 
 export const OurServices = ({ onNavigate }) => {
+  const [selectedServiceId, setSelectedServiceId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleBookNow = (service, e) => {
+    if (e) e.stopPropagation();
+    setSelectedServiceId(service.id);
+    setIsModalOpen(true);
+  };
+
   return (
     <section className="our-services-section">
       <div className="os-container">
@@ -81,66 +91,89 @@ export const OurServices = ({ onNavigate }) => {
           </div>
         </div>
 
-        {/* Grid Layout */}
+        {/* Grid Layout: Two - Three - Two (2 - 3 - 2) Style */}
         <div className="os-grid">
 
-          {/* Top Row: 4 Cards */}
-          <div className="os-row os-row-top">
-            {SERVICES.slice(0, 4).map((service) => {
-              const Icon = service.icon;
-              return (
-                <div key={service.id} className="os-card" onClick={() => onNavigate && onNavigate(service.path)}>
-                  <div className="os-image-box">
-                    <img src={service.image} alt={service.title} />
-                    <div className="os-chevron-overlay"></div>
-                    <div className="os-hex-icon">
-                      <Icon size={20} className="os-icon" />
-                    </div>
+          {/* Row 1: 2 Cards */}
+          <div className="os-row os-row-2 os-row-top">
+            {SERVICES.slice(0, 2).map((service) => (
+              <div key={service.id} className="os-card os-card-2" onClick={(e) => handleBookNow(service, e)}>
+                <div className="os-image-box">
+                  <img src={service.image} alt={service.title} loading="lazy" />
+                </div>
+                <div className="os-card-content">
+                  <div className="os-card-body">
+                    <h3 className="os-card-title">{service.title}</h3>
+                    <p className="os-card-subtitle">{service.subtitle}</p>
                   </div>
-                  <div className="os-card-content">
-                    <div className="os-card-text">
-                      <h3 className="os-card-title">{service.title}</h3>
-                      <p className="os-card-subtitle">{service.subtitle}</p>
-                      <div className="os-card-goldline"></div>
-                    </div>
+                  <div className="os-card-footer">
                     <div className="os-card-action">
-                      Book Now &rarr;
+                      <span className="os-action-text-full">Book Now</span>
+                      <span className="os-action-text-short">Book</span>
+                      <ArrowRight size={14} className="os-card-action-icon" />
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
 
-          {/* Bottom Row: 3 Cards Centered */}
-          <div className="os-row os-row-bottom">
-            {SERVICES.slice(4, 7).map((service) => {
-              const Icon = service.icon;
-              return (
-                <div key={service.id} className="os-card" onClick={() => onNavigate && onNavigate(service.path)}>
-                  <div className="os-image-box">
-                    <img src={service.image} alt={service.title} />
-                    <div className="os-chevron-overlay"></div>
-                    <div className="os-hex-icon">
-                      <Icon size={20} className="os-icon" />
-                    </div>
+          {/* Row 2: 3 Cards */}
+          <div className="os-row os-row-3 os-row-middle">
+            {SERVICES.slice(2, 5).map((service) => (
+              <div key={service.id} className="os-card os-card-3" onClick={(e) => handleBookNow(service, e)}>
+                <div className="os-image-box">
+                  <img src={service.image} alt={service.title} loading="lazy" />
+                </div>
+                <div className="os-card-content">
+                  <div className="os-card-body">
+                    <h3 className="os-card-title">{service.title}</h3>
+                    <p className="os-card-subtitle">{service.subtitle}</p>
                   </div>
-                  <div className="os-card-content">
-                    <div className="os-card-text">
-                      <h3 className="os-card-title">{service.title}</h3>
-                      <p className="os-card-subtitle">{service.subtitle}</p>
-                      <div className="os-card-goldline"></div>
-                    </div>
+                  <div className="os-card-footer">
                     <div className="os-card-action">
-                      Book Now &rarr;
+                      <span className="os-action-text-full">Book Now</span>
+                      <span className="os-action-text-short">Book</span>
+                      <ArrowRight size={14} className="os-card-action-icon" />
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
+          </div>
+
+          {/* Row 3: 2 Cards */}
+          <div className="os-row os-row-2 os-row-bottom">
+            {SERVICES.slice(5, 7).map((service) => (
+              <div key={service.id} className="os-card os-card-2" onClick={(e) => handleBookNow(service, e)}>
+                <div className="os-image-box">
+                  <img src={service.image} alt={service.title} loading="lazy" />
+                </div>
+                <div className="os-card-content">
+                  <div className="os-card-body">
+                    <h3 className="os-card-title">{service.title}</h3>
+                    <p className="os-card-subtitle">{service.subtitle}</p>
+                  </div>
+                  <div className="os-card-footer">
+                    <div className="os-card-action">
+                      <span className="os-action-text-full">Book Now</span>
+                      <span className="os-action-text-short">Book</span>
+                      <ArrowRight size={14} className="os-card-action-icon" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
         </div>
+
+        {/* Dedicated Executive Service Journey Enquiry Suite */}
+        <ServiceJourneyModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          initialServiceId={selectedServiceId}
+        />
 
         {/* Bottom Features */}
         <div className="os-features">

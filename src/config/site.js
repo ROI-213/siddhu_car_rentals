@@ -6,4 +6,9 @@ export const SITE_CONFIG = {
   contact: {
     phone: '917625059665',
   },
+  company: {
+    name: 'Siddhu Car Rentals',
+    phone: '917625059665',
+  },
 };
+

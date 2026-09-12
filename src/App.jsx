@@ -148,7 +148,7 @@ export function App() {
         {activePage === 'local' && <LocalTransfer />}
         {activePage === 'corporate' && <CorporateTransfer />}
         {activePage === 'about' && <About onReserveClick={scrollToEnquiry} />}
-        {activePage === 'tariff' && <Tariff onSelectVehicleForBooking={(variant) => handleSelectForEnquiry(variant)} />}
+        {activePage === 'tariff' && <Tariff />}
         {activePage === 'admin' && <AdminTariff onNavigateToPublicTariff={() => handleNavigate('tariff')} />}
         {activePage === 'testimonials' && <Testimonials onReserveClick={scrollToEnquiry} />}
         {activePage === 'contact' && <Contact />}

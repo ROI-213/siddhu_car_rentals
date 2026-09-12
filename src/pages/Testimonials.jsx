@@ -15,123 +15,10 @@ const GoogleIcon = ({ size = 16 }) => (
   </svg>
 );
 
+import { testimonialsData } from '../data/testimonialsData';
+
 export const Testimonials = ({ onReserveClick }) => {
   const [filterCategory, setFilterCategory] = useState('all');
-
-  // Genuine, verified Google Reviews from real customers
-  const testimonialsData = [
-    {
-      id: 1,
-      name: 'RIHA GOYAL',
-      title: '7 reviews · 1 photo',
-      company: 'Google Review',
-      category: 'luxury',
-      categoryLabel: 'Luxury Car Rental',
-      rating: 5,
-      date: '2 years ago',
-      avatarBg: '#0F766E',
-      review: "We had availed their Luxury Car Rental Service on Valentine's. It was absolutely surreal and peaceful. Seamless booking, Driver arrived on time, Car Superclean and stylish. Even the rates, I believe were attractive. We had fantastic experience. Siddhu Ji and Rudresh Ji made it a memorable experience for us."
-    },
-    {
-      id: 2,
-      name: 'Ashish Bhat',
-      title: 'Local Guide · 10 reviews · 5 photos',
-      company: 'Google Review',
-      category: 'outstation',
-      categoryLabel: '6-Day Tour',
-      rating: 5,
-      date: '2 years ago',
-      avatarBg: '#0284C7',
-      isLocalGuide: true,
-      review: "Don Jacob was excellent driver , very friendly and helped us in a 6 day tour"
-    },
-    {
-      id: 3,
-      name: 'Shreevatsa Kulkarni',
-      title: '2 reviews · 3 photos',
-      company: 'Google Review',
-      category: 'luxury',
-      categoryLabel: 'Luxury Maintenance',
-      rating: 5,
-      date: '2 years ago',
-      avatarBg: '#059669',
-      review: "Cleaniness and timing is at the peak with very luxurious car maintenance. High class vehicles available at a cheaper cost."
-    },
-    {
-      id: 4,
-      name: 'Ram Ghatge',
-      title: 'Local Guide · 26 reviews · 2 photos',
-      company: 'Google Review',
-      category: 'local',
-      categoryLabel: 'On-Time Punctuality',
-      rating: 5,
-      date: '4 years ago',
-      avatarBg: '#D97706',
-      isLocalGuide: true,
-      review: "Cars Mentainance is very well. Drivers reaches ON TIME. Whenever i visit Bangalore i prefer SIDDHU car rentals. Thank u"
-    },
-    {
-      id: 5,
-      name: 'William Brown',
-      title: '1 review',
-      company: 'Google Review',
-      category: 'outstation',
-      categoryLabel: 'Ooty Tour',
-      rating: 5,
-      date: '9 years ago',
-      avatarBg: '#7C3AED',
-      review: "I have travelled in ciaz car to ooty and we enjoyed a lot with the service of the driver very honest ..polite ..services thank you siddu car rentals team ..all the best ..i give u 7stars."
-    },
-    {
-      id: 6,
-      name: 'Tejas S',
-      title: '4 reviews',
-      company: 'Google Review',
-      category: 'local',
-      categoryLabel: 'Comfortable Rental',
-      rating: 5,
-      date: '2 years ago',
-      avatarBg: '#DB2777',
-      review: "An excellent platform to book a rental. I just had to a trip a month before which was good , comfy and very well assurance which is why i have started booking without any issue."
-    },
-    {
-      id: 7,
-      name: 'Pramod Hegde',
-      title: '5 reviews',
-      company: 'Google Review',
-      category: 'local',
-      categoryLabel: 'Smooth Coordination',
-      rating: 5,
-      date: '2 years ago',
-      avatarBg: '#4F46E5',
-      review: "They have provided good service and have looked everything smoothly... Felt better and I suggest you to approach them"
-    },
-    {
-      id: 8,
-      name: 'Rakesh Prajapati',
-      title: '2 reviews',
-      company: 'Google Review',
-      category: 'local',
-      categoryLabel: 'Bangalore Rental',
-      rating: 5,
-      date: '2 years ago',
-      avatarBg: '#EA580C',
-      review: "Very good service provided by Siddhu car Rentals , Banglore"
-    },
-    {
-      id: 9,
-      name: 'Shyama Prasad Das',
-      title: 'Local Guide · 123 reviews · 147 photos',
-      company: 'Google Review',
-      category: 'local',
-      categoryLabel: 'Local Guide Feedback',
-      rating: 5,
-      date: '4 years ago',
-      avatarBg: '#2563EB',
-      isLocalGuide: true,
-      review: "Good experience. They give pretty well service."
-    }
-  ];
 
   const filteredTestimonials = filterCategory === 'all'
     ? testimonialsData
@@ -244,9 +131,10 @@ export const Testimonials = ({ onReserveClick }) => {
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px', marginBottom: '40px' }}>
             {[
               { id: 'all', label: `All Reviews (${testimonialsData.length})` },
-              { id: 'luxury', label: 'Luxury & Events' },
+              { id: 'corporate', label: 'Corporate Mobility' },
+              { id: 'airport', label: 'Airport VIP Transfers' },
               { id: 'outstation', label: 'Outstation Tours' },
-              { id: 'local', label: 'City & Punctuality' }
+              { id: 'wedding', label: 'Wedding Convoys' }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -271,11 +159,11 @@ export const Testimonials = ({ onReserveClick }) => {
                   </div>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', background: 'rgba(26, 115, 232, 0.08)', borderRadius: '999px', border: '1px solid rgba(26, 115, 232, 0.2)' }}>
                     <GoogleIcon size={13} />
-                    <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#1A73E8' }}>Google Verified</span>
+                    <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#1A73E8' }}>{item.categoryLabel || 'Google Verified'}</span>
                   </div>
                 </div>
 
-                <p className="text-body" style={{ fontStyle: 'italic', lineHeight: '1.7', color: '#1E293B', marginBottom: '22px', flex: 1, fontSize: '0.94rem' }}>
+                <p className="text-body" style={{ lineHeight: '1.7', color: '#1E293B', marginBottom: '22px', flex: 1, fontSize: '0.94rem' }}>
                   "{item.review}"
                 </p>
 
@@ -302,7 +190,7 @@ export const Testimonials = ({ onReserveClick }) => {
                         <CheckCircle size={14} color="#1A73E8" />
                       </div>
                       <div style={{ fontSize: '0.74rem', color: 'var(--color-charcoal-500)', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
-                        <span>{item.title}</span>
+                        <span>{item.title}{item.company ? ` • ${item.company}` : ''}</span>
                         {item.isLocalGuide && (
                           <span style={{ background: '#FEF3C7', color: '#92400E', fontSize: '0.65rem', fontWeight: '800', padding: '1px 6px', borderRadius: '4px' }}>
                             Local Guide

@@ -765,6 +765,12 @@ export const CarRentalSearch = ({ onNavigate }) => {
         if (!pickupLocation) setPickupLocation('Bengaluru, Karnataka');
         setSelectedRouteNotice(`Destination Selected: Bengaluru → ${destination}`);
         setTimeout(() => setSelectedRouteNotice(''), 7000);
+        if (e.detail?.shouldScroll) {
+          const el = document.getElementById('journey-planner') || document.getElementById('quick-enquiry');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
       }
     };
     window.addEventListener('scr_select_destination', handleExternalDestinationSelect);
@@ -813,8 +819,9 @@ export const CarRentalSearch = ({ onNavigate }) => {
         <div className="crs-left-panel">
           <div className="crs-header-compact">
             <div className="crs-feature-badge">
-              <ShieldCheck size={13} />
-              <span>Bengaluru Luxury Chauffeur Specialists</span>
+              <ShieldCheck size={12} />
+              <span className="crs-text-full">Bengaluru Luxury Chauffeur Specialists</span>
+              <span className="crs-text-short">Luxury Chauffeurs</span>
             </div>
             <h2 className="crs-headline">
               Exceptional Journeys, Backed by Uncompromised Luxury.
@@ -842,32 +849,45 @@ export const CarRentalSearch = ({ onNavigate }) => {
 
           <div className="crs-trust-grid">
             <div className="crs-trust-item">
-              <ShieldCheck size={16} color="#C5A059" className="crs-trust-icon" />
-              <span className="crs-trust-title">100% Verified Chauffeurs</span>
+              <ShieldCheck size={14} color="#C5A059" className="crs-trust-icon" />
+              <span className="crs-trust-title">
+                <span className="crs-text-full">100% Verified Chauffeurs</span>
+                <span className="crs-text-short">100% Verified</span>
+              </span>
             </div>
 
             <div className="crs-trust-item">
-              <Clock size={16} color="#0284C7" className="crs-trust-icon" />
-              <span className="crs-trust-title">24/7 Guaranteed Dispatch</span>
+              <Clock size={14} color="#0284C7" className="crs-trust-icon" />
+              <span className="crs-trust-title">
+                <span className="crs-text-full">24/7 Guaranteed Dispatch</span>
+                <span className="crs-text-short">24/7 Dispatch</span>
+              </span>
             </div>
 
             <div className="crs-trust-item">
-              <FileText size={16} color="#059669" className="crs-trust-icon" />
-              <span className="crs-trust-title">Transparent GST Billing</span>
+              <FileText size={14} color="#059669" className="crs-trust-icon" />
+              <span className="crs-trust-title">
+                <span className="crs-text-full">Transparent GST Billing</span>
+                <span className="crs-text-short">GST Invoicing</span>
+              </span>
             </div>
 
             <div className="crs-trust-item">
-              <Crown size={16} color="#D97706" className="crs-trust-icon" />
-              <span className="crs-trust-title">Flagship Luxury Fleet</span>
+              <Crown size={14} color="#D97706" className="crs-trust-icon" />
+              <span className="crs-trust-title">
+                <span className="crs-text-full">Flagship Luxury Fleet</span>
+                <span className="crs-text-short">Luxury Fleet</span>
+              </span>
             </div>
           </div>
 
           <div className="crs-cta-cluster">
             <WhatsAppEnquiryMenu
               context={{ tripType: 'Concierge Booking' }}
-              triggerLabel="WhatsApp Concierge"
               triggerIcon={WhatsAppIcon}
-              iconSize={15}
+              iconSize={14}
+              menuPlacement="bottom-start"
+              className="crs-btn-whatsapp-concierge"
               buttonStyle={{
                 background: '#25D366',
                 color: '#FFFFFF',
@@ -877,20 +897,27 @@ export const CarRentalSearch = ({ onNavigate }) => {
                 fontWeight: '700',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '7px',
+                justifyContent: 'center',
+                gap: '6px',
                 border: 'none',
                 cursor: 'pointer',
                 boxShadow: '0 4px 12px rgba(37, 211, 102, 0.28)',
-                transition: 'transform 0.2s ease'
+                transition: 'transform 0.2s ease',
+                boxSizing: 'border-box'
               }}
-            />
+            >
+              <WhatsAppIcon size={14} />
+              <span className="crs-text-full">WhatsApp Concierge</span>
+              <span className="crs-text-short">WhatsApp</span>
+            </WhatsAppEnquiryMenu>
 
             <a
               href={`tel:${SITE_CONFIG.contact.phone}`}
               className="crs-btn-call"
             >
               <PhoneCall size={14} color="#0F172A" />
-              <span>Call: +91 76250 59665</span>
+              <span className="crs-text-full">Call: +91 76250 59665</span>
+              <span className="crs-text-short">Call Desk</span>
             </a>
 
             <button
@@ -1036,7 +1063,7 @@ export const CarRentalSearch = ({ onNavigate }) => {
                             returnDate: showReturnDate ? returnDate : undefined,
                             returnTime: showReturnDate ? returnTime : undefined,
                           }}
-                          menuPlacement="top-end"
+                          menuPlacement="bottom-end"
                           triggerLabel="WhatsApp"
                           triggerIcon={WhatsAppIcon}
                           iconSize={15}

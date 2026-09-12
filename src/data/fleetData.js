@@ -623,7 +623,7 @@ export const fleetData = [
   },
   {
     "id": "traveller",
-    "name": "Force Traveller Luxury A/C (12+1 / 16+1)",
+    "name": "Force Traveller Luxury A/C",
     "modelYear": "2024–2025 Luxury High-Roof Edition",
     "category": "Executive Group Coaches",
     "categoryKey": "group",
@@ -658,6 +658,82 @@ export const fleetData = [
       "Curtained Privacy Windows",
       "Rear Ladder & Luggage Carrier",
       "Uniformed Highway Driver"
+    ]
+  },
+  {
+    "id": "urbania-12",
+    "name": "Force Urbania VIP (12+1 Seater AC)",
+    "modelYear": "2024–2025 Next-Gen Luxury Commuter",
+    "category": "Next-Gen VIP Commuters",
+    "categoryKey": "group",
+    "categoryLabel": "Group Travel",
+    "passengerCapacity": 12,
+    "passengerDisplay": "12 Passengers + Chauffeur",
+    "seatCategory": "12+",
+    "luggageCapacity": 8,
+    "luggageDisplay": "8 Large Bags / Luggage Bay",
+    "chauffeurIncluded": true,
+    "bestFor": "C-Suite Delegations, VIP Airport Meet-and-Greet, Interstate Executive Group Tours",
+    "bestSuitedFor": ["C-Suite Delegations", "Airport VIP Shuttles", "Luxury Corporate Offsites", "High-Profile Events"],
+    "image": "/images/traveller_front.jpg",
+    "gallery": [
+      "/images/traveller_front.jpg",
+      "/images/traveller_int_1.jpg",
+      "/images/traveller_int_2.jpg",
+      "/images/traveller_int_3.jpg"
+    ],
+    "rating": 4.9,
+    "transmission": "Mercedes-Derived 5-Speed Manual",
+    "fuelType": "FM 2.6 CR ED TCIC Diesel",
+    "ac": "Individual Overhead AC Vents for Every Passenger",
+    "badgeText": "Next-Gen Luxury Van",
+    "regPlate": "KA 05 U 1201",
+    "description": "Next-generation Force Urbania 12+1 VIP Commuter with ultra-luxury aerodynamic European design, monocoque chassis for whisper-quiet ride, reclining captain seats with armrests, individual USB ports, ambient ceiling lighting, and ample luggage space. Perfect for executive corporate delegations and VIP airport transfers.",
+    "amenities": [
+      "Monocoque Ultra-Quiet Body",
+      "Individual Passenger Recliners & USB",
+      "Independent Air Suspension",
+      "Personal Overhead Reading Lamps & AC",
+      "Dual Airbags & ABS with EBD",
+      "Uniformed Senior Chauffeur"
+    ]
+  },
+  {
+    "id": "urbania-16",
+    "name": "Force Urbania VIP (16+1 Seater AC)",
+    "modelYear": "2024–2025 Next-Gen Luxury Commuter",
+    "category": "Next-Gen VIP Commuters",
+    "categoryKey": "group",
+    "categoryLabel": "Group Travel",
+    "passengerCapacity": 16,
+    "passengerDisplay": "16 Passengers + Chauffeur",
+    "seatCategory": "12+",
+    "luggageCapacity": 10,
+    "luggageDisplay": "10 Large Bags / Luggage Bay",
+    "chauffeurIncluded": true,
+    "bestFor": "Large Executive Delegations, High-Capacity Airport Transfers, Destination Weddings",
+    "bestSuitedFor": ["Large Executive Delegations", "High-Capacity Airport Transfers", "Destination Weddings", "Interstate Tours"],
+    "image": "/images/traveller_front.jpg",
+    "gallery": [
+      "/images/traveller_front.jpg",
+      "/images/traveller_int_1.jpg",
+      "/images/traveller_int_2.jpg",
+      "/images/traveller_int_3.jpg"
+    ],
+    "rating": 4.9,
+    "transmission": "Mercedes-Derived 5-Speed Manual",
+    "fuelType": "FM 2.6 CR ED TCIC Diesel",
+    "ac": "Individual Overhead AC Vents for Every Passenger",
+    "badgeText": "16 Seater Next-Gen VIP",
+    "regPlate": "KA 05 U 1601",
+    "description": "Next-generation Force Urbania 16+1 VIP Commuter designed for maximum capacity without compromising on comfort. European-styled cabin with independent multi-vent climate control, high-back ergonomic reclining seats, whisper-quiet cabin acoustics, and seasoned long-distance chauffeurs.",
+    "amenities": [
+      "Monocoque Whisper-Quiet Cabin",
+      "16 Ergonomic High-Back Recliners",
+      "Individual AC Vents & USB Ports",
+      "Large Tinted Privacy Windows",
+      "Spacious Rear Luggage Compartment",
+      "Uniformed Experienced Highway Chauffeur"
     ]
   },
   {

@@ -1,10 +1,453 @@
-import React from 'react';
-import { Crown, Award, ShieldCheck, Clock, Users, Star, Car, CheckCircle2, HeartHandshake, Sparkles, Building2, MapPin } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Crown, Award, ShieldCheck, Clock, Users, Star, Car, CheckCircle2, HeartHandshake, Sparkles, Building2, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PageHero } from '../components/common/PageHero';
 import { GlassCard } from '../components/common/GlassCard';
 import { SectionHeader } from '../components/common/SectionHeader';
 import { Badge } from '../components/common/Badge';
-import { StatCard } from '../components/cards/StatCard';
+
+// Fleet car images strictly excluding tempo travellers and buses
+const ABOUT_CAR_SLIDES = [
+  {
+    name: "Mercedes-Benz S-Class S350d",
+    badge: "Flagship VIP",
+    category: "Ultra Luxury Sedans",
+    src: "/images/sclass_front.png",
+    fit: "contain"
+  },
+  {
+    name: "Mercedes-Benz S-Class Chauffeur Service",
+    badge: "VIP Chauffeur",
+    category: "Ultra Luxury VIP",
+    src: "/images/fleet/mercedes_s_class_chauffeur.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Toyota Vellfire Executive Lounge",
+    badge: "Supreme VIP Lounge",
+    category: "Ultra Luxury MPVs",
+    src: "/images/vellfire_front.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Toyota Vellfire VIP Lounge Edition",
+    badge: "Captain Ottoman Seats",
+    category: "Ultra Luxury MPVs",
+    src: "/images/fleet/vellfire_front_quarter.png",
+    fit: "contain"
+  },
+  {
+    name: "BMW 730Ld xDrive (7 Series)",
+    badge: "Ultra VIP Flagship",
+    category: "Luxury Flagship Sedans",
+    src: "/images/bmw_front.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Mercedes-Benz E-Class Executive",
+    badge: "VIP Luxury",
+    category: "Premium German Sedans",
+    src: "/images/eclass_front.jpg",
+    fit: "cover"
+  },
+  {
+    name: "BMW 5 Series Luxury Line",
+    badge: "German Executive",
+    category: "Premium Sedans",
+    src: "/images/fleet/bmw_5_series_white_front.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Audi Q7 Quattro Luxury SUV",
+    badge: "Luxury SUV",
+    category: "Premium 7-Seater SUV",
+    src: "/images/audi_q7_front.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Toyota Camry Hybrid Luxury Sedan",
+    badge: "C-Suite Executive",
+    category: "Executive Hybrid Sedans",
+    src: "/images/fleet/camry_hybrid_white_front.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Toyota Fortuner 4x4 Luxury SUV",
+    badge: "Executive SUV",
+    category: "All-Terrain Executive SUV",
+    src: "/images/fortuner_front.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Honda Accord Executive Sedan",
+    badge: "Executive Choice",
+    category: "Premium Corporate Sedans",
+    src: "/images/accord_front.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Toyota Innova Hycross Hybrid",
+    badge: "Hybrid Luxury",
+    category: "Executive MPVs",
+    src: "/images/hycross_front.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Toyota Innova Crysta VIP",
+    badge: "Executive Choice",
+    category: "Executive MPVs",
+    src: "/images/crysta_front.png",
+    fit: "contain"
+  },
+  {
+    name: "Toyota Innova Crysta Luxury Edition",
+    badge: "Premium Outstation",
+    category: "Executive MPVs",
+    src: "/images/innova_crysta_luxury.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Toyota Innova (Classic VIP)",
+    badge: "Corporate Favorite",
+    category: "Family & Corporate MPVs",
+    src: "/images/fleet/innova_white_front.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Kia Carens Luxury Plus",
+    badge: "Modern Executive",
+    category: "Compact Executive MPVs",
+    src: "/images/fleet/kia_carens_white_front.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Maruti Suzuki Ertiga Smart Hybrid",
+    badge: "City & Outstation",
+    category: "Smart Hybrid MPVs",
+    src: "/images/fleet/ertiga_white_front.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Maruti Suzuki Dzire Executive",
+    badge: "Economy Executive",
+    category: "Compact Sedans",
+    src: "/images/fleet/dzire_fleet.jpg",
+    fit: "cover"
+  },
+  {
+    name: "Siddhu Verified Fleet on Bengaluru Road",
+    badge: "On-Road Verified",
+    category: "Commercial Yellow-Board Fleet",
+    src: "/images/siddhu_white_car_bengaluru_road.jpg",
+    fit: "cover"
+  }
+];
+
+const AboutFleetSlider = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const touchStartXRef = useRef(null);
+
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % ABOUT_CAR_SLIDES.length);
+  }, []);
+
+  const prevSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + ABOUT_CAR_SLIDES.length) % ABOUT_CAR_SLIDES.length);
+  }, []);
+
+  // Continuous auto-sliding (every 2.8 seconds)
+  useEffect(() => {
+    if (isHovered) return;
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 2800);
+    return () => clearInterval(interval);
+  }, [isHovered, nextSlide]);
+
+  const handleTouchStart = (e) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartXRef.current === null) return;
+    const diff = touchStartXRef.current - e.changedTouches[0].clientX;
+    if (diff > 40) {
+      nextSlide();
+    } else if (diff < -40) {
+      prevSlide();
+    }
+    touchStartXRef.current = null;
+  };
+
+  const currentSlide = ABOUT_CAR_SLIDES[currentIndex];
+
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        position: 'relative',
+        borderRadius: '24px',
+        overflow: 'hidden',
+        boxShadow: '0 20px 40px -15px rgba(0,0,0,0.25)',
+        border: '1px solid rgba(0,0,0,0.1)',
+        minHeight: '340px',
+        aspectRatio: '4/3',
+        background: '#0B111E',
+        userSelect: 'none'
+      }}
+    >
+      {/* Horizontal Sliding Track */}
+      <div
+        style={{
+          display: 'flex',
+          width: '100%',
+          height: '100%',
+          transform: `translateX(-${currentIndex * 100}%)`,
+          transition: 'transform 600ms cubic-bezier(0.25, 1, 0.5, 1)',
+          willChange: 'transform'
+        }}
+      >
+        {ABOUT_CAR_SLIDES.map((slide, idx) => (
+          <div
+            key={idx}
+            style={{
+              flex: '0 0 100%',
+              width: '100%',
+              height: '100%',
+              position: 'relative',
+              background: slide.fit === 'contain' ? 'radial-gradient(ellipse at center, #1E293B 0%, #0B111E 100%)' : '#0B111E'
+            }}
+          >
+            <img
+              src={slide.src}
+              alt={slide.name}
+              loading={idx < 3 ? 'eager' : 'lazy'}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: slide.fit,
+                display: 'block',
+                padding: slide.fit === 'contain' ? '28px' : '0'
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Top Left Fleet Badge */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '16px',
+          left: '16px',
+          background: 'rgba(15, 23, 42, 0.85)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          color: 'var(--accent-gold-primary)',
+          padding: '6px 14px',
+          borderRadius: '9999px',
+          fontSize: '0.75rem',
+          fontWeight: '700',
+          letterSpacing: '0.04em',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          border: '1px solid rgba(245, 158, 11, 0.35)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+          zIndex: 3,
+          pointerEvents: 'none'
+        }}
+      >
+        <Car size={14} />
+        <span>SIDDHU VERIFIED FLEET</span>
+      </div>
+
+      {/* Top Right Slide Counter */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '16px',
+          right: '16px',
+          background: 'rgba(15, 23, 42, 0.85)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          color: '#FFFFFF',
+          padding: '4px 12px',
+          borderRadius: '9999px',
+          fontSize: '0.72rem',
+          fontWeight: '700',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+          zIndex: 3,
+          pointerEvents: 'none'
+        }}
+      >
+        {currentIndex + 1} / {ABOUT_CAR_SLIDES.length}
+      </div>
+
+      {/* Navigation Arrows */}
+      <button
+        onClick={prevSlide}
+        aria-label="Previous car"
+        style={{
+          position: 'absolute',
+          left: '12px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: '40px',
+          height: '40px',
+          borderRadius: '50%',
+          background: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          color: '#FFFFFF',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          zIndex: 4,
+          transition: 'all 0.2s ease',
+          opacity: isHovered ? 1 : 0.7
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'var(--accent-gold-primary)';
+          e.currentTarget.style.color = '#000000';
+          e.currentTarget.style.transform = 'translateY(-50%) scale(1.08)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'rgba(15, 23, 42, 0.75)';
+          e.currentTarget.style.color = '#FFFFFF';
+          e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+        }}
+      >
+        <ChevronLeft size={20} />
+      </button>
+
+      <button
+        onClick={nextSlide}
+        aria-label="Next car"
+        style={{
+          position: 'absolute',
+          right: '12px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: '40px',
+          height: '40px',
+          borderRadius: '50%',
+          background: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          color: '#FFFFFF',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          zIndex: 4,
+          transition: 'all 0.2s ease',
+          opacity: isHovered ? 1 : 0.7
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'var(--accent-gold-primary)';
+          e.currentTarget.style.color = '#000000';
+          e.currentTarget.style.transform = 'translateY(-50%) scale(1.08)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'rgba(15, 23, 42, 0.75)';
+          e.currentTarget.style.color = '#FFFFFF';
+          e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+        }}
+      >
+        <ChevronRight size={20} />
+      </button>
+
+      {/* Bottom Gradient Overlay with Vehicle Details */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: 'linear-gradient(to top, rgba(11, 17, 30, 0.95) 0%, rgba(11, 17, 30, 0.7) 60%, transparent 100%)',
+          padding: '40px 20px 16px',
+          zIndex: 3,
+          color: '#FFFFFF',
+          pointerEvents: 'none'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+          <span
+            style={{
+              background: 'var(--accent-gold-primary)',
+              color: '#000000',
+              fontSize: '0.68rem',
+              fontWeight: '800',
+              padding: '2px 8px',
+              borderRadius: '4px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em'
+            }}
+          >
+            {currentSlide.badge}
+          </span>
+          <span style={{ fontSize: '0.76rem', color: '#CBD5E1', fontWeight: '600' }}>
+            {currentSlide.category}
+          </span>
+        </div>
+        <div
+          style={{
+            fontSize: '1.08rem',
+            fontWeight: '800',
+            color: '#FFFFFF',
+            letterSpacing: '-0.01em',
+            textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
+          }}
+        >
+          {currentSlide.name}
+        </div>
+      </div>
+
+      {/* Slide Progress Dots */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '8px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: '4px',
+          zIndex: 4,
+          alignItems: 'center'
+        }}
+      >
+        {ABOUT_CAR_SLIDES.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => setCurrentIndex(idx)}
+            aria-label={`Go to slide ${idx + 1}`}
+            style={{
+              width: currentIndex === idx ? '16px' : '5px',
+              height: '5px',
+              borderRadius: '9999px',
+              background: currentIndex === idx ? 'var(--accent-gold-primary)' : 'rgba(255, 255, 255, 0.35)',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
 
 export const About = ({ onReserveClick }) => {
   return (
@@ -20,19 +463,6 @@ export const About = ({ onReserveClick }) => {
         breadcrumbs={['About Us']}
         image="/images/hero_luxury_sedan.jpg"
       />
-
-      {/* 2. COMPANY STATISTICS BAR */}
-      <section style={{ marginTop: '-40px', position: 'relative', zIndex: 10 }}>
-        <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-            <StatCard value="25+ Years" label="Chauffeur Legacy" sublabel="Established in Bengaluru" icon={Award} />
-            <StatCard value="50+ Fleet" label="Luxury Vehicles" sublabel="Mercedes, BMW, Innova" icon={Car} />
-            <StatCard value="15,000+" label="Happy Clients" sublabel="VIP & Corporate Travelers" icon={Users} />
-            <StatCard value="40+ Cities" label="South India Covered" sublabel="Karnataka, TN, Kerala" icon={MapPin} />
-            <StatCard value="25,000+" label="Successful Trips" sublabel="99.8% Punctuality SLA" icon={ShieldCheck} />
-          </div>
-        </div>
-      </section>
 
       {/* 3. THE MAN BEHIND THE WHEEL - S.M. PATIL (BALANCED 50/50 EDITORIAL LAYOUT) */}
       <section className="section-padding" style={{ position: 'relative', background: '#FFFFFF' }}>
@@ -285,10 +715,8 @@ export const About = ({ onReserveClick }) => {
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px', alignItems: 'center' }}>
             
-            {/* Vision Image */}
-            <div style={{ borderRadius: '24px', overflow: 'hidden', boxShadow: 'var(--shadow-lg)', border: '1px solid rgba(0,0,0,0.08)', minHeight: '340px', aspectRatio: '4/3' }}>
-              <img src="/images/siddhu_white_car_bengaluru_road.jpg" alt="Siddhu Car Rentals fleet on Bengaluru road" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-            </div>
+            {/* Vision Image / Continuous Fleet Showcase Slider */}
+            <AboutFleetSlider />
 
             {/* Mission & Vision Text */}
             <div>
