@@ -307,6 +307,18 @@
   }
 }
 
+@media (max-width: 768px) {
+  .journey-planner-section {
+    padding: 30px 14px 10px 14px !important;
+  }
+  .planner-top-composition {
+    margin-bottom: 0px !important;
+  }
+  .planner-intro-block {
+    margin-bottom: 12px !important;
+  }
+}
+
 /* KARNATAKA BENTO GRID */
 .trip-bento-grid {
   display: grid;

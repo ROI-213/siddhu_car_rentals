@@ -47,7 +47,8 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
   };
 
   return (
-    <header
+    <>
+      <header
       style={{
         position: 'sticky',
         top: 10,
@@ -248,145 +249,6 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
         </button>
       </div>
 
-      {/* 100% Light Mobile Full-Screen Navigation Drawer */}
-      {mobileMenuOpen && (
-        <div style={{
-          position: 'fixed',
-          top: '110px',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(250, 249, 246, 0.98)',
-          backdropFilter: 'blur(28px)',
-          WebkitBackdropFilter: 'blur(28px)',
-          zIndex: 999,
-          padding: '24px 20px 40px 20px',
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          borderTop: '1px solid var(--accent-sky-border)'
-        }}>
-          
-          {/* Ambient Background Shape */}
-          <div style={{
-            position: 'absolute',
-            top: '10%',
-            right: '-10%',
-            width: '300px',
-            height: '300px',
-            background: 'radial-gradient(circle, rgba(2, 132, 199, 0.08) 0%, rgba(255,255,255,0) 70%)',
-            pointerEvents: 'none'
-          }} />
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative', zIndex: 2 }}>
-            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-sky-primary)', fontWeight: '700', marginBottom: '10px' }}>
-              Explore Services & Fleets
-            </div>
-            {navItems.map((item) => {
-              const isActive = activePage === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleNavClick(item.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    width: '100%',
-                    padding: '14px 16px',
-                    minHeight: '48px',
-                    borderRadius: '12px',
-                    background: isActive ? 'rgba(2, 132, 199, 0.1)' : 'rgba(255, 255, 255, 0.9)',
-                    border: isActive ? '1px solid var(--accent-sky-primary)' : '1px solid rgba(226,232,240,0.8)',
-                    color: isActive ? 'var(--accent-sky-primary)' : 'var(--color-slate-900)',
-                    fontFamily: isActive ? 'var(--font-editorial)' : 'var(--font-ui)',
-                    fontSize: '1.05rem',
-                    fontWeight: isActive ? '700' : '500',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
-                  }}
-                >
-                  <span>{item.label}</span>
-                  <ChevronRight size={18} opacity={isActive ? 1 : 0.4} />
-                </button>
-              );
-            })}
-
-            {/* Admin Management Link in Mobile Menu */}
-            <button
-              onClick={() => handleNavClick('admin')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-                padding: '12px 16px',
-                borderRadius: '12px',
-                background: 'rgba(197, 160, 89, 0.1)',
-                border: '1px solid rgba(197, 160, 89, 0.4)',
-                color: '#C5A059',
-                fontSize: '0.92rem',
-                fontWeight: '700',
-                cursor: 'pointer',
-                textAlign: 'left',
-                marginTop: '8px'
-              }}
-            >
-              <span>⚙️ Admin Tariff Portal</span>
-              <ChevronRight size={16} />
-            </button>
-          </div>
-
-          {/* Sticky Bottom Actions */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '28px', position: 'relative', zIndex: 2 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <a
-                href={`tel:${SITE_CONFIG.contact.phone}`}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  height: '48px',
-                  borderRadius: '12px',
-                  background: 'var(--color-slate-900)',
-                  color: '#FFFFFF',
-                  textDecoration: 'none',
-                  fontSize: '0.9rem',
-                  fontWeight: '600'
-                }}
-              >
-                <PhoneCall size={16} color="var(--accent-sky-primary)" />
-                <span>Call</span>
-              </a>
-              <WhatsAppButton
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  height: '48px',
-                  borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
-                  color: '#FFFFFF',
-                  fontSize: '0.9rem',
-                  fontWeight: '600'
-                }}
-              >
-                <MessageSquare size={16} />
-                <span>WhatsApp</span>
-              </WhatsAppButton>
-            </div>
-
-            <PremiumButton variant="sky" size="lg" fullWidth pill icon={ChevronRight} iconPosition="right" onClick={() => handleNavClick('contact')}>
-              Get Quote
-            </PremiumButton>
-          </div>
-        </div>
-      )}
-
       <style>{`
         .nav-center-links {
           display: flex;
@@ -510,5 +372,186 @@ export const Navbar = ({ activePage = 'home', onNavigate }) => {
         }
       `}</style>
     </header>
+
+    {/* 100% Light Mobile Full-Screen Navigation Drawer (outside header to prevent clipping) */}
+    {mobileMenuOpen && (
+      <div style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(250, 249, 246, 0.98)',
+        backdropFilter: 'blur(28px)',
+        WebkitBackdropFilter: 'blur(28px)',
+        zIndex: 99999,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        padding: '16px 20px 32px 20px',
+        overflowY: 'auto',
+        animation: 'navFadeIn 0.25s ease-out'
+      }}>
+        {/* Drawer Header with Brand & Close Button */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingBottom: '16px',
+          borderBottom: '1px solid rgba(226, 232, 240, 0.8)',
+          marginBottom: '16px'
+        }}>
+          <div 
+            onClick={() => handleNavClick('home')}
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+          >
+            <div style={{
+              height: '44px',
+              width: '54px',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #090D16 0%, #151D2A 100%)',
+              border: '1px solid rgba(197, 160, 89, 0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '3px'
+            }}>
+              <img src="/images/siddhu_logo_transparent.png" alt="Siddhu Car Rentals" style={{ height: '100%', width: '100%', objectFit: 'contain' }} />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'var(--font-editorial, "Playfair Display", serif)', fontWeight: '900', fontSize: '0.96rem', color: '#0F172A', lineHeight: '1.1' }}>
+                SIDDHU <span style={{ color: '#0284C7' }}>CAR RENTALS</span>
+              </div>
+              <div style={{ fontSize: '0.58rem', fontWeight: '800', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#64748B', marginTop: '2px' }}>
+                Bengaluru Luxury Chauffeur
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            aria-label="Close Navigation Menu"
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '50%',
+              background: '#FFFFFF',
+              border: '1px solid rgba(226, 232, 240, 0.8)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#0F172A',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)'
+            }}
+          >
+            <X size={22} />
+          </button>
+        </div>
+
+        {/* Nav Items List */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
+          <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-sky-primary)', fontWeight: '700', marginBottom: '8px' }}>
+            Explore Services & Fleets
+          </div>
+          {navItems.map((item) => {
+            const isActive = activePage === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavClick(item.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  padding: '12px 16px',
+                  borderRadius: '12px',
+                  background: isActive ? 'rgba(2, 132, 199, 0.1)' : 'rgba(255, 255, 255, 0.85)',
+                  border: isActive ? '1px solid var(--accent-sky-primary)' : '1px solid rgba(226,232,240,0.8)',
+                  color: isActive ? 'var(--accent-sky-primary)' : 'var(--color-slate-900)',
+                  fontFamily: isActive ? 'var(--font-editorial)' : 'var(--font-ui)',
+                  fontSize: '1rem',
+                  fontWeight: isActive ? '700' : '500',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                }}
+              >
+                <span>{item.label}</span>
+                <ChevronRight size={18} opacity={isActive ? 1 : 0.35} />
+              </button>
+            );
+          })}
+
+          <button
+            onClick={() => handleNavClick('admin')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              padding: '12px 16px',
+              borderRadius: '12px',
+              background: 'rgba(197, 160, 89, 0.1)',
+              border: '1px solid rgba(197, 160, 89, 0.4)',
+              color: '#C5A059',
+              fontSize: '0.90rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              textAlign: 'left',
+              marginTop: '6px'
+            }}
+          >
+            <span>⚙️ Admin Tariff Portal</span>
+            <ChevronRight size={16} />
+          </button>
+        </div>
+
+        {/* Sticky Bottom Actions inside Drawer */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(226, 232, 240, 0.8)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <a
+              href={`tel:${SITE_CONFIG.contact.phone}`}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                height: '46px',
+                borderRadius: '12px',
+                background: 'var(--color-slate-900)',
+                color: '#FFFFFF',
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+                fontWeight: '600'
+              }}
+            >
+              <PhoneCall size={16} color="var(--accent-sky-primary)" />
+              <span>Call</span>
+            </a>
+            <WhatsAppButton
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                height: '46px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                color: '#FFFFFF',
+                fontSize: '0.9rem',
+                fontWeight: '600'
+              }}
+            >
+              <MessageSquare size={16} />
+              <span>WhatsApp</span>
+            </WhatsAppButton>
+          </div>
+
+          <PremiumButton variant="sky" size="md" fullWidth pill icon={ChevronRight} iconPosition="right" onClick={() => handleNavClick('contact')}>
+            Get Instant Quote
+          </PremiumButton>
+        </div>
+      </div>
+    )}
+  </>
   );
 };
