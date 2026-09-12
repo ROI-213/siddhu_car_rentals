@@ -273,13 +273,12 @@
   background: rgba(0,0,0,0.1);
 }
 
-@media (min-width: 769px) {
-  .os-action-text-short {
-    display: none !important;
-  }
-  .os-action-text-full {
-    display: inline !important;
-  }
+.os-action-text-short {
+  display: none !important;
+}
+
+.os-action-text-full {
+  display: inline !important;
 }
 
 @media (max-width: 1024px) and (min-width: 769px) {
@@ -370,6 +369,14 @@
     font-size: 0.66rem !important;
     padding: 0 6px !important;
     gap: 4px !important;
+  }
+
+  .os-card-2 .os-action-text-full {
+    display: inline !important;
+  }
+
+  .os-card-2 .os-action-text-short {
+    display: none !important;
   }
 
   /* ROW 2: THREE (3) CARDS */
