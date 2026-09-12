@@ -192,16 +192,15 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
             })}
           </div>
 
-          <GlassCard variant="standard" style={{ padding: '20px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <GlassCard variant="standard" style={{ padding: '16px' }} className="fleet-filter-wrapper-card">
+            <div className="fleet-filters-grid">
               {/* Category Filter */}
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '600', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Fleet Category</label>
+              <div className="fleet-filter-card">
+                <label style={{ fontSize: '0.76rem', fontWeight: '700', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Fleet Category</label>
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="form-control"
-                  style={{ padding: '8px 12px', fontSize: '0.88rem' }}
+                  className="form-control fleet-filter-select"
                 >
                   <option value="all">All Fleet Categories ({fleetData.length})</option>
                   <option value="luxury">Luxury (S-Class, 7-Series, Vellfire)</option>
@@ -212,13 +211,12 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
               </div>
 
               {/* Seating Capacity Filter */}
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '600', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Seating Capacity</label>
+              <div className="fleet-filter-card">
+                <label style={{ fontSize: '0.76rem', fontWeight: '700', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Seating Capacity</label>
                 <select
                   value={seatFilter}
                   onChange={(e) => setSeatFilter(e.target.value)}
-                  className="form-control"
-                  style={{ padding: '8px 12px', fontSize: '0.88rem' }}
+                  className="form-control fleet-filter-select"
                 >
                   <option value="all">All Seats</option>
                   <option value="3-4">3 - 4 Executive Seats</option>
@@ -228,13 +226,12 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
               </div>
 
               {/* Transmission Filter */}
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '600', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Transmission</label>
+              <div className="fleet-filter-card">
+                <label style={{ fontSize: '0.76rem', fontWeight: '700', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Transmission</label>
                 <select
                   value={transmissionFilter}
                   onChange={(e) => setTransmissionFilter(e.target.value)}
-                  className="form-control"
-                  style={{ padding: '8px 12px', fontSize: '0.88rem' }}
+                  className="form-control fleet-filter-select"
                 >
                   <option value="all">All Transmissions</option>
                   <option value="automatic">Automatic</option>
@@ -243,13 +240,12 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
               </div>
 
               {/* Fuel Type Filter */}
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: '600', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Fuel Type</label>
+              <div className="fleet-filter-card">
+                <label style={{ fontSize: '0.76rem', fontWeight: '700', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Fuel Type</label>
                 <select
                   value={fuelFilter}
                   onChange={(e) => setFuelFilter(e.target.value)}
-                  className="form-control"
-                  style={{ padding: '8px 12px', fontSize: '0.88rem' }}
+                  className="form-control fleet-filter-select"
                 >
                   <option value="all">All Fuel Types</option>
                   <option value="diesel">Diesel Turbo</option>
@@ -457,11 +453,12 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
                           
                         </div>
 
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        <div className="fleet-amenities-2x2-grid">
                           {vehicle.amenities.slice(0, 4).map((item, idx) => (
-                            <span key={idx} style={{ fontSize: '0.75rem', color: 'var(--color-slate-700)', background: '#FFFFFF', padding: '5px 12px', borderRadius: '6px', border: '1px solid rgba(226, 232, 240, 0.9)', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-                              ✓ {item}
-                            </span>
+                            <div key={idx} className="fleet-amenity-card">
+                              <span className="amenity-check">✓</span>
+                              <span className="amenity-text">{item}</span>
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -613,6 +610,87 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
         onClose={() => setSelectedVehicleForModal(null)}
       />
 
+      <style>{`
+        /* 2x2 Filter Controls */
+        .fleet-filters-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+        }
+
+        .fleet-filter-card {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .fleet-filter-select {
+          padding: 8px 12px;
+          font-size: 0.88rem;
+          width: 100%;
+          border-radius: 8px;
+        }
+
+        @media (max-width: 900px) {
+          .fleet-filters-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 10px !important;
+          }
+          .fleet-filter-card {
+            background: #FFFFFF;
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            border-radius: 12px;
+            padding: 10px 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+          }
+          .fleet-filter-card label {
+            font-size: 0.72rem !important;
+            margin-bottom: 4px !important;
+          }
+          .fleet-filter-select {
+            padding: 6px 8px !important;
+            font-size: 0.80rem !important;
+          }
+        }
+
+        /* 2x2 Vehicle Amenities Cards */
+        .fleet-amenities-2x2-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8px;
+          width: 100%;
+        }
+
+        .fleet-amenity-card {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          background: #FFFFFF;
+          padding: 8px 10px;
+          border-radius: 8px;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+          font-size: 0.74rem;
+          color: var(--color-slate-700);
+          font-weight: 600;
+          line-height: 1.25;
+          min-height: 38px;
+        }
+
+        .fleet-amenity-card .amenity-check {
+          color: #10B981;
+          font-weight: 800;
+          font-size: 0.80rem;
+          flex-shrink: 0;
+        }
+
+        .fleet-amenity-card .amenity-text {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      `}</style>
     </div>
   );
 };
