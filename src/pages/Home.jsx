@@ -3106,70 +3106,116 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             .destination-collage-grid {
               display: flex;
               flex-direction: column;
-              gap: 16px;
+              gap: 12px;
             }
-            .hero-dest-card, .stacked-dest-card {
-              height: 240px !important;
+            .hero-dest-card {
+              height: 250px !important;
               width: 100% !important;
             }
             .dest-right-stack {
               height: auto !important;
               width: 100% !important;
-              display: flex !important;
-              flex-direction: column !important;
-              gap: 16px !important;
+              display: grid !important;
+              grid-template-columns: 1fr 1fr !important;
+              gap: 10px !important;
             }
-            .dest-glass-label {
+            .stacked-dest-card {
+              height: 195px !important;
+              width: 100% !important;
+            }
+            .hero-dest-card .dest-glass-label {
               bottom: 10px !important;
               left: 10px !important;
               right: 10px !important;
-              padding: 8px 12px !important;
+              padding: 9px 12px !important;
               border-radius: 12px !important;
               background: rgba(255, 255, 255, 0.90) !important;
               backdrop-filter: blur(10px) !important;
               WebkitBackdropFilter: blur(10px) !important;
               box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
             }
-            .dest-tag {
-              font-size: 0.58rem !important;
+            .hero-dest-card .dest-tag {
+              font-size: 0.60rem !important;
               letter-spacing: 0.05em !important;
             }
-            .dest-quote-btn {
-              font-size: 0.62rem !important;
+            .hero-dest-card .dest-quote-btn {
+              font-size: 0.66rem !important;
               padding: 2px 8px !important;
             }
-            .dest-title {
-              font-size: 1.02rem !important;
+            .hero-dest-card .dest-title {
+              font-size: 1.15rem !important;
               line-height: 1.25 !important;
               margin: 2px 0 !important;
             }
-            .dest-desc {
-              font-size: 0.66rem !important;
+            .hero-dest-card .dest-desc {
+              font-size: 0.68rem !important;
               margin-top: 2px !important;
               white-space: nowrap !important;
               overflow: hidden !important;
               text-overflow: ellipsis !important;
+            }
+
+            .stacked-dest-card .dest-glass-label {
+              bottom: 6px !important;
+              left: 6px !important;
+              right: 6px !important;
+              padding: 6px 8px !important;
+              border-radius: 10px !important;
+              background: rgba(255, 255, 255, 0.92) !important;
+              backdrop-filter: blur(10px) !important;
+              WebkitBackdropFilter: blur(10px) !important;
+              box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08) !important;
+            }
+            .stacked-dest-card .dest-tag {
+              font-size: 0.50rem !important;
+              letter-spacing: 0.02em !important;
+              white-space: nowrap !important;
+              overflow: hidden !important;
+              text-overflow: ellipsis !important;
+              max-width: 80px !important;
+            }
+            .stacked-dest-card .dest-quote-btn {
+              font-size: 0.52rem !important;
+              padding: 1px 5px !important;
+            }
+            .stacked-dest-card .dest-title {
+              font-size: 0.82rem !important;
+              line-height: 1.2 !important;
+              margin: 2px 0 0 0 !important;
+            }
+            .stacked-dest-card .dest-desc {
+              display: none !important;
             }
           }
           @media (max-width: 480px) {
             .carousel-swipe-hint {
               display: none !important;
             }
-            .hero-dest-card, .stacked-dest-card {
+            .hero-dest-card {
               height: 230px !important;
             }
-            .dest-glass-label {
-              bottom: 8px !important;
-              left: 8px !important;
-              right: 8px !important;
-              padding: 7px 10px !important;
-              border-radius: 10px !important;
+            .dest-right-stack {
+              gap: 8px !important;
             }
-            .dest-title {
-              font-size: 0.96rem !important;
+            .stacked-dest-card {
+              height: 180px !important;
             }
-            .dest-desc {
-              font-size: 0.64rem !important;
+            .stacked-dest-card .dest-glass-label {
+              padding: 5px 6px !important;
+              bottom: 5px !important;
+              left: 5px !important;
+              right: 5px !important;
+            }
+            .stacked-dest-card .dest-title {
+              font-size: 0.78rem !important;
+            }
+            .stacked-dest-card .dest-tag {
+              font-size: 0.48rem !important;
+              max-width: 68px !important;
+            }
+            .stacked-dest-card .dest-quote-btn {
+              font-size: 0.50rem !important;
+              padding: 1px 4px !important;
             }
           }
         `}</style>
