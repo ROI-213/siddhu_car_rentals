@@ -47,7 +47,40 @@ export const pricingService = {
     return FLEET_TARIFF_MAPPING[vehicleId] || null;
   },
 
-  getLocalTariff(vehicleId) {
+  getLocalTariff(vehicleOrId) {
+    if (!vehicleOrId) return DEFAULT_DISPOSAL_TARIFFS[0] || null;
+
+    let vehicleObj = null;
+    let vehicleId = '';
+
+    if (typeof vehicleOrId === 'object') {
+      vehicleObj = vehicleOrId;
+      vehicleId = vehicleOrId.id || '';
+    } else {
+      vehicleId = String(vehicleOrId);
+      try {
+        const cached = JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
+        if (Array.isArray(cached)) {
+          vehicleObj = cached.find(v => v.id === vehicleId);
+        }
+      } catch {
+        // ignore error
+      }
+    }
+
+    // Check if vehicle has direct custom pricing overrides
+    if (vehicleObj && (vehicleObj.eight_hours_eighty_km !== undefined && vehicleObj.eight_hours_eighty_km !== null && vehicleObj.eight_hours_eighty_km !== '')) {
+      return {
+        vehicle_variant: vehicleObj.name || vehicleId,
+        eight_hours_eighty_km: Number(vehicleObj.eight_hours_eighty_km),
+        four_hours_forty_km: vehicleObj.four_hours_forty_km ? Number(vehicleObj.four_hours_forty_km) : null,
+        extra_hour: vehicleObj.extra_hour ? Number(vehicleObj.extra_hour) : null,
+        extra_km: vehicleObj.extra_km ? Number(vehicleObj.extra_km) : null,
+        night_local_bata: vehicleObj.night_local_bata ? Number(vehicleObj.night_local_bata) : 300,
+        airport_transfer: vehicleObj.airport_transfer ? Number(vehicleObj.airport_transfer) : null
+      };
+    }
+
     const variantName = this.getTariffVariantName(vehicleId);
     if (variantName) {
       const match = DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant === variantName);
@@ -76,7 +109,38 @@ export const pricingService = {
     return DEFAULT_DISPOSAL_TARIFFS[0] || null;
   },
 
-  getOutstationTariff(vehicleId) {
+  getOutstationTariff(vehicleOrId) {
+    if (!vehicleOrId) return DEFAULT_OUTSTATION_TARIFFS[0] || null;
+
+    let vehicleObj = null;
+    let vehicleId = '';
+
+    if (typeof vehicleOrId === 'object') {
+      vehicleObj = vehicleOrId;
+      vehicleId = vehicleOrId.id || '';
+    } else {
+      vehicleId = String(vehicleOrId);
+      try {
+        const cached = JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
+        if (Array.isArray(cached)) {
+          vehicleObj = cached.find(v => v.id === vehicleId);
+        }
+      } catch {
+        // ignore error
+      }
+    }
+
+    // Check if vehicle has direct custom outstation pricing overrides
+    if (vehicleObj && (vehicleObj.rate_per_km !== undefined && vehicleObj.rate_per_km !== null && vehicleObj.rate_per_km !== '')) {
+      return {
+        vehicle_variant: vehicleObj.name || vehicleId,
+        rate_per_km: Number(vehicleObj.rate_per_km),
+        outstation_extra_km: Number(vehicleObj.rate_per_km),
+        minimum_km_per_day: vehicleObj.minimum_km_per_day ? Number(vehicleObj.minimum_km_per_day) : 300,
+        driver_allowance: vehicleObj.driver_allowance ? Number(vehicleObj.driver_allowance) : 400
+      };
+    }
+
     const variantName = this.getTariffVariantName(vehicleId);
     if (variantName) {
       const match = DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant === variantName);
@@ -105,8 +169,8 @@ export const pricingService = {
     return DEFAULT_OUTSTATION_TARIFFS[0] || null;
   },
 
-  getAirportTransferPrice(vehicleId) {
-    const tariff = this.getLocalTariff(vehicleId);
+  getAirportTransferPrice(vehicleOrId) {
+    const tariff = this.getLocalTariff(vehicleOrId);
     return tariff ? tariff.airport_transfer : null;
   },
 

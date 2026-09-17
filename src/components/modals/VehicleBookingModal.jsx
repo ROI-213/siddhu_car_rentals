@@ -72,12 +72,12 @@ export const VehicleBookingModal = ({ vehicle, isOpen, onClose, initialLocation 
     }
   }, [isOpen, onClose]);
 
-  const localTariff = vehicle ? (pricingService.getLocalTariff(vehicle.id) || {}) : {};
-  const outstationTariff = vehicle ? (pricingService.getOutstationTariff(vehicle.id) || {}) : {};
+  const localTariff = vehicle ? (pricingService.getLocalTariff(vehicle) || {}) : {};
+  const outstationTariff = vehicle ? (pricingService.getOutstationTariff(vehicle) || {}) : {};
   const priceStr = localTariff.eight_hours_eighty_km ? pricingService.formatPrice(localTariff.eight_hours_eighty_km) : 'Price on Request';
   const fourHourPriceStr = localTariff.four_hours_forty_km ? pricingService.formatPrice(localTariff.four_hours_forty_km) : null;
   const airportPriceStr = localTariff.airport_transfer ? pricingService.formatPrice(localTariff.airport_transfer) : null;
-  const perKmRateStr = outstationTariff.per_km_rate ? `₹${outstationTariff.per_km_rate}/km` : null;
+  const perKmRateStr = outstationTariff.rate_per_km ? `${pricingService.formatPrice(outstationTariff.rate_per_km)}/km` : null;
 
   if (!isOpen || !vehicle) return null;
 

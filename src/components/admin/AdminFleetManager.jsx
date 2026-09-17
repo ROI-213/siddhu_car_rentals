@@ -23,6 +23,19 @@ import {
 } from 'lucide-react';
 import { tariffApi } from '../../services/tariffApi';
 import { fleetData as defaultFleet, FLEET_CATEGORIES } from '../../data/fleetData';
+import { pricingService } from '../../services/pricingService';
+
+const COMMON_VEHICLE_IMAGES = [
+  { label: 'Mercedes S-Class', path: '/images/sclass_front.png' },
+  { label: 'Toyota Fortuner', path: '/images/fortuner.png' },
+  { label: 'Innova Crysta', path: '/images/crysta.png' },
+  { label: 'Innova Hycross', path: '/images/hycross.png' },
+  { label: 'Toyota Camry', path: '/images/camry.png' },
+  { label: 'Dzire / Sedan', path: '/images/sedan.png' },
+  { label: 'Force Urbania', path: '/images/urbania.png' },
+  { label: 'Tempo Traveller', path: '/images/tempo.png' },
+  { label: 'Luxury Coach Bus', path: '/images/luxury_bus.png' },
+];
 
 export const AdminFleetManager = ({ showToast }) => {
   const [fleet, setFleet] = useState([]);
@@ -67,7 +80,15 @@ export const AdminFleetManager = ({ showToast }) => {
       regPlate: 'KA Commercial VIP',
       description: 'Chauffeur-driven luxury car rental with professional English-speaking driver in Bangalore.',
       amenities: ['Uniformed Chauffeur', 'Bottled Mineral Water', 'Sanitized Cabin', 'Air Conditioning'],
-      isActive: true
+      isActive: true,
+      // Tariffs and Pricing
+      eight_hours_eighty_km: 2900,
+      four_hours_forty_km: 1800,
+      extra_hour: 250,
+      extra_km: 19,
+      airport_transfer: 2250,
+      rate_per_km: 19,
+      driver_allowance: 400
     };
   }
 
@@ -124,13 +145,59 @@ export const AdminFleetManager = ({ showToast }) => {
   const handleOpenEdit = (vehicle) => {
     setModalMode('edit');
     setCurrentEditVehicle(vehicle);
+    const localT = pricingService.getLocalTariff(vehicle) || {};
+    const outT = pricingService.getOutstationTariff(vehicle) || {};
+
     setFormData({
       ...getInitialVehicleForm(),
       ...vehicle,
+      eight_hours_eighty_km: vehicle.eight_hours_eighty_km !== undefined && vehicle.eight_hours_eighty_km !== null
+        ? vehicle.eight_hours_eighty_km
+        : (localT.eight_hours_eighty_km ?? ''),
+      four_hours_forty_km: vehicle.four_hours_forty_km !== undefined && vehicle.four_hours_forty_km !== null
+        ? vehicle.four_hours_forty_km
+        : (localT.four_hours_forty_km ?? ''),
+      extra_hour: vehicle.extra_hour !== undefined && vehicle.extra_hour !== null
+        ? vehicle.extra_hour
+        : (localT.extra_hour ?? ''),
+      extra_km: vehicle.extra_km !== undefined && vehicle.extra_km !== null
+        ? vehicle.extra_km
+        : (localT.extra_km ?? ''),
+      airport_transfer: vehicle.airport_transfer !== undefined && vehicle.airport_transfer !== null
+        ? vehicle.airport_transfer
+        : (localT.airport_transfer ?? ''),
+      rate_per_km: vehicle.rate_per_km !== undefined && vehicle.rate_per_km !== null
+        ? vehicle.rate_per_km
+        : (outT.rate_per_km ?? ''),
+      driver_allowance: vehicle.driver_allowance !== undefined && vehicle.driver_allowance !== null
+        ? vehicle.driver_allowance
+        : (outT.driver_allowance ?? 400),
       amenities: Array.isArray(vehicle.amenities) ? vehicle.amenities : [],
-      gallery: Array.isArray(vehicle.gallery) ? vehicle.gallery : [vehicle.image]
+      gallery: Array.isArray(vehicle.gallery) && vehicle.gallery.length > 0 ? vehicle.gallery : (vehicle.image ? [vehicle.image] : [])
     });
     setIsModalOpen(true);
+  };
+
+  const handleAddGalleryItem = () => {
+    setFormData(prev => ({
+      ...prev,
+      gallery: [...(Array.isArray(prev.gallery) ? prev.gallery : []), '']
+    }));
+  };
+
+  const handleGalleryItemChange = (index, val) => {
+    setFormData(prev => {
+      const list = [...(Array.isArray(prev.gallery) ? prev.gallery : [])];
+      list[index] = val;
+      return { ...prev, gallery: list };
+    });
+  };
+
+  const handleRemoveGalleryItem = (index) => {
+    setFormData(prev => {
+      const list = (Array.isArray(prev.gallery) ? prev.gallery : []).filter((_, i) => i !== index);
+      return { ...prev, gallery: list.length > 0 ? list : [prev.image || '/images/sclass_front.png'] };
+    });
   };
 
   // Toggle Active/Inactive
@@ -164,20 +231,48 @@ export const AdminFleetManager = ({ showToast }) => {
       return;
     }
 
+    const cleanedData = {
+      ...formData,
+      eight_hours_eighty_km: formData.eight_hours_eighty_km !== '' && formData.eight_hours_eighty_km !== null && !isNaN(formData.eight_hours_eighty_km)
+        ? Number(formData.eight_hours_eighty_km)
+        : null,
+      four_hours_forty_km: formData.four_hours_forty_km !== '' && formData.four_hours_forty_km !== null && !isNaN(formData.four_hours_forty_km)
+        ? Number(formData.four_hours_forty_km)
+        : null,
+      extra_hour: formData.extra_hour !== '' && formData.extra_hour !== null && !isNaN(formData.extra_hour)
+        ? Number(formData.extra_hour)
+        : null,
+      extra_km: formData.extra_km !== '' && formData.extra_km !== null && !isNaN(formData.extra_km)
+        ? Number(formData.extra_km)
+        : null,
+      airport_transfer: formData.airport_transfer !== '' && formData.airport_transfer !== null && !isNaN(formData.airport_transfer)
+        ? Number(formData.airport_transfer)
+        : null,
+      rate_per_km: formData.rate_per_km !== '' && formData.rate_per_km !== null && !isNaN(formData.rate_per_km)
+        ? Number(formData.rate_per_km)
+        : null,
+      driver_allowance: formData.driver_allowance !== '' && formData.driver_allowance !== null && !isNaN(formData.driver_allowance)
+        ? Number(formData.driver_allowance)
+        : null,
+      gallery: Array.isArray(formData.gallery) && formData.gallery.length > 0
+        ? formData.gallery.filter(Boolean)
+        : (formData.image ? [formData.image] : [])
+    };
+
     let updatedFleet;
     if (modalMode === 'add') {
       const newVehicle = {
-        ...formData,
-        id: formData.id || ('car-' + Date.now()),
-        categoryLabel: FLEET_CATEGORIES.find(c => c.id === formData.categoryKey)?.label || 'Executive'
+        ...cleanedData,
+        id: cleanedData.id || ('car-' + Date.now()),
+        categoryLabel: FLEET_CATEGORIES.find(c => c.id === cleanedData.categoryKey)?.label || 'Executive'
       };
       updatedFleet = [newVehicle, ...fleet];
     } else {
       updatedFleet = fleet.map(v => {
-        if (v.id === formData.id) {
+        if (v.id === cleanedData.id) {
           return {
-            ...formData,
-            categoryLabel: FLEET_CATEGORIES.find(c => c.id === formData.categoryKey)?.label || v.categoryLabel
+            ...cleanedData,
+            categoryLabel: FLEET_CATEGORIES.find(c => c.id === cleanedData.categoryKey)?.label || v.categoryLabel
           };
         }
         return v;
@@ -396,6 +491,28 @@ export const AdminFleetManager = ({ showToast }) => {
                     )}
                   </div>
 
+                  {/* Gallery Photos Count Pill */}
+                  {Array.isArray(vehicle.gallery) && vehicle.gallery.length > 1 && (
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '10px',
+                      left: '12px',
+                      background: 'rgba(15, 23, 42, 0.75)',
+                      backdropFilter: 'blur(4px)',
+                      color: '#FFFFFF',
+                      fontWeight: '700',
+                      fontSize: '0.7rem',
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}>
+                      <ImageIcon size={11} />
+                      <span>{vehicle.gallery.length} Photos</span>
+                    </div>
+                  )}
+
                   {/* Reg Plate Pill */}
                   {vehicle.regPlate && (
                     <div style={{
@@ -465,6 +582,47 @@ export const AdminFleetManager = ({ showToast }) => {
                       )}
                     </div>
                   )}
+
+                  {/* Tariffs & Pricing Summary */}
+                  {(() => {
+                    const localT = pricingService.getLocalTariff(vehicle) || {};
+                    const outT = pricingService.getOutstationTariff(vehicle) || {};
+                    const local8h = vehicle.eight_hours_eighty_km || localT.eight_hours_eighty_km;
+                    const airport = vehicle.airport_transfer || localT.airport_transfer;
+                    const outKm = vehicle.rate_per_km || outT.rate_per_km;
+
+                    return (
+                      <div style={{
+                        marginTop: '12px',
+                        padding: '10px 12px',
+                        borderRadius: '10px',
+                        background: '#F8FAFC',
+                        border: '1px solid #E2E8F0',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '6px'
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--color-slate-500)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                            Showroom Tariffs
+                          </span>
+                          <span style={{ fontSize: '0.88rem', fontWeight: '900', color: '#0284C7' }}>
+                            {local8h ? pricingService.formatPrice(local8h) : 'On Request'}
+                            <span style={{ fontSize: '0.7rem', fontWeight: '600', color: 'var(--color-slate-400)' }}> /8h 80km</span>
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '0.74rem', paddingTop: '6px', borderTop: '1px dashed #E2E8F0' }}>
+                          <div style={{ color: 'var(--color-slate-600)' }}>
+                            ✈️ Airport: <strong style={{ color: '#0F172A' }}>{airport ? pricingService.formatPrice(airport) : 'N/A'}</strong>
+                          </div>
+                          <div style={{ color: 'var(--color-slate-600)', textAlign: 'right' }}>
+                            🛣️ Outstation: <strong style={{ color: '#D97706' }}>{outKm ? `${pricingService.formatPrice(outKm)}/km` : 'N/A'}</strong>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -737,28 +895,290 @@ export const AdminFleetManager = ({ showToast }) => {
                 </div>
               </div>
 
-              {/* Main Image */}
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: 'var(--color-slate-700)', marginBottom: '4px' }}>
-                  Main Image URL / Path *
-                </label>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <input
-                    type="text"
-                    required
-                    value={formData.image || ''}
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    placeholder="/images/sclass_front.png"
-                    style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem' }}
-                  />
-                  {formData.image && (
-                    <img
-                      src={formData.image}
-                      alt="Preview"
-                      style={{ width: '56px', height: '40px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #CBD5E1' }}
-                      onError={(e) => e.target.style.display = 'none'}
+              {/* ========================================================================= */}
+              {/* VEHICLE PHOTOS & GALLERY MANAGEMENT                                       */}
+              {/* ========================================================================= */}
+              <div style={{
+                background: '#F8FAFC',
+                borderRadius: '14px',
+                border: '1px solid #E2E8F0',
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '14px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ImageIcon size={18} color="#0284C7" />
+                    <span style={{ fontSize: '0.92rem', fontWeight: '800', color: 'var(--color-slate-800)' }}>
+                      Vehicle Photos & Showroom Gallery
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '0.74rem', color: 'var(--color-slate-500)' }}>
+                    Add main showroom image & multiple gallery photos
+                  </span>
+                </div>
+
+                {/* Main Showroom Image */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: 'var(--color-slate-700)', marginBottom: '4px' }}>
+                    Main Showroom Image URL / Path *
+                  </label>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      required
+                      value={formData.image || ''}
+                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                      placeholder="/images/sclass_front.png or https://..."
+                      style={{ flex: 1, padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.86rem', background: '#FFFFFF' }}
                     />
+                    {formData.image && (
+                      <div style={{ position: 'relative', width: '64px', height: '46px', borderRadius: '8px', overflow: 'hidden', border: '2px solid #0284C7', flexShrink: 0 }}>
+                        <img
+                          src={formData.image}
+                          alt="Main Preview"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Quick Preset Selector */}
+                  <div style={{ marginTop: '8px' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: '700', color: 'var(--color-slate-500)', marginBottom: '4px' }}>
+                      Quick image presets (Click to select):
+                    </div>
+                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                      {COMMON_VEHICLE_IMAGES.map((preset, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, image: preset.path })}
+                          style={{
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            background: formData.image === preset.path ? '#0284C7' : '#FFFFFF',
+                            color: formData.image === preset.path ? '#FFFFFF' : 'var(--color-slate-700)',
+                            border: '1px solid #CBD5E1',
+                            fontSize: '0.72rem',
+                            fontWeight: '600',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Multiple Gallery Images */}
+                <div style={{ borderTop: '1px dashed #CBD5E1', paddingTop: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--color-slate-700)' }}>
+                      Vehicle Detail Gallery Photos ({Array.isArray(formData.gallery) ? formData.gallery.length : 0})
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleAddGalleryItem}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        background: '#0284C7',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        fontSize: '0.74rem',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      <Plus size={13} />
+                      <span>Add Gallery Photo</span>
+                    </button>
+                  </div>
+
+                  {Array.isArray(formData.gallery) && formData.gallery.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {formData.gallery.map((imgUrl, gIdx) => (
+                        <div key={gIdx} style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#FFFFFF', padding: '6px 10px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                          <span style={{ fontSize: '0.72rem', fontWeight: '800', color: 'var(--color-slate-400)', minWidth: '20px' }}>
+                            #{gIdx + 1}
+                          </span>
+                          <input
+                            type="text"
+                            value={imgUrl}
+                            onChange={(e) => handleGalleryItemChange(gIdx, e.target.value)}
+                            placeholder={`Gallery Photo URL #${gIdx + 1} (e.g. /images/sclass_interior.png)`}
+                            style={{ flex: 1, padding: '6px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.82rem' }}
+                          />
+                          {imgUrl && (
+                            <img
+                              src={imgUrl}
+                              alt={`Thumb ${gIdx + 1}`}
+                              style={{ width: '42px', height: '32px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #CBD5E1' }}
+                              onError={(e) => { e.target.style.display = 'none'; }}
+                            />
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveGalleryItem(gIdx)}
+                            style={{
+                              padding: '6px',
+                              borderRadius: '6px',
+                              background: '#FEE2E2',
+                              color: '#DC2626',
+                              border: 'none',
+                              cursor: 'pointer'
+                            }}
+                            title="Remove photo"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: '0.78rem', color: 'var(--color-slate-500)', fontStyle: 'italic', padding: '6px 0' }}>
+                      No additional gallery photos yet. Click "Add Gallery Photo" above to add vehicle interior/side angles.
+                    </div>
                   )}
+                </div>
+              </div>
+
+              {/* ========================================================================= */}
+              {/* VEHICLE PRICING & TARIFFS MANAGEMENT (DIRECT EDIT)                        */}
+              {/* ========================================================================= */}
+              <div style={{
+                background: '#F0F9FF',
+                borderRadius: '14px',
+                border: '1px solid #BAE6FD',
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '14px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '1.1rem' }}>💳</span>
+                    <div>
+                      <h4 style={{ fontSize: '0.94rem', fontWeight: '800', color: '#0369A1', margin: 0 }}>
+                        Vehicle Tariffs & Pricing (Direct Edit)
+                      </h4>
+                      <span style={{ fontSize: '0.74rem', color: '#0284C7' }}>
+                        Custom prices entered here immediately override standard rate tables on the showroom, vehicle detail, and booking form.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+                  {/* 8h / 80km Full Day */}
+                  <div style={{ background: '#FFFFFF', padding: '10px 12px', borderRadius: '8px', border: '1px solid #E0F2FE' }}>
+                    <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '800', color: '#0369A1', marginBottom: '4px' }}>
+                      Local 8h / 80km Full Day (₹) *
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      value={formData.eight_hours_eighty_km !== undefined ? formData.eight_hours_eighty_km : ''}
+                      onChange={(e) => setFormData({ ...formData, eight_hours_eighty_km: e.target.value })}
+                      placeholder="e.g. 2900"
+                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: '700', color: '#0F172A' }}
+                    />
+                    <span style={{ fontSize: '0.68rem', color: 'var(--color-slate-500)' }}>Primary showroom price</span>
+                  </div>
+
+                  {/* 4h / 40km Half Day */}
+                  <div style={{ background: '#FFFFFF', padding: '10px 12px', borderRadius: '8px', border: '1px solid #E0F2FE' }}>
+                    <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '800', color: '#0369A1', marginBottom: '4px' }}>
+                      Local 4h / 40km Half Day (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.four_hours_forty_km !== undefined ? formData.four_hours_forty_km : ''}
+                      onChange={(e) => setFormData({ ...formData, four_hours_forty_km: e.target.value })}
+                      placeholder="e.g. 1800"
+                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: '700', color: '#0F172A' }}
+                    />
+                    <span style={{ fontSize: '0.68rem', color: 'var(--color-slate-500)' }}>Leave empty if N/A</span>
+                  </div>
+
+                  {/* Airport Transfer */}
+                  <div style={{ background: '#FFFFFF', padding: '10px 12px', borderRadius: '8px', border: '1px solid #E0F2FE' }}>
+                    <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '800', color: '#0369A1', marginBottom: '4px' }}>
+                      Airport Flat VIP Transfer (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.airport_transfer !== undefined ? formData.airport_transfer : ''}
+                      onChange={(e) => setFormData({ ...formData, airport_transfer: e.target.value })}
+                      placeholder="e.g. 2250"
+                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: '700', color: '#0F172A' }}
+                    />
+                    <span style={{ fontSize: '0.68rem', color: 'var(--color-slate-500)' }}>Fixed pickup/drop</span>
+                  </div>
+
+                  {/* Outstation Rate / Km */}
+                  <div style={{ background: '#FFFFFF', padding: '10px 12px', borderRadius: '8px', border: '1px solid #B45309', marginBottom: '4px' }}>
+                    <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '800', color: '#B45309', marginBottom: '4px' }}>
+                      Outstation Rate / Km (₹)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.rate_per_km !== undefined ? formData.rate_per_km : ''}
+                      onChange={(e) => setFormData({ ...formData, rate_per_km: e.target.value })}
+                      placeholder="e.g. 19"
+                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: '700', color: '#B45309' }}
+                    />
+                    <span style={{ fontSize: '0.68rem', color: 'var(--color-slate-500)' }}>Min 300km/day standard</span>
+                  </div>
+
+                  {/* Extra Hour Charge */}
+                  <div style={{ background: '#FFFFFF', padding: '10px 12px', borderRadius: '8px', border: '1px solid #E0F2FE' }}>
+                    <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '700', color: 'var(--color-slate-700)', marginBottom: '4px' }}>
+                      Extra Hour Charge (₹ / hr)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.extra_hour !== undefined ? formData.extra_hour : ''}
+                      onChange={(e) => setFormData({ ...formData, extra_hour: e.target.value })}
+                      placeholder="e.g. 250"
+                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.86rem' }}
+                    />
+                  </div>
+
+                  {/* Extra Km Charge */}
+                  <div style={{ background: '#FFFFFF', padding: '10px 12px', borderRadius: '8px', border: '1px solid #E0F2FE' }}>
+                    <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '700', color: 'var(--color-slate-700)', marginBottom: '4px' }}>
+                      Extra Distance (₹ / km)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.extra_km !== undefined ? formData.extra_km : ''}
+                      onChange={(e) => setFormData({ ...formData, extra_km: e.target.value })}
+                      placeholder="e.g. 19"
+                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.86rem' }}
+                    />
+                  </div>
+
+                  {/* Driver Allowance / Day */}
+                  <div style={{ background: '#FFFFFF', padding: '10px 12px', borderRadius: '8px', border: '1px solid #E0F2FE' }}>
+                    <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '700', color: 'var(--color-slate-700)', marginBottom: '4px' }}>
+                      Outstation Driver Allowance (₹ / day)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.driver_allowance !== undefined ? formData.driver_allowance : ''}
+                      onChange={(e) => setFormData({ ...formData, driver_allowance: e.target.value })}
+                      placeholder="e.g. 400"
+                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.86rem' }}
+                    />
+                  </div>
                 </div>
               </div>
 

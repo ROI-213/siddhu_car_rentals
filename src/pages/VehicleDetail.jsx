@@ -18,8 +18,8 @@ export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) =>
     : vehicle ? [vehicle.image] : [];
 
   const [activeImage, setActiveImage] = useState(galleryImages[0] || null);
-  const localTariff = vehicle ? (pricingService.getLocalTariff(vehicle.id) || {}) : {};
-  const outstationTariff = vehicle ? (pricingService.getOutstationTariff(vehicle.id) || {}) : {};
+  const localTariff = vehicle ? (pricingService.getLocalTariff(vehicle) || {}) : {};
+  const outstationTariff = vehicle ? (pricingService.getOutstationTariff(vehicle) || {}) : {};
   const halfDayStr = localTariff.four_hours_forty_km ? pricingService.formatPrice(localTariff.four_hours_forty_km) : "Not Available";
   const fullDayStr = localTariff.eight_hours_eighty_km ? pricingService.formatPrice(localTariff.eight_hours_eighty_km) : "Not Available";
   const extraHrKmStr = (localTariff.extra_hour && localTariff.extra_km) ? `${pricingService.formatPrice(localTariff.extra_hour)}/hr | ${pricingService.formatPrice(localTariff.extra_km)}/km` : "N/A";
@@ -76,7 +76,7 @@ export const VehicleDetail = ({ vehicle, onBackToFleet, onSelectForEnquiry }) =>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase' }}>Local 8h/80km Package</div>
               <div style={{ fontSize: '2.25rem', fontWeight: '800', color: '#C5A059', fontFamily: 'var(--font-ui)' }}>
-                {pricingService.getDisplayPrice(vehicle.id)}/day
+                {pricingService.getDisplayPrice(vehicle)}/day
               </div>
             </div>
           </div>

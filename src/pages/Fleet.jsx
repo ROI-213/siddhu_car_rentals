@@ -182,8 +182,8 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
                   <tbody>
                     {filteredFleet.map((vehicle, idx) => {
                       const theme = getTheme(vehicle.categoryKey, vehicle.name);
-                  const localTariff = pricingService.getLocalTariff(vehicle.id) || {};
-                  const outstationTariff = pricingService.getOutstationTariff(vehicle.id) || {};
+                  const localTariff = pricingService.getLocalTariff(vehicle) || {};
+                  const outstationTariff = pricingService.getOutstationTariff(vehicle) || {};
                   const halfDayStr = localTariff.four_hours_forty_km ? pricingService.formatPrice(localTariff.four_hours_forty_km) : "Not Available";
                   const fullDayStr = localTariff.eight_hours_eighty_km ? pricingService.formatPrice(localTariff.eight_hours_eighty_km) : "Not Available";
                   const extraHrKmStr = (localTariff.extra_hour && localTariff.extra_km) ? `${pricingService.formatPrice(localTariff.extra_hour)}/hr | ${pricingService.formatPrice(localTariff.extra_km)}/km` : "N/A";
@@ -287,8 +287,8 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
               {filteredFleet.map((vehicle) => {
                 const theme = getTheme(vehicle.categoryKey, vehicle.name);
-                  const localTariff = pricingService.getLocalTariff(vehicle.id) || {};
-                  const outstationTariff = pricingService.getOutstationTariff(vehicle.id) || {};
+                  const localTariff = pricingService.getLocalTariff(vehicle) || {};
+                  const outstationTariff = pricingService.getOutstationTariff(vehicle) || {};
                   const halfDayStr = localTariff.four_hours_forty_km ? pricingService.formatPrice(localTariff.four_hours_forty_km) : "Not Available";
                   const fullDayStr = localTariff.eight_hours_eighty_km ? pricingService.formatPrice(localTariff.eight_hours_eighty_km) : "Not Available";
                   const extraHrKmStr = (localTariff.extra_hour && localTariff.extra_km) ? `${pricingService.formatPrice(localTariff.extra_hour)}/hr | ${pricingService.formatPrice(localTariff.extra_km)}/km` : "N/A";
