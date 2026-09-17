@@ -28,6 +28,7 @@ import { GlassCard } from '../components/common/GlassCard';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { tariffApi, formatCurrency } from '../services/tariffApi';
 import { AdminHomeContent } from '../components/admin/AdminHomeContent';
+import { AdminFleetManager } from '../components/admin/AdminFleetManager';
 
 export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
   // Auth state
@@ -488,7 +489,7 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
       {/* Main Container */}
       <div className="container" style={{ marginTop: '32px' }}>
         
-        {/* Primary Admin Navigation: Tariffs vs Home Page Content */}
+        {/* Primary Admin Navigation: Fleet vs Tariffs vs Home Content */}
         <div style={{
           display: 'flex',
           gap: '12px',
@@ -497,6 +498,29 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
           paddingBottom: '16px',
           flexWrap: 'wrap'
         }}>
+          <button
+            type="button"
+            onClick={() => setMainAdminSection('fleet')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 24px',
+              borderRadius: '12px',
+              border: 'none',
+              background: mainAdminSection === 'fleet' ? '#12151C' : '#FFFFFF',
+              color: mainAdminSection === 'fleet' ? '#C5A059' : 'var(--color-slate-700)',
+              fontWeight: '800',
+              fontSize: '0.95rem',
+              cursor: 'pointer',
+              boxShadow: mainAdminSection === 'fleet' ? '0 4px 14px rgba(0,0,0,0.12)' : '0 2px 6px rgba(0,0,0,0.02)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Car size={18} />
+            <span>🚗 Fleet & Vehicle Manager</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setMainAdminSection('tariffs')}
@@ -516,8 +540,8 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
               transition: 'all 0.2s ease'
             }}
           >
-            <Car size={18} />
-            <span>Vehicle Tariffs & Pricing</span>
+            <Clock size={18} />
+            <span>💵 Vehicle Tariffs & Pricing</span>
           </button>
 
           <button
@@ -540,11 +564,13 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
             }}
           >
             <Layers size={18} />
-            <span>Home Page Content CMS</span>
+            <span>📑 Home Page Content CMS</span>
           </button>
         </div>
 
-        {mainAdminSection === 'home_content' ? (
+        {mainAdminSection === 'fleet' ? (
+          <AdminFleetManager showToast={showToast} />
+        ) : mainAdminSection === 'home_content' ? (
           <AdminHomeContent
             activeSubTab={homeContentSubTab}
             onSubTabChange={setHomeContentSubTab}

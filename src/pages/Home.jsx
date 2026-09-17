@@ -12,6 +12,7 @@ import { CarRentalSearch } from '../components/home/CarRentalSearch';
 import { ScrollStory } from '../components/home/ScrollStory';
 import { GlassCard } from '../components/common/GlassCard';
 import { fleetData } from '../data/fleetData';
+import { useFleetData } from '../hooks/useFleetData';
 import { pricingService } from '../services/pricingService';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { Badge } from '../components/common/Badge';
@@ -40,6 +41,8 @@ const getTodayDateStr = () => {
 
 export const Home = ({ onViewVehicleDetail, onNavigate }) => {
   const { content } = useSiteContent();
+  const { fleet } = useFleetData();
+  const activeFleet = (fleet && fleet.length > 0 ? fleet : fleetData).filter(v => v.isActive !== false);
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
   const heroRef = useRef(null);
@@ -2501,7 +2504,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                 paddingRight: '4px'
               }}
             >
-                        {fleetData
+              {activeFleet
                 .filter(v => showroomFilter === 'all' || v.categoryKey === showroomFilter)
                 .slice(0, 8)
                 .map(vehicle => {

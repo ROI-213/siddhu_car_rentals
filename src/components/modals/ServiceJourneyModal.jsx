@@ -6,6 +6,7 @@ import {
   CheckCircle2, RotateCw, Navigation, Building2, Luggage, Receipt, FileCheck
 } from 'lucide-react';
 import { fleetData } from '../../data/fleetData';
+import { useFleetData } from '../../hooks/useFleetData';
 import { pricingService } from '../../services/pricingService';
 import { SITE_CONFIG } from '../../config/site';
 import { WhatsAppIcon } from '../common/WhatsAppEnquiryMenu';
@@ -373,6 +374,8 @@ export const ServiceJourneyModal = ({
   initialServiceId = 'airport',
   initialContext = {}
 }) => {
+  const { fleet } = useFleetData();
+  const currentFleet = useMemo(() => (fleet && fleet.length > 0 ? fleet : fleetData).filter(v => v.isActive !== false), [fleet]);
   const [activeServiceId, setActiveServiceId] = useState(initialServiceId || 'airport');
   const [currentStep, setCurrentStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
@@ -492,7 +495,7 @@ export const ServiceJourneyModal = ({
   // Filter fleet based on selected service
   const filteredFleet = useMemo(() => {
     if (activeServiceId === 'luxury') {
-      return fleetData.filter(v => 
+      return currentFleet.filter(v => 
         v.categoryKey === 'luxury' || 
         v.id === 'mercedes-e-class' || 
         v.id === 'bmw-5-series' || 
@@ -500,10 +503,10 @@ export const ServiceJourneyModal = ({
       );
     }
     if (activeServiceId === 'group') {
-      return fleetData.filter(v => v.categoryKey === 'group');
+      return currentFleet.filter(v => v.categoryKey === 'group');
     }
     if (activeServiceId === 'wedding') {
-      return fleetData.filter(v => 
+      return currentFleet.filter(v => 
         v.categoryKey === 'luxury' || 
         v.id === 'mercedes-e-class' || 
         v.id === 'bmw-5-series' || 
@@ -512,7 +515,7 @@ export const ServiceJourneyModal = ({
       );
     }
     if (activeServiceId === 'corporate') {
-      return fleetData.filter(v => 
+      return currentFleet.filter(v => 
         v.id === 'mercedes-e-class' || 
         v.id === 'toyota-camry' || 
         v.id === 'innova-hycross' || 
@@ -522,7 +525,7 @@ export const ServiceJourneyModal = ({
       );
     }
     // Airport, Local, Outstation
-    return fleetData.filter(v => 
+    return currentFleet.filter(v => 
       v.id === 'sedan-dzire' || 
       v.id === 'innova-crysta' || 
       v.id === 'innova-hycross' || 
@@ -533,12 +536,12 @@ export const ServiceJourneyModal = ({
       v.id === 'toyota-vellfire' || 
       v.id === 'traveller'
     );
-  }, [activeServiceId]);
+  }, [activeServiceId, currentFleet]);
 
   // Selected vehicle object
   const selectedVehicle = useMemo(() => {
-    return fleetData.find(v => v.id === formData.selectedVehicleId) || filteredFleet[0] || fleetData[0];
-  }, [formData.selectedVehicleId, filteredFleet]);
+    return currentFleet.find(v => v.id === formData.selectedVehicleId) || filteredFleet[0] || currentFleet[0];
+  }, [formData.selectedVehicleId, filteredFleet, currentFleet]);
 
   // Calculate pricing display for selected vehicle
   const getVehicleTariffBadge = (vehicle) => {

@@ -190,6 +190,34 @@ export const tariffApi = {
     }
   },
 
+  // 12. Fetch Dynamic Fleet
+  async getFleet() {
+    try {
+      const data = await this.getContent('fleet');
+      if (Array.isArray(data) && data.length > 0) {
+        localStorage.setItem('scr_fleet_cache', JSON.stringify(data));
+        return data;
+      }
+      return JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
+    } catch (err) {
+      console.warn('getFleet error, reading local cache:', err);
+      return JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
+    }
+  },
+
+  // 13. Save Dynamic Fleet
+  async saveFleet(fleetList) {
+    try {
+      const saved = await this.saveContent('fleet', fleetList);
+      localStorage.setItem('scr_fleet_cache', JSON.stringify(saved));
+      return saved;
+    } catch (err) {
+      console.warn('saveFleet error, saving to local cache:', err);
+      localStorage.setItem('scr_fleet_cache', JSON.stringify(fleetList));
+      return fleetList;
+    }
+  },
+
   // --- LOCAL FALLBACK HELPERS ---
   getLocalTariffs({ usage_type, search, all } = {}) {
     let list = JSON.parse(localStorage.getItem('scr_tariffs_cache_v5') || 'null');

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Plane, MapPin, Briefcase, RefreshCw, ArrowRight, Calendar, LocateFixed, Loader2, Star, Users, ShieldCheck, MessageSquare, Sparkles, X, ChevronRight, PhoneCall, ArrowLeftRight, Compass, Clock, Crown, FileText } from 'lucide-react';
 import { fleetData } from '../../data/fleetData';
+import { useFleetData } from '../../hooks/useFleetData';
 import { pricingService } from '../../services/pricingService';
 import { VehicleBookingModal } from '../modals/VehicleBookingModal';
 import { WhatsAppEnquiryMenu, WhatsAppIcon } from '../common/WhatsAppEnquiryMenu';
@@ -656,6 +657,8 @@ const todayStr = () => {
 };
 
 export const CarRentalSearch = ({ onNavigate }) => {
+  const { fleet } = useFleetData();
+  const activeFleet = useMemo(() => (fleet && fleet.length > 0 ? fleet : fleetData).filter(v => v.isActive !== false), [fleet]);
   const [activeTab, setActiveTab] = useState('airport');
 
   // Location state
@@ -802,13 +805,13 @@ export const CarRentalSearch = ({ onNavigate }) => {
     return { price: p ? `₹${p}/km` : 'Price on Request', label: `Outstation (${t?.minimum_km_per_day || 300} km/day min)`, rawPrice: p };
   };
 
-  const filteredVehicles = useMemo(() => fleetData.filter(v => {
+  const filteredVehicles = useMemo(() => activeFleet.filter(v => {
     if (resultCategoryFilter === 'sedans')  return v.seatCategory === '3-4' || v.category.toLowerCase().includes('sedan');
     if (resultCategoryFilter === 'suvs')    return v.category.toLowerCase().includes('mpv') || v.category.toLowerCase().includes('suv');
     if (resultCategoryFilter === 'luxury')  return v.categoryKey === 'luxury' || (v.badgeText && v.badgeText.includes('VIP'));
     if (resultCategoryFilter === 'buses')   return v.category.toLowerCase().includes('bus') || v.category.toLowerCase().includes('traveller') || v.category.toLowerCase().includes('urbania');
     return true;
-  }), [resultCategoryFilter]);
+  }), [activeFleet, resultCategoryFilter]);
 
   const activeTabLabel = TABS.find(t => t.id === activeTab)?.label || 'Car Rental';
 
@@ -1008,7 +1011,7 @@ export const CarRentalSearch = ({ onNavigate }) => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               <div className="crs-results-filter-bar">
                 {[
-                  { id: 'all',    label: `All (${fleetData.length})` },
+                  { id: 'all',    label: `All (${activeFleet.length})` },
                   { id: 'sedans', label: 'Sedans' },
                   { id: 'suvs',   label: 'SUVs & MPVs' },
                   { id: 'luxury', label: 'VIP Flagship' },

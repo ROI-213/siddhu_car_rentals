@@ -9,8 +9,10 @@ import { VehicleBookingModal } from '../components/modals/VehicleBookingModal';
 import { fleetData } from '../data/fleetData';
 import { pricingService } from '../services/pricingService';
 import { WhatsAppEnquiryMenu, WhatsAppIcon } from '../components/common/WhatsAppEnquiryMenu';
+import { useFleetData } from '../hooks/useFleetData';
 
 export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
+  const { fleet } = useFleetData();
   const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'table'
   const [selectedVehicleForModal, setSelectedVehicleForModal] = useState(null);
 
@@ -69,7 +71,7 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
     };
   };
 
-  const filteredFleet = fleetData;
+  const filteredFleet = (fleet && fleet.length > 0 ? fleet : fleetData).filter(v => v.isActive !== false);
 
   return (
     <div style={{ overflowX: 'hidden' }}>
@@ -90,7 +92,7 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
         <div className="container">
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
             <div style={{ fontSize: '0.95rem', fontWeight: '700', color: 'var(--color-slate-700)' }}>
-              Complete Verified Fleet ({fleetData.length} Vehicles)
+              Complete Verified Fleet ({filteredFleet.length} Vehicles)
             </div>
 
             {/* View Mode Toggle: Showroom Cards vs Full Price List Table */}
