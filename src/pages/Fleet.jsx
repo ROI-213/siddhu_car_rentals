@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
-import { Crown, Car, Users, Briefcase, Disc, Wind, ShieldCheck, Star, PhoneCall, MessageSquare, ChevronRight, CheckCircle2, Clock, Filter, Eye, LayoutGrid, Table as TableIcon, FileText } from 'lucide-react';
+import { Crown, Car, Users, Briefcase, Disc, Wind, ShieldCheck, Star, PhoneCall, MessageSquare, ChevronRight, CheckCircle2, Clock, Eye, LayoutGrid, Table as TableIcon, FileText } from 'lucide-react';
 import { PageHero } from '../components/common/PageHero';
 import { GlassCard } from '../components/common/GlassCard';
 import { SectionHeader } from '../components/common/SectionHeader';
 import { Badge } from '../components/common/Badge';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { VehicleBookingModal } from '../components/modals/VehicleBookingModal';
-import { fleetData, FLEET_CATEGORIES } from '../data/fleetData';
+import { fleetData } from '../data/fleetData';
 import { pricingService } from '../services/pricingService';
 import { WhatsAppEnquiryMenu, WhatsAppIcon } from '../components/common/WhatsAppEnquiryMenu';
 
 export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
   const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'table'
-  const [categoryFilter, setCategoryFilter] = useState('all');
-  const [seatFilter, setSeatFilter] = useState('all');
-  const [transmissionFilter, setTransmissionFilter] = useState('all');
-  const [fuelFilter, setFuelFilter] = useState('all');
   const [selectedVehicleForModal, setSelectedVehicleForModal] = useState(null);
 
   const getTheme = (key, name) => {
@@ -73,13 +69,7 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
     };
   };
 
-  const filteredFleet = fleetData.filter(v => {
-    if (categoryFilter !== 'all' && v.categoryKey !== categoryFilter) return false;
-    if (seatFilter !== 'all' && v.seatCategory !== seatFilter) return false;
-    if (transmissionFilter !== 'all' && !v.transmission.toLowerCase().includes(transmissionFilter.toLowerCase())) return false;
-    if (fuelFilter !== 'all' && !v.fuelType.toLowerCase().includes(fuelFilter.toLowerCase())) return false;
-    return true;
-  });
+  const filteredFleet = fleetData;
 
   return (
     <div style={{ overflowX: 'hidden' }}>
@@ -95,14 +85,12 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
         image="/images/s_class_building_front.png"
       />
 
-      {/* 2. VIEW TOGGLE & FILTER BAR */}
-      <section style={{ padding: '24px 0', background: 'var(--bg-foundation-alt)', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+      {/* 2. VIEW TOGGLE BAR */}
+      <section style={{ padding: '16px 0', background: 'var(--bg-foundation-alt)', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
         <div className="container">
-          
-          {/* Top Bar with View Switcher & Price List Shortcut */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: '700', textTransform: 'uppercase', color: 'var(--accent-gold-primary)' }}>
-              <Filter size={16} /> Filter Fleet Vehicles
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
+            <div style={{ fontSize: '0.95rem', fontWeight: '700', color: 'var(--color-slate-700)' }}>
+              Complete Verified Fleet ({fleetData.length} Vehicles)
             </div>
 
             {/* View Mode Toggle: Showroom Cards vs Full Price List Table */}
@@ -150,133 +138,13 @@ export const Fleet = ({ onViewVehicleDetail, onBookVehicle }) => {
               </button>
             </div>
           </div>
-
-          {/* Quick Category Switcher Tabs */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
-            {FLEET_CATEGORIES.map(cat => {
-              const isActive = categoryFilter === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => setCategoryFilter(cat.id)}
-                  style={{
-                    padding: '8px 18px',
-                    borderRadius: '9999px',
-                    border: isActive ? '1px solid #C5A059' : '1px solid rgba(226, 232, 240, 0.9)',
-                    background: isActive ? 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)' : '#FFFFFF',
-                    color: isActive ? '#F59E0B' : 'var(--color-slate-700)',
-                    fontWeight: '700',
-                    fontSize: '0.84rem',
-                    cursor: 'pointer',
-                    boxShadow: isActive ? '0 4px 12px rgba(15, 23, 42, 0.15)' : '0 1px 3px rgba(0,0,0,0.03)',
-                    transition: 'all 0.2s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px'
-                  }}
-                >
-                  <span>{cat.label}</span>
-                  {cat.id !== 'all' && (
-                    <span style={{
-                      fontSize: '0.70rem',
-                      background: isActive ? 'rgba(245, 158, 11, 0.2)' : '#F1F5F9',
-                      padding: '1px 6px',
-                      borderRadius: '9999px',
-                      color: isActive ? '#F59E0B' : 'var(--color-slate-600)'
-                    }}>
-                      {fleetData.filter(v => v.categoryKey === cat.id).length}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          <GlassCard variant="standard" style={{ padding: '16px' }} className="fleet-filter-wrapper-card">
-            <div className="fleet-filters-grid">
-              {/* Category Filter */}
-              <div className="fleet-filter-card">
-                <label style={{ fontSize: '0.76rem', fontWeight: '700', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Fleet Category</label>
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="form-control fleet-filter-select"
-                >
-                  <option value="all">All Fleet Categories ({fleetData.length})</option>
-                  <option value="luxury">Luxury (S-Class, 7-Series, Vellfire)</option>
-                  <option value="premium">Premium (E-Class, 5-Series, Audi Q7, Camry)</option>
-                  <option value="executive">Executive (Fortuner, Hycross, Crysta, Innova, Accord, Carens, Ertiga, Dzire)</option>
-                  <option value="group">Group Travel (HiAce Commuter, Force Traveller, Mini Buses & Coaches)</option>
-                </select>
-              </div>
-
-              {/* Seating Capacity Filter */}
-              <div className="fleet-filter-card">
-                <label style={{ fontSize: '0.76rem', fontWeight: '700', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Seating Capacity</label>
-                <select
-                  value={seatFilter}
-                  onChange={(e) => setSeatFilter(e.target.value)}
-                  className="form-control fleet-filter-select"
-                >
-                  <option value="all">All Seats</option>
-                  <option value="3-4">3 - 4 Executive Seats</option>
-                  <option value="5-7">5 - 7 Passenger Seats</option>
-                  <option value="8-12">8 - 16 Group Seats</option>
-                </select>
-              </div>
-
-              {/* Transmission Filter */}
-              <div className="fleet-filter-card">
-                <label style={{ fontSize: '0.76rem', fontWeight: '700', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Transmission</label>
-                <select
-                  value={transmissionFilter}
-                  onChange={(e) => setTransmissionFilter(e.target.value)}
-                  className="form-control fleet-filter-select"
-                >
-                  <option value="all">All Transmissions</option>
-                  <option value="automatic">Automatic</option>
-                  <option value="manual">Manual</option>
-                </select>
-              </div>
-
-              {/* Fuel Type Filter */}
-              <div className="fleet-filter-card">
-                <label style={{ fontSize: '0.76rem', fontWeight: '700', color: 'var(--color-charcoal-700)', display: 'block', marginBottom: '4px' }}>Fuel Type</label>
-                <select
-                  value={fuelFilter}
-                  onChange={(e) => setFuelFilter(e.target.value)}
-                  className="form-control fleet-filter-select"
-                >
-                  <option value="all">All Fuel Types</option>
-                  <option value="diesel">Diesel Turbo</option>
-                  <option value="petrol">Petrol / Hybrid</option>
-                </select>
-              </div>
-            </div>
-          </GlassCard>
         </div>
       </section>
 
       {/* 3. FLEET LISTING: CARDS OR FULL PRICE LIST TABLE */}
       <section className="section-padding">
         <div className="container">
-          {filteredFleet.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-              <h3 className="text-h3">No vehicles match the selected filter criteria</h3>
-              <p className="text-small" style={{ margin: '8px 0 16px 0' }}>Try resetting your filter parameters to view our complete fleet.</p>
-              <button
-                onClick={() => {
-                  setCategoryFilter('all');
-                  setSeatFilter('all');
-                  setTransmissionFilter('all');
-                  setFuelFilter('all');
-                }}
-                className="btn btn-gold btn-pill"
-              >
-                Reset All Filters
-              </button>
-            </div>
-          ) : viewMode === 'table' ? (
+          {viewMode === 'table' ? (
             /* ========================================================= */
             /* VIEW MODE: COMPLETE FLEET PRICE LIST TABLE               */
             /* ========================================================= */
