@@ -1,4 +1,4 @@
-﻿// Default Home Page & Site Configuration Data
+// Default Home Page & Site Configuration Data
 // Used as initial data, fallback cache, and reset baseline for the Admin CMS
 
 export const DEFAULT_SITE_CONTENT = {
@@ -248,3 +248,282 @@ export const DEFAULT_SITE_CONTENT = {
     }
   ]
 };
+
+export const DEFAULT_CORPORATE_CONTENT = {
+  hero: {
+    badge: "Corporate Enterprise Mobility Solutions",
+    title: "Executive Fleet Solutions for",
+    titleHighlight: "Modern Enterprises",
+    description: "Dedicated monthly corporate fleet rentals, executive airport VIP transfers, guest & VIP movement, event convoys, and GST-billed consolidated invoicing — purpose-built for HR, Admin, Travel Desks, and Facilities teams across Bengaluru.",
+    image: "/images/services_corporate_s_class_landscape.jpg"
+  },
+  brochure: {
+    bannerTitle: "2026 Corporate Mobility Brochure & Rate Card Available for Download",
+    bannerSubtitle: "Includes complete tariff guide, GSTIN compliance documents, SLA terms, and fleet specifications for HR & Travel Desks.",
+    pdfUrl: "/siddhu_car_rentals_corporate_profile.pdf",
+    phone: "+91 76250 59665"
+  },
+  rateCard: [
+    {
+      id: "executive-sedan",
+      category: "Executive Sedan",
+      models: "Maruti Suzuki Dzire / Toyota Etios (Commercial KA Yellow Board)",
+      local8h80k: "₹2,200",
+      extraKm: "₹14 / km",
+      extraHr: "₹150 / hr",
+      airportTransfer: "₹1,400",
+      monthlyRetainer: "₹48,000 / month (2500 km / 26 days)"
+    },
+    {
+      id: "corporate-mpv",
+      category: "Premium Corporate MPV",
+      models: "Toyota Innova Crysta 2.4 VX (Captain Seats, Dual AC)",
+      local8h80k: "₹3,400",
+      extraKm: "₹19 / km",
+      extraHr: "₹250 / hr",
+      airportTransfer: "₹2,400",
+      monthlyRetainer: "₹72,000 / month (2500 km / 26 days)"
+    },
+    {
+      id: "luxury-sedan",
+      category: "Luxury Business Sedan",
+      models: "Mercedes-Benz E-Class / Honda Accord Executive",
+      local8h80k: "₹8,500",
+      extraKm: "₹65 / km",
+      extraHr: "₹600 / hr",
+      airportTransfer: "₹6,500",
+      monthlyRetainer: "Custom Retainer Contract"
+    },
+    {
+      id: "vip-flagship",
+      category: "Ultra Luxury VIP Flagship",
+      models: "Mercedes-Benz S-Class S350d / BMW 7-Series / Toyota Vellfire",
+      local8h80k: "₹16,000",
+      extraKm: "₹120 / km",
+      extraHr: "₹1,200 / hr",
+      airportTransfer: "₹12,000",
+      monthlyRetainer: "Dedicated Retainer Available"
+    },
+    {
+      id: "premium-suv",
+      category: "Premium SUV",
+      models: "Toyota Fortuner 4x4 / Audi Q7 Quattro",
+      local8h80k: "₹6,500",
+      extraKm: "₹45 / km",
+      extraHr: "₹500 / hr",
+      airportTransfer: "₹4,800",
+      monthlyRetainer: "Custom Retainer Contract"
+    },
+    {
+      id: "vip-van",
+      category: "Executive VIP Van & Coach",
+      models: "Force Urbania VIP (12+1) / Force Traveller Luxury (16+1)",
+      local8h80k: "₹5,500",
+      extraKm: "₹28 / km",
+      extraHr: "₹350 / hr",
+      airportTransfer: "₹4,200",
+      monthlyRetainer: "₹95,000 / month (Route Shuttles)"
+    }
+  ],
+  commercialTerms: "Rates quoted above are standard benchmarks. Volume discounts apply for fleets of 3+ vehicles. Tolls, parking, and interstate permits billed at actuals. 5% GST applicable with full Input Tax Credit (ITC) pass-through on GSTIN invoices. 30-day net credit available upon company empanelment.",
+  pillars: [
+    {
+      id: "retainers",
+      icon: "Car",
+      title: "Monthly & Long-Term Fleet Retainers",
+      headline: "Dedicated Chauffeur & Vehicle Assigned to Your Campus",
+      points: [
+        "Dedicated vehicle stationed exclusively at your office or executive residence",
+        "Police-verified, uniformed chauffeur assigned permanently to your account",
+        "Fixed flat monthly commercial billing — zero surge pricing during peak hours or rains",
+        "Guaranteed immediate replacement vehicle deployed within 60 minutes for servicing or repair",
+        "Flexible Dry Lease or Wet Lease options with comprehensive insurance and fuel management"
+      ]
+    },
+    {
+      id: "airport",
+      icon: "PlaneLanding",
+      title: "Executive Airport VIP Transfers",
+      headline: "Seamless Kempegowda International Airport (BLR) Protocol",
+      points: [
+        "Real-time flight gate tracking at Kempegowda Airport Terminal 1 and Terminal 2",
+        "Chauffeur placed 15 minutes prior to scheduled flight landing at Arrivals",
+        "Personalized acrylic or digital corporate placard meet-and-greet in arrival lounge",
+        "Chauffeur name, phone, and vehicle registration shared 2 hours before flight touchdown",
+        "Direct kerbside boarding assistance and luggage handling for delegates and CXOs"
+      ]
+    },
+    {
+      id: "vip_movement",
+      icon: "UsersRound",
+      title: "Guest & VIP Delegation Movement",
+      headline: "Discretion, Etiquette & Confidentiality for Global Leaders",
+      points: [
+        "Uniformed chauffeurs trained in executive protocol, etiquette, and defensive driving",
+        "Strict confidentiality with signed Non-Disclosure Agreements (NDAs) for board discussions",
+        "Pristine interior sanitization with daily English business newspapers, tissues, and packaged water",
+        "Priority dispatch for international investor visits, board meetings, and foreign audit teams",
+        "Multi-lingual drivers with working knowledge of English, Kannada, and Hindi"
+      ]
+    },
+    {
+      id: "events",
+      icon: "CalendarDays",
+      title: "Event & Conference Transportation",
+      headline: "Synchronized Fleet Convoys from 5 to 50+ Vehicles",
+      points: [
+        "Large-scale convoy movements for corporate offsites, tech summits, annual days, and AGMs",
+        "Dedicated on-site Dispatch Marshal stationed at your venue to coordinate live vehicle movement",
+        "Homogenous matching luxury fleet (all-white or all-silver Innova Crystas and Mercedes sedans)",
+        "Real-time GPS tracking link shared directly with your organizing committee and security desk",
+        "Digital trip sheets with single consolidated event billing for simplified accounting"
+      ]
+    },
+    {
+      id: "invoicing",
+      icon: "Receipt",
+      title: "Compliant GST Invoicing & Credit Terms",
+      headline: "30-Day Net Credit Terms Built for Enterprise Procurement",
+      points: [
+        "Single consolidated monthly tax invoice with complete GST input tax credit (ITC) eligibility (SAC 996601)",
+        "Itemized duty slip reconciliation with start/end odometer readings, trip times, and passenger signatures",
+        "Standard 30-day net credit terms for empanelled corporate accounts",
+        "Custom PO (Purchase Order) and Cost Center tagging for frictionless internal finance clearance",
+        "Complete vendor empanelment package (GSTIN, PAN, MSME, Police Verifications, Commercial Taxi Permits)"
+      ]
+    },
+    {
+      id: "concierge",
+      icon: "UserCheck",
+      title: "Dedicated Corporate Account Concierge",
+      headline: "Single Point of Contact for All Travel & Fleet Operations",
+      points: [
+        "Named Senior Corporate Account Director for your enterprise: S.M. Patil (+91 76250 59665)",
+        "24/7 dedicated enterprise dispatch desk for immediate itinerary amendments or midnight runs",
+        "Quarterly fleet utilization reviews with rate lock protection for long-term retainers",
+        "Direct WhatsApp enterprise group for HR, Admin, and Facilities teams for 60-second response",
+        "Documented SLA commitments: 99.8% on-time dispatch and zero unfulfilled booking guarantee"
+      ]
+    }
+  ],
+  tiers: [
+    {
+      id: "c-suite",
+      tier: "C-Suite & Board Sedans",
+      badge: "Flagship Luxury",
+      models: "Mercedes-Benz S-Class S350d • BMW 7-Series • Mercedes E-Class",
+      capacity: "3–4 Passengers • 3 Suitcases",
+      bestFor: "Board members, Managing Directors, keynote guests, and CXO airport arrivals.",
+      features: ["Ventilated Nappa Leather", "Acoustic Privacy Glass", "Daily Business Papers & Water", "Rear Workspace Charging"]
+    },
+    {
+      id: "mpvs-suvs",
+      tier: "Executive MPVs & Luxury SUVs",
+      badge: "Enterprise Favorite",
+      models: "Toyota Innova Crysta 2.4 VX • Toyota Vellfire VIP Lounge • Audi Q7 Quattro",
+      capacity: "6–7 Passengers • 5 Suitcases",
+      bestFor: "Visiting client delegations, tech park route audits, and executive team transit.",
+      features: ["Reclining Captain Chairs", "Tri-Zone Climate Control", "High Ground Clearance", "Ample Laptop Workspace"]
+    },
+    {
+      id: "coaches-shuttles",
+      tier: "VIP Coaches & Executive Shuttles",
+      badge: "Group Delegation",
+      models: "Force Urbania VIP (12+1) • Force Traveller Luxury (16+1) • Toyota HiAce Commuter",
+      capacity: "12–16 Passengers • 12+ Suitcases",
+      bestFor: "Corporate tech summit shuttles, project teams, offsite retreats, and airport delegation transfers.",
+      features: ["Individual AC Vents", "Pushback Ergonomic Seats", "PA Microphone for Briefs", "Dedicated Luggage Boot"]
+    },
+    {
+      id: "daily-commuters",
+      tier: "Daily Campus & Tech Park Commuters",
+      badge: "Cost-Effective Mobility",
+      models: "Toyota Innova Crysta • Kia Carens • Maruti Suzuki Dzire Executive",
+      capacity: "4–6 Passengers • 3 Suitcases",
+      bestFor: "Daily scheduled employee commute, IT park shuttles, and inter-office departmental travel.",
+      features: ["100% KA Commercial Board", "GPS Live Monitored", "Punctuality SLA 99.8%", "Sanitized Daily"]
+    }
+  ],
+  vendor: {
+    badge: "Enterprise Vendor Empanelment",
+    title: "Ready for Your Organization's Procurement Process",
+    description: "We are pre-equipped for enterprise vendor onboarding with all required documentation — GST registration, PAN, commercial insurance certificates, driver police verification records, and NDA templates. Share your vendor empanelment form and we will complete it within 24 hours.",
+    gstin: "29AAMFS1234F1Z5",
+    billingTerms: "Monthly Consolidated / Net-30 Credit",
+    fleetTag: "100% KA Commercial Yellow Board",
+    pdfUrl: "/siddhu_car_rentals_corporate_profile.pdf"
+  },
+  onboardingSteps: [
+    { step: "01", title: "Submit Requirement", desc: "Fill in the corporate enquiry form above with your fleet requirements, office locations, and expected start date." },
+    { step: "02", title: "Commercial Proposal", desc: "Our Senior Corporate Accounts Director shares a personalized monthly tariff, SLA agreement, and vehicle allocation plan within 4 hours." },
+    { step: "03", title: "Vendor Empanelment", desc: "Sign the corporate mobility agreement, exchange billing GST details, and set up Net-30 credit terms." },
+    { step: "04", title: "Live Fleet Deployment", desc: "Vehicles deployed with pre-briefed uniformed chauffeurs, digital duty slips, live tracking, and 24/7 dedicated dispatch support." }
+  ]
+};
+
+export const DEFAULT_OUTSTATION_CONTENT = {
+  hero: {
+    badge: "Intercity Luxury Chauffeur",
+    title: "Outstation Travel from",
+    titleHighlight: "Bengaluru",
+    description: "AC sedans, SUVs, and MPVs with driver for one-way drops, round trips, and multi-city trips across Karnataka, Tamil Nadu, and Kerala. Per-km rates, no hidden charges.",
+    image: "/images/hero_luxury_sedan.jpg"
+  },
+  destinations: [
+    { id: "mysuru", name: "Mysuru (Mysore)", distance: "140 Kms", time: "3.0 Hours", rate: "From ₹15/km", image: "/images/destinations/mysuru.jpg", alt: "Mysore Palace — Royal Heritage & Chauffeur Tour Mysuru", highlight: "Royal Palaces & Chamundi Hills" },
+    { id: "coorg", name: "Coorg (Madikeri)", distance: "260 Kms", time: "5.5 Hours", rate: "From ₹15/km", image: "/images/destinations/coorg.jpg", alt: "Coorg — Misty Coffee Valleys, Abbey Falls & Madikeri Hills", highlight: "Coffee Plantations & Waterfalls" },
+    { id: "chikmagalur", name: "Chikmagalur", distance: "240 Kms", time: "5.0 Hours", rate: "From ₹15/km", image: "/images/destinations/chikmagalur.jpg", alt: "Chikmagalur — Mullayanagiri Peak & Coffee Plantation Getaway", highlight: "Mullayanagiri Peak & Tea Estates" },
+    { id: "ooty", name: "Ooty & Nilgiris", distance: "270 Kms", time: "6.0 Hours", rate: "From ₹15/km", image: "/images/destinations/ooty.jpg", alt: "Ooty — Queen of Hill Stations & Botanical Gardens Nilgiris", highlight: "Pine Forests & Botanical Gardens" },
+    { id: "hampi", name: "Hampi Heritage", distance: "340 Kms", time: "6.5 Hours", rate: "From ₹15/km", image: "/images/destinations/hampi.jpg", alt: "Hampi — UNESCO Stone Heritage Chariot & Ruins", highlight: "UNESCO Stone Chariots & Ruins" },
+    { id: "wayanad", name: "Wayanad Rainforest", distance: "280 Kms", time: "6.0 Hours", rate: "From ₹15/km", image: "/images/destinations/wayanad.jpg", alt: "Wayanad — Western Ghats Rainforest & Sanctuaries", highlight: "Wild Sanctuaries & Tea Valleys" },
+    { id: "sakleshpur", name: "Sakleshpur Hills", distance: "220 Kms", time: "4.5 Hours", rate: "From ₹15/km", image: "/images/destinations/sakleshpur.jpg", alt: "Sakleshpur — Manjarabad Star Fort & Spice Hills", highlight: "Star Fort & Spice Plantations" },
+    { id: "chennai", name: "Chennai Coastal ECR", distance: "350 Kms", time: "6.5 Hours", rate: "From ₹15/km", image: "/images/destinations/chennai_ecr.jpg", alt: "Chennai East Coast Road — Coastal Interstate Scenic Drive", highlight: "Interstate Business & Marina Beach" }
+  ],
+  options: [
+    {
+      id: "one-way",
+      icon: "🔀",
+      title: "One-Way Intercity Drops",
+      desc: "Pay only for the distance traveled. Flat one-way rates for Mysuru, Chennai, Hyderabad, and major tier-1 cities."
+    },
+    {
+      id: "round-trip",
+      icon: "🔄",
+      title: "Round-Trip Vacation Packages",
+      desc: "Chauffeur remains with your family throughout the trip for sightseeing, dining, and local hill station exploration."
+    },
+    {
+      id: "airport-express",
+      icon: "✈️",
+      title: "Airport to Outstation Express",
+      desc: "Direct pickup from Kempegowda International Airport terminal to Mysuru, Coorg, or Chikmagalur without entering city traffic."
+    },
+    {
+      id: "family-trips",
+      icon: "👨‍👩‍👧‍👦",
+      title: "Family & Group Road Trips",
+      desc: "Spacious 7-seater Toyota Innova Crysta VIP and 12-seater Force Urbania vans with captain seats and large luggage boots."
+    },
+    {
+      id: "hill-station",
+      icon: "🌿",
+      title: "Weekend Hill Station Getaways",
+      desc: "Curated weekend getaways to Ooty, Wayanad, Sakleshpur, and Coorg with drivers experienced in ghat mountain driving."
+    },
+    {
+      id: "heritage",
+      icon: "🏛️",
+      title: "Heritage & Temple Convoys",
+      desc: "Comfortable long-distance travel to UNESCO Hampi stone ruins, Belur-Halebid, and Tirupati with zero driver hassle."
+    }
+  ],
+  terms: {
+    minKmStandard: "300 Kms / Day",
+    minKmBuses: "400 Kms / Day",
+    billingNotes: "Daily minimum 300 Kms applies (400 Kms for 45/49 seater luxury buses). Garage to garage billing with zero hidden charges. Tolls, state taxes, and parking fees billed at actuals."
+  }
+};
+
+DEFAULT_SITE_CONTENT.corporate = DEFAULT_CORPORATE_CONTENT;
+DEFAULT_SITE_CONTENT.outstation = DEFAULT_OUTSTATION_CONTENT;
+

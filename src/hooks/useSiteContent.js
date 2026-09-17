@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { tariffApi } from '../services/tariffApi';
 import { DEFAULT_SITE_CONTENT } from '../data/defaultSiteContent';
 
@@ -13,7 +13,9 @@ export const useSiteContent = () => {
         testimonials: { ...DEFAULT_SITE_CONTENT.testimonials, ...(cached.testimonials || {}) },
         destinations: { ...DEFAULT_SITE_CONTENT.destinations, ...(cached.destinations || {}) },
         services: cached.services && Array.isArray(cached.services) ? cached.services : DEFAULT_SITE_CONTENT.services,
-        story: cached.story && Array.isArray(cached.story) ? cached.story : DEFAULT_SITE_CONTENT.story
+        story: cached.story && Array.isArray(cached.story) ? cached.story : DEFAULT_SITE_CONTENT.story,
+        corporate: { ...DEFAULT_SITE_CONTENT.corporate, ...(cached.corporate || {}) },
+        outstation: { ...DEFAULT_SITE_CONTENT.outstation, ...(cached.outstation || {}) }
       };
     } catch {
       return DEFAULT_SITE_CONTENT;
@@ -38,7 +40,9 @@ export const useSiteContent = () => {
             ribbonItems: (all.destinations && Array.isArray(all.destinations.ribbonItems)) ? all.destinations.ribbonItems : DEFAULT_SITE_CONTENT.destinations.ribbonItems
           },
           services: (all.services && Array.isArray(all.services)) ? all.services : DEFAULT_SITE_CONTENT.services,
-          story: (all.story && Array.isArray(all.story)) ? all.story : DEFAULT_SITE_CONTENT.story
+          story: (all.story && Array.isArray(all.story)) ? all.story : DEFAULT_SITE_CONTENT.story,
+          corporate: { ...DEFAULT_SITE_CONTENT.corporate, ...(all.corporate || {}) },
+          outstation: { ...DEFAULT_SITE_CONTENT.outstation, ...(all.outstation || {}) }
         };
 
         setContent(merged);

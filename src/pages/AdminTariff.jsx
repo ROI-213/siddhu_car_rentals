@@ -29,6 +29,8 @@ import { PremiumButton } from '../components/common/PremiumButton';
 import { tariffApi, formatCurrency } from '../services/tariffApi';
 import { AdminHomeContent } from '../components/admin/AdminHomeContent';
 import { AdminFleetManager } from '../components/admin/AdminFleetManager';
+import { AdminCorporateContent } from '../components/admin/AdminCorporateContent';
+import { AdminOutstationContent } from '../components/admin/AdminOutstationContent';
 
 export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
   // Auth state
@@ -564,7 +566,53 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
             }}
           >
             <Layers size={18} />
-            <span>📑 Home Page Content CMS</span>
+            <span>📑 Home Content CMS</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setMainAdminSection('corporate')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 24px',
+              borderRadius: '12px',
+              border: 'none',
+              background: mainAdminSection === 'corporate' ? '#12151C' : '#FFFFFF',
+              color: mainAdminSection === 'corporate' ? '#C5A059' : 'var(--color-slate-700)',
+              fontWeight: '800',
+              fontSize: '0.95rem',
+              cursor: 'pointer',
+              boxShadow: mainAdminSection === 'corporate' ? '0 4px 14px rgba(0,0,0,0.12)' : '0 2px 6px rgba(0,0,0,0.02)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <span style={{ fontSize: '1.1rem' }}>🏢</span>
+            <span>Corporate Page CMS</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setMainAdminSection('outstation')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 24px',
+              borderRadius: '12px',
+              border: 'none',
+              background: mainAdminSection === 'outstation' ? '#12151C' : '#FFFFFF',
+              color: mainAdminSection === 'outstation' ? '#C5A059' : 'var(--color-slate-700)',
+              fontWeight: '800',
+              fontSize: '0.95rem',
+              cursor: 'pointer',
+              boxShadow: mainAdminSection === 'outstation' ? '0 4px 14px rgba(0,0,0,0.12)' : '0 2px 6px rgba(0,0,0,0.02)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <span style={{ fontSize: '1.1rem' }}>🛣️</span>
+            <span>Outstation Page CMS</span>
           </button>
         </div>
 
@@ -576,6 +624,10 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
             onSubTabChange={setHomeContentSubTab}
             showToast={showToast}
           />
+        ) : mainAdminSection === 'corporate' ? (
+          <AdminCorporateContent showToast={showToast} />
+        ) : mainAdminSection === 'outstation' ? (
+          <AdminOutstationContent showToast={showToast} />
         ) : (
           <>
             {/* Controls, Category Tabs & Add Button */}

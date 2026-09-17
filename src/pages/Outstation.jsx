@@ -11,8 +11,17 @@ import { WhatsAppButton } from '../components/common/WhatsAppButton';
 import { WhatsAppBookingModal } from '../components/modals/WhatsAppBookingModal';
 import { TariffEnquiryModal } from '../components/modals/TariffEnquiryModal';
 import { DEFAULT_OUTSTATION_TARIFFS } from '../services/tariffApi';
+import { useSiteContent } from '../hooks/useSiteContent';
+import { DEFAULT_OUTSTATION_CONTENT } from '../data/defaultSiteContent';
 
 export const Outstation = ({ onEnquireClick }) => {
+  const { content } = useSiteContent();
+  const outstation = content?.outstation || DEFAULT_OUTSTATION_CONTENT;
+  const hero = outstation.hero || DEFAULT_OUTSTATION_CONTENT.hero;
+  const destinations = Array.isArray(outstation.destinations) ? outstation.destinations : DEFAULT_OUTSTATION_CONTENT.destinations;
+  const options = Array.isArray(outstation.options) ? outstation.options : DEFAULT_OUTSTATION_CONTENT.options;
+  const terms = outstation.terms || DEFAULT_OUTSTATION_CONTENT.terms;
+
   const [selectedRouteModal, setSelectedRouteModal] = useState(null);
   const [selectedTariffForModal, setSelectedTariffForModal] = useState(null);
   const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
@@ -45,29 +54,18 @@ export const Outstation = ({ onEnquireClick }) => {
     return themes[idx % themes.length];
   };
 
-  const destinations = [
-    { name: 'Mysuru (Mysore)', distance: '140 Kms', time: '3.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/mysuru.jpg', alt: 'Mysore Palace — Royal Heritage & Chauffeur Tour Mysuru', highlight: 'Royal Palaces & Chamundi Hills' },
-    { name: 'Coorg (Madikeri)', distance: '260 Kms', time: '5.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/coorg.jpg', alt: 'Coorg — Misty Coffee Valleys, Abbey Falls & Madikeri Hills', highlight: 'Coffee Plantations & Waterfalls' },
-    { name: 'Chikmagalur', distance: '240 Kms', time: '5.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/chikmagalur.jpg', alt: 'Chikmagalur — Mullayanagiri Peak & Coffee Plantation Getaway', highlight: 'Mullayanagiri Peak & Tea Estates' },
-    { name: 'Ooty & Nilgiris', distance: '270 Kms', time: '6.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/ooty.jpg', alt: 'Ooty — Queen of Hill Stations & Botanical Gardens Nilgiris', highlight: 'Pine Forests & Botanical Gardens' },
-    { name: 'Hampi Heritage', distance: '340 Kms', time: '6.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/hampi.jpg', alt: 'Hampi — UNESCO Stone Heritage Chariot & Ruins', highlight: 'UNESCO Stone Chariots & Ruins' },
-    { name: 'Wayanad Rainforest', distance: '280 Kms', time: '6.0 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/wayanad.jpg', alt: 'Wayanad — Western Ghats Rainforest & Sanctuaries', highlight: 'Wild Sanctuaries & Tea Valleys' },
-    { name: 'Sakleshpur Hills', distance: '220 Kms', time: '4.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/sakleshpur.jpg', alt: 'Sakleshpur — Manjarabad Star Fort & Spice Hills', highlight: 'Star Fort & Spice Plantations' },
-    { name: 'Chennai Coastal ECR', distance: '350 Kms', time: '6.5 Hours', rate: `${pricingService.getOutstationTariff('innova-crysta')?.rate_per_km || 23}/km`, image: '/images/destinations/chennai_ecr.jpg', alt: 'Chennai East Coast Road — Coastal Interstate Scenic Drive', highlight: 'Interstate Business & Marina Beach' }
-  ];
-
   return (
     <div style={{ overflowX: 'hidden' }}>
       
       {/* 1. HERO SECTION */}
       <PageHero
-        badge="Intercity Luxury Chauffeur"
+        badge={hero.badge || "Intercity Luxury Chauffeur"}
         badgeIcon={Navigation}
-        title="Outstation Travel from"
-        titleHighlight="Bengaluru"
-        description="AC sedans, SUVs, and MPVs with driver for one-way drops, round trips, and multi-city trips across Karnataka, Tamil Nadu, and Kerala. Per-km rates, no hidden charges."
+        title={hero.title || "Outstation Travel from"}
+        titleHighlight={hero.titleHighlight || "Bengaluru"}
+        description={hero.description || "AC sedans, SUVs, and MPVs with driver for one-way drops, round trips, and multi-city trips across Karnataka, Tamil Nadu, and Kerala. Per-km rates, no hidden charges."}
         breadcrumbs={['Services', 'Outstation Travel']}
-        image="/images/hero_luxury_sedan.jpg"
+        image={hero.image || "/images/hero_luxury_sedan.jpg"}
       >
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '24px' }}>
           <PremiumButton variant="gold" size="lg" pill icon={ChevronRight} iconPosition="right" onClick={scrollToEnquiry}>
@@ -189,39 +187,8 @@ export const Outstation = ({ onEnquireClick }) => {
         <div className="outstation-options-marquee-wrapper">
           <div className="outstation-options-marquee-track">
             <div className="outstation-options-set">
-              {[
-                {
-                  icon: '🔀',
-                  title: 'One-Way Intercity Drops',
-                  desc: 'Pay only for the distance traveled. Flat one-way rates for Mysuru, Chennai, Hyderabad, and major tier-1 cities.'
-                },
-                {
-                  icon: '🔄',
-                  title: 'Round-Trip Vacation Packages',
-                  desc: 'Chauffeur remains with your family throughout the trip for sightseeing, dining, and local hill station exploration.'
-                },
-                {
-                  icon: '✈️',
-                  title: 'Airport to Outstation Express',
-                  desc: 'Direct pickup from Kempegowda International Airport terminal to Mysuru, Coorg, or Chikmagalur without entering city traffic.'
-                },
-                {
-                  icon: '👨‍👩‍👧‍👦',
-                  title: 'Family & Group Road Trips',
-                  desc: 'Spacious 7-seater Toyota Innova Crysta VIP and 12-seater Force Urbania vans with captain seats and large luggage boots.'
-                },
-                {
-                  icon: '🌿',
-                  title: 'Weekend Hill Station Getaways',
-                  desc: 'Curated weekend getaways to Ooty, Wayanad, Sakleshpur, and Coorg with drivers experienced in ghat mountain driving.'
-                },
-                {
-                  icon: '🏛️',
-                  title: 'Heritage & Temple Convoys',
-                  desc: 'Comfortable long-distance travel to UNESCO Hampi stone ruins, Belur-Halebid, and Tirupati with zero driver hassle.'
-                }
-              ].map((opt, i) => (
-                <div key={`opt1-${i}`} className="outstation-option-slide-card">
+              {options.map((opt, i) => (
+                <div key={`opt1-${opt.id || i}`} className="outstation-option-slide-card">
                   <div className="option-slide-icon">{opt.icon}</div>
                   <div className="option-slide-title">{opt.title}</div>
                   <p className="option-slide-desc">{opt.desc}</p>
@@ -230,39 +197,8 @@ export const Outstation = ({ onEnquireClick }) => {
             </div>
 
             <div className="outstation-options-set" aria-hidden="true">
-              {[
-                {
-                  icon: '🔀',
-                  title: 'One-Way Intercity Drops',
-                  desc: 'Pay only for the distance traveled. Flat one-way rates for Mysuru, Chennai, Hyderabad, and major tier-1 cities.'
-                },
-                {
-                  icon: '🔄',
-                  title: 'Round-Trip Vacation Packages',
-                  desc: 'Chauffeur remains with your family throughout the trip for sightseeing, dining, and local hill station exploration.'
-                },
-                {
-                  icon: '✈️',
-                  title: 'Airport to Outstation Express',
-                  desc: 'Direct pickup from Kempegowda International Airport terminal to Mysuru, Coorg, or Chikmagalur without entering city traffic.'
-                },
-                {
-                  icon: '👨‍👩‍👧‍👦',
-                  title: 'Family & Group Road Trips',
-                  desc: 'Spacious 7-seater Toyota Innova Crysta VIP and 12-seater Force Urbania vans with captain seats and large luggage boots.'
-                },
-                {
-                  icon: '🌿',
-                  title: 'Weekend Hill Station Getaways',
-                  desc: 'Curated weekend getaways to Ooty, Wayanad, Sakleshpur, and Coorg with drivers experienced in ghat mountain driving.'
-                },
-                {
-                  icon: '🏛️',
-                  title: 'Heritage & Temple Convoys',
-                  desc: 'Comfortable long-distance travel to UNESCO Hampi stone ruins, Belur-Halebid, and Tirupati with zero driver hassle.'
-                }
-              ].map((opt, i) => (
-                <div key={`opt2-${i}`} className="outstation-option-slide-card">
+              {options.map((opt, i) => (
+                <div key={`opt2-${opt.id || i}`} className="outstation-option-slide-card">
                   <div className="option-slide-icon">{opt.icon}</div>
                   <div className="option-slide-title">{opt.title}</div>
                   <p className="option-slide-desc">{opt.desc}</p>
@@ -362,7 +298,7 @@ export const Outstation = ({ onEnquireClick }) => {
             badgeIcon={Award}
             title="Outstation Fleet Per-Km Tariff"
             titleHighlight="Breakdown"
-            description="Daily minimum 300 Kms applies (400 Kms for 45/49 seater luxury buses). Garage to garage billing with zero hidden charges."
+            description={terms.billingNotes || "Daily minimum 300 Kms applies (400 Kms for 45/49 seater luxury buses). Garage to garage billing with zero hidden charges."}
             align="center"
           />
 

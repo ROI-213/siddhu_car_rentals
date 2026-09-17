@@ -14,7 +14,18 @@ import { LocationAutocompleteInput } from '../components/common/LocationAutocomp
 import { WhatsAppButton } from '../components/common/WhatsAppButton';
 import { WhatsAppIcon } from '../components/common/WhatsAppEnquiryMenu';
 import { SITE_CONFIG } from '../config/site';
+import { useSiteContent } from '../hooks/useSiteContent';
+import { DEFAULT_CORPORATE_CONTENT } from '../data/defaultSiteContent';
 import './CorporateTransfer.css';
+
+const PILLAR_ICONS = {
+  Car,
+  PlaneLanding,
+  UsersRound,
+  CalendarDays,
+  Receipt,
+  UserCheck
+};
 
 export const CorporateTransfer = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -59,9 +70,20 @@ export const CorporateTransfer = () => {
     });
   };
 
+  const { content } = useSiteContent();
+  const corporate = content?.corporate || DEFAULT_CORPORATE_CONTENT;
+  const hero = corporate.hero || DEFAULT_CORPORATE_CONTENT.hero;
+  const brochure = corporate.brochure || DEFAULT_CORPORATE_CONTENT.brochure;
+  const rateCardData = Array.isArray(corporate.rateCard) ? corporate.rateCard : DEFAULT_CORPORATE_CONTENT.rateCard;
+  const commercialTerms = corporate.commercialTerms || DEFAULT_CORPORATE_CONTENT.commercialTerms;
+  const corporatePillars = Array.isArray(corporate.pillars) ? corporate.pillars : DEFAULT_CORPORATE_CONTENT.pillars;
+  const vehicleTiers = Array.isArray(corporate.tiers) ? corporate.tiers : DEFAULT_CORPORATE_CONTENT.tiers;
+  const vendor = corporate.vendor || DEFAULT_CORPORATE_CONTENT.vendor;
+  const onboardingSteps = Array.isArray(corporate.onboardingSteps) ? corporate.onboardingSteps : DEFAULT_CORPORATE_CONTENT.onboardingSteps;
+
   const copyGstin = () => {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText('29AAMFS1234F1Z5');
+      navigator.clipboard.writeText(vendor.gstin || '29AAMFS1234F1Z5');
       setCopiedGstin(true);
       setTimeout(() => setCopiedGstin(false), 2500);
     }
@@ -117,188 +139,18 @@ export const CorporateTransfer = () => {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Corporate Rate Card Data
-  const rateCardData = [
-    {
-      category: 'Executive Sedan',
-      models: 'Maruti Suzuki Dzire / Toyota Etios (Commercial KA Yellow Board)',
-      local8h80k: '₹2,200',
-      extraKm: '₹14 / km',
-      extraHr: '₹150 / hr',
-      airportTransfer: '₹1,400',
-      monthlyRetainer: '₹48,000 / month (2500 km / 26 days)'
-    },
-    {
-      category: 'Premium Corporate MPV',
-      models: 'Toyota Innova Crysta 2.4 VX (Captain Seats, Dual AC)',
-      local8h80k: '₹3,400',
-      extraKm: '₹19 / km',
-      extraHr: '₹250 / hr',
-      airportTransfer: '₹2,400',
-      monthlyRetainer: '₹72,000 / month (2500 km / 26 days)'
-    },
-    {
-      category: 'Luxury Business Sedan',
-      models: 'Mercedes-Benz E-Class / Honda Accord Executive',
-      local8h80k: '₹8,500',
-      extraKm: '₹65 / km',
-      extraHr: '₹600 / hr',
-      airportTransfer: '₹6,500',
-      monthlyRetainer: 'Custom Retainer Contract'
-    },
-    {
-      category: 'Ultra Luxury VIP Flagship',
-      models: 'Mercedes-Benz S-Class S350d / BMW 7-Series / Toyota Vellfire',
-      local8h80k: '₹16,000',
-      extraKm: '₹120 / km',
-      extraHr: '₹1,200 / hr',
-      airportTransfer: '₹12,000',
-      monthlyRetainer: 'Dedicated Retainer Available'
-    },
-    {
-      category: 'Premium SUV',
-      models: 'Toyota Fortuner 4x4 / Audi Q7 Quattro',
-      local8h80k: '₹6,500',
-      extraKm: '₹45 / km',
-      extraHr: '₹500 / hr',
-      airportTransfer: '₹4,800',
-      monthlyRetainer: 'Custom Retainer Contract'
-    },
-    {
-      category: 'Executive VIP Van & Coach',
-      models: 'Force Urbania VIP (12+1) / Force Traveller Luxury (16+1)',
-      local8h80k: '₹5,500',
-      extraKm: '₹28 / km',
-      extraHr: '₹350 / hr',
-      airportTransfer: '₹4,200',
-      monthlyRetainer: '₹95,000 / month (Route Shuttles)'
-    }
-  ];
-
-  // 6 Corporate Pillars
-  const corporatePillars = [
-    {
-      icon: Car,
-      title: 'Monthly & Long-Term Fleet Retainers',
-      headline: 'Dedicated Chauffeur & Vehicle Assigned to Your Campus',
-      points: [
-        'Dedicated vehicle stationed exclusively at your office or executive residence',
-        'Police-verified, uniformed chauffeur assigned permanently to your account',
-        'Fixed flat monthly commercial billing — zero surge pricing during peak hours or rains',
-        'Guaranteed immediate replacement vehicle deployed within 60 minutes for servicing or repair',
-        'Flexible Dry Lease or Wet Lease options with comprehensive insurance and fuel management'
-      ]
-    },
-    {
-      icon: PlaneLanding,
-      title: 'Executive Airport VIP Transfers',
-      headline: 'Seamless Kempegowda International Airport (BLR) Protocol',
-      points: [
-        'Real-time flight gate tracking at Kempegowda Airport Terminal 1 and Terminal 2',
-        'Chauffeur placed 15 minutes prior to scheduled flight landing at Arrivals',
-        'Personalized acrylic or digital corporate placard meet-and-greet in arrival lounge',
-        'Chauffeur name, phone, and vehicle registration shared 2 hours before flight touchdown',
-        'Direct kerbside boarding assistance and luggage handling for delegates and CXOs'
-      ]
-    },
-    {
-      icon: UsersRound,
-      title: 'Guest & VIP Delegation Movement',
-      headline: 'Discretion, Etiquette & Confidentiality for Global Leaders',
-      points: [
-        'Uniformed chauffeurs trained in executive protocol, etiquette, and defensive driving',
-        'Strict confidentiality with signed Non-Disclosure Agreements (NDAs) for board discussions',
-        'Pristine interior sanitization with daily English business newspapers, tissues, and packaged water',
-        'Priority dispatch for international investor visits, board meetings, and foreign audit teams',
-        'Multi-lingual drivers with working knowledge of English, Kannada, and Hindi'
-      ]
-    },
-    {
-      icon: CalendarDays,
-      title: 'Event & Conference Transportation',
-      headline: 'Synchronized Fleet Convoys from 5 to 50+ Vehicles',
-      points: [
-        'Large-scale convoy movements for corporate offsites, tech summits, annual days, and AGMs',
-        'Dedicated on-site Dispatch Marshal stationed at your venue to coordinate live vehicle movement',
-        'Homogenous matching luxury fleet (all-white or all-silver Innova Crystas and Mercedes sedans)',
-        'Real-time GPS tracking link shared directly with your organizing committee and security desk',
-        'Digital trip sheets with single consolidated event billing for simplified accounting'
-      ]
-    },
-    {
-      icon: Receipt,
-      title: 'Compliant GST Invoicing & Credit Terms',
-      headline: '30-Day Net Credit Terms Built for Enterprise Procurement',
-      points: [
-        'Single consolidated monthly tax invoice with complete GST input tax credit (ITC) eligibility (SAC 996601)',
-        'Itemized duty slip reconciliation with start/end odometer readings, trip times, and passenger signatures',
-        'Standard 30-day net credit terms for empanelled corporate accounts',
-        'Custom PO (Purchase Order) and Cost Center tagging for frictionless internal finance clearance',
-        'Complete vendor empanelment package (GSTIN, PAN, MSME, Police Verifications, Commercial Taxi Permits)'
-      ]
-    },
-    {
-      icon: UserCheck,
-      title: 'Dedicated Corporate Account Concierge',
-      headline: 'Single Point of Contact for All Travel & Fleet Operations',
-      points: [
-        'Named Senior Corporate Account Director for your enterprise: S.M. Patil (+91 76250 59665)',
-        '24/7 dedicated enterprise dispatch desk for immediate itinerary amendments or midnight runs',
-        'Quarterly fleet utilization reviews with rate lock protection for long-term retainers',
-        'Direct WhatsApp enterprise group for HR, Admin, and Facilities teams for 60-second response',
-        'Documented SLA commitments: 99.8% on-time dispatch and zero unfulfilled booking guarantee'
-      ]
-    }
-  ];
-
-  // Vehicle Categories Matrix
-  const vehicleTiers = [
-    {
-      tier: 'C-Suite & Board Sedans',
-      badge: 'Flagship Luxury',
-      models: 'Mercedes-Benz S-Class S350d • BMW 7-Series • Mercedes E-Class',
-      capacity: '3–4 Passengers • 3 Suitcases',
-      bestFor: 'Board members, Managing Directors, keynote guests, and CXO airport arrivals.',
-      features: ['Ventilated Nappa Leather', 'Acoustic Privacy Glass', 'Daily Business Papers & Water', 'Rear Workspace Charging']
-    },
-    {
-      tier: 'Executive MPVs & Luxury SUVs',
-      badge: 'Enterprise Favorite',
-      models: 'Toyota Innova Crysta 2.4 VX • Toyota Vellfire VIP Lounge • Audi Q7 Quattro',
-      capacity: '6–7 Passengers • 5 Suitcases',
-      bestFor: 'Visiting client delegations, tech park route audits, and executive team transit.',
-      features: ['Reclining Captain Chairs', 'Tri-Zone Climate Control', 'High Ground Clearance', 'Ample Laptop Workspace']
-    },
-    {
-      tier: 'VIP Coaches & Executive Shuttles',
-      badge: 'Group Delegation',
-      models: 'Force Urbania VIP (12+1) • Force Traveller Luxury (16+1) • Toyota HiAce Commuter',
-      capacity: '12–16 Passengers • 12+ Suitcases',
-      bestFor: 'Corporate tech summit shuttles, project teams, offsite retreats, and airport delegation transfers.',
-      features: ['Individual AC Vents', 'Pushback Ergonomic Seats', 'PA Microphone for Briefs', 'Dedicated Luggage Boot']
-    },
-    {
-      tier: 'Daily Campus & Tech Park Commuters',
-      badge: 'Cost-Effective Mobility',
-      models: 'Toyota Innova Crysta • Kia Carens • Maruti Suzuki Dzire Executive',
-      capacity: '4–6 Passengers • 3 Suitcases',
-      bestFor: 'Daily scheduled employee commute, IT park shuttles, and inter-office departmental travel.',
-      features: ['100% KA Commercial Board', 'GPS Live Monitored', 'Punctuality SLA 99.8%', 'Sanitized Daily']
-    }
-  ];
-
   return (
     <div style={{ overflowX: 'hidden' }}>
 
       {/* 1. HERO SECTION */}
       <PageHero
-        badge="Corporate Enterprise Mobility Solutions"
+        badge={hero.badge || "Corporate Enterprise Mobility Solutions"}
         badgeIcon={Building2}
-        title="Executive Fleet Solutions for"
-        titleHighlight="Modern Enterprises"
-        description="Dedicated monthly corporate fleet rentals, executive airport VIP transfers, guest & VIP movement, event convoys, and GST-billed consolidated invoicing — purpose-built for HR, Admin, Travel Desks, and Facilities teams across Bengaluru."
+        title={hero.title || "Executive Fleet Solutions for"}
+        titleHighlight={hero.titleHighlight || "Modern Enterprises"}
+        description={hero.description || "Dedicated monthly corporate fleet rentals, executive airport VIP transfers, guest & VIP movement, event convoys, and GST-billed consolidated invoicing — purpose-built for HR, Admin, Travel Desks, and Facilities teams across Bengaluru."}
         breadcrumbs={['Services', 'Corporate Accounts']}
-        image="/images/services_corporate_s_class_landscape.jpg"
+        image={hero.image || "/images/services_corporate_s_class_landscape.jpg"}
       />
 
       {/* 2. ENTERPRISE DOWNLOADABLE RATE CARD & HR / PROCUREMENT QUICK BANNER */}
@@ -331,17 +183,17 @@ export const CorporateTransfer = () => {
               </div>
               <div>
                 <div style={{ fontSize: '0.96rem', fontWeight: '800', color: '#FFFFFF', letterSpacing: '-0.01em' }}>
-                  2026 Corporate Mobility Brochure & Rate Card Available for Download
+                  {brochure.bannerTitle || "2026 Corporate Mobility Brochure & Rate Card Available for Download"}
                 </div>
                 <div style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.65)', marginTop: '2px' }}>
-                  Includes complete tariff guide, GSTIN compliance documents, SLA terms, and fleet specifications for HR & Travel Desks.
+                  {brochure.bannerSubtitle || "Includes complete tariff guide, GSTIN compliance documents, SLA terms, and fleet specifications for HR & Travel Desks."}
                 </div>
               </div>
             </div>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
               <a
-                href="/siddhu_car_rentals_corporate_profile.pdf"
+                href={brochure.pdfUrl || "/siddhu_car_rentals_corporate_profile.pdf"}
                 download="Siddhu_Car_Rentals_Corporate_Profile.pdf"
                 style={{
                   display: 'inline-flex',
@@ -360,7 +212,7 @@ export const CorporateTransfer = () => {
                 <span>Download PDF Guide</span>
               </a>
               <a
-                href="tel:+917625059665"
+                href={`tel:${(brochure.phone || '+917625059665').replace(/\s+/g, '')}`}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -376,7 +228,7 @@ export const CorporateTransfer = () => {
                 }}
               >
                 <PhoneCall size={15} color="#C5A059" />
-                <span>Corporate Desk: +91 76250 59665</span>
+                <span>Corporate Desk: {brochure.phone || '+91 76250 59665'}</span>
               </a>
             </div>
           </div>
@@ -819,7 +671,10 @@ export const CorporateTransfer = () => {
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    <pillar.icon size={24} color="var(--accent-gold-primary)" />
+                    {(() => {
+                      const PillarIcon = typeof pillar.icon === 'string' ? (PILLAR_ICONS[pillar.icon] || Car) : (pillar.icon || Car);
+                      return <PillarIcon size={24} color="var(--accent-gold-primary)" />;
+                    })()}
                   </div>
                   <div>
                     <h3 style={{ fontSize: '1.08rem', fontWeight: '800', color: '#0F172A', margin: '0 0 4px 0' }}>
@@ -950,7 +805,7 @@ export const CorporateTransfer = () => {
               color: '#64748B',
               lineHeight: '1.6'
             }}>
-              <strong>Commercial Invoicing Terms:</strong> Rates quoted above are standard benchmarks. Volume discounts apply for fleets of 3+ vehicles. Tolls, parking, and interstate permits billed at actuals. 5% GST applicable with full Input Tax Credit (ITC) pass-through on GSTIN invoices. 30-day net credit available upon company empanelment.
+              <strong>Commercial Invoicing Terms:</strong> {commercialTerms}
             </div>
           </GlassCard>
         </div>
@@ -964,19 +819,19 @@ export const CorporateTransfer = () => {
               <div className="corp-vendor-content">
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(197, 160, 89, 0.15)', color: '#E6CA85', padding: '4px 14px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '12px' }}>
                   <Handshake size={13} />
-                  <span>Enterprise Vendor Empanelment</span>
+                  <span>{vendor.badge || "Enterprise Vendor Empanelment"}</span>
                 </div>
                 <h3 style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.6rem', color: '#FFFFFF', margin: '0 0 10px 0' }}>
-                  Ready for Your Organization's Procurement Process
+                  {vendor.title || "Ready for Your Organization's Procurement Process"}
                 </h3>
                 <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.75)', lineHeight: '1.65', margin: 0 }}>
-                  We are pre-equipped for enterprise vendor onboarding with all required documentation — GST registration, PAN, commercial insurance certificates, driver police verification records, and NDA templates. Share your vendor empanelment form and we will complete it within 24 hours.
+                  {vendor.description || "We are pre-equipped for enterprise vendor onboarding with all required documentation — GST registration, PAN, commercial insurance certificates, driver police verification records, and NDA templates. Share your vendor empanelment form and we will complete it within 24 hours."}
                 </p>
 
                 <div className="corp-vendor-meta">
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                     <strong style={{ color: '#E6CA85' }}>GSTIN:</strong>
-                    <span style={{ fontFamily: 'monospace', fontSize: '0.88rem', letterSpacing: '0.04em' }}>29AAMFS1234F1Z5</span>
+                    <span style={{ fontFamily: 'monospace', fontSize: '0.88rem', letterSpacing: '0.04em' }}>{vendor.gstin || '29AAMFS1234F1Z5'}</span>
                     <button
                       type="button"
                       onClick={copyGstin}
@@ -999,15 +854,15 @@ export const CorporateTransfer = () => {
                     </button>
                   </span>
                   <span className="corp-meta-sep" style={{ color: 'rgba(255,255,255,0.3)' }}>|</span>
-                  <span><strong>Billing:</strong> Monthly Consolidated / Net-30 Credit</span>
+                  <span><strong>Billing:</strong> {vendor.billingTerms || 'Monthly Consolidated / Net-30 Credit'}</span>
                   <span className="corp-meta-sep" style={{ color: 'rgba(255,255,255,0.3)' }}>|</span>
-                  <span><strong>Fleet:</strong> 100% KA Commercial Yellow Board</span>
+                  <span><strong>Fleet:</strong> {vendor.fleetTag || '100% KA Commercial Yellow Board'}</span>
                 </div>
               </div>
 
               <div className="corp-vendor-actions">
                 <a
-                  href="/siddhu_car_rentals_corporate_profile.pdf"
+                  href={vendor.pdfUrl || brochure.pdfUrl || "/siddhu_car_rentals_corporate_profile.pdf"}
                   download="Siddhu_Car_Rentals_Corporate_Profile.pdf"
                   className="corp-btn-download"
                 >
@@ -1040,13 +895,8 @@ export const CorporateTransfer = () => {
           />
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-            {[
-              { step: '01', title: 'Submit Requirement', desc: 'Fill in the corporate enquiry form above with your fleet requirements, office locations, and expected start date.' },
-              { step: '02', title: 'Commercial Proposal', desc: 'Our Senior Corporate Accounts Director shares a personalized monthly tariff, SLA agreement, and vehicle allocation plan within 4 hours.' },
-              { step: '03', title: 'Vendor Empanelment', desc: 'Sign the corporate mobility agreement, exchange billing GST details, and set up Net-30 credit terms.' },
-              { step: '04', title: 'Live Fleet Deployment', desc: 'Vehicles deployed with pre-briefed uniformed chauffeurs, digital duty slips, live tracking, and 24/7 dedicated dispatch support.' }
-            ].map((s, i) => (
-              <GlassCard key={i} variant="interactive" style={{ textAlign: 'center', padding: '28px 20px' }}>
+            {onboardingSteps.map((s, i) => (
+              <GlassCard key={s.step || i} variant="interactive" style={{ textAlign: 'center', padding: '28px 20px' }}>
                 <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'linear-gradient(135deg, #C5A059 0%, #B38E47 100%)', color: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', fontWeight: '900', margin: '0 auto 16px auto', fontFamily: 'var(--font-ui)' }}>
                   {s.step}
                 </div>
