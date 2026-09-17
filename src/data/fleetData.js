@@ -714,13 +714,13 @@ export const fleetData = [
     "chauffeurIncluded": true,
     "bestFor": "Large Executive Delegations, High-Capacity Airport Transfers, Destination Weddings",
     "bestSuitedFor": ["Large Executive Delegations", "High-Capacity Airport Transfers", "Destination Weddings", "Interstate Tours"],
-    "image": "/images/fleet/urbania_front_quarter.jpg",
+    "image": "/images/fleet/urbania_16_front.jpg",
     "gallery": [
+      "/images/fleet/urbania_16_front.jpg",
+      "/images/fleet/urbania_16_interior_cabin.png",
+      "/images/fleet/urbania_16_interior_tv.png",
       "/images/fleet/urbania_front_quarter.jpg",
-      "/images/fleet/urbania_front.jpg",
-      "/images/fleet/urbania_rear.jpg",
-      "/images/fleet/urbania_interior_cabin.jpg",
-      "/images/fleet/urbania_interior_seats.png"
+      "/images/fleet/urbania_rear.jpg"
     ],
     "rating": 4.9,
     "transmission": "Mercedes-Derived 5-Speed Manual",
