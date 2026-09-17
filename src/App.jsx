@@ -138,11 +138,13 @@ export function App() {
     }
   };
 
+  const isAdminPage = activePage === 'admin';
+
   return (
     <ErrorBoundary>
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', overflowX: 'clip' }}>
-        {/* Floating Sticky Glass Navbar */}
-        <Navbar activePage={activePage} onNavigate={handleNavigate} />
+        {/* Floating Sticky Glass Navbar (Hidden on Admin Portal) */}
+        {!isAdminPage && <Navbar activePage={activePage} onNavigate={handleNavigate} />}
 
         <main style={{ flex: 1 }}>
           <ErrorBoundary>
@@ -168,7 +170,7 @@ export function App() {
         {activePage === 'corporate' && <CorporateTransfer />}
         {activePage === 'about' && <About onReserveClick={scrollToEnquiry} />}
         {activePage === 'tariff' && <Tariff />}
-        {activePage === 'admin' && <AdminTariff onNavigateToPublicTariff={() => handleNavigate('tariff')} />}
+        {activePage === 'admin' && <AdminTariff onNavigateToPublicTariff={() => handleNavigate('tariff')} onExitAdmin={() => handleNavigate('home')} />}
         {activePage === 'testimonials' && <Testimonials onReserveClick={scrollToEnquiry} />}
         {activePage === 'contact' && <Contact />}
         
@@ -181,11 +183,11 @@ export function App() {
           </ErrorBoundary>
         </main>
 
-        {/* Luxury Dark Executive Footer */}
-        <Footer onNavigate={handleNavigate} />
+        {/* Luxury Dark Executive Footer (Hidden on Admin Portal) */}
+        {!isAdminPage && <Footer onNavigate={handleNavigate} />}
 
-        {/* Global Floating Action UI (WhatsApp, Call, Mobile Sticky Bar) */}
-        <FloatingUI onOpenEnquiry={scrollToEnquiry} />
+        {/* Global Floating Action UI (WhatsApp, Call, Mobile Sticky Bar - Hidden on Admin Portal) */}
+        {!isAdminPage && <FloatingUI onOpenEnquiry={scrollToEnquiry} />}
       </div>
     </ErrorBoundary>
   );

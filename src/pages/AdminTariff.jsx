@@ -27,7 +27,7 @@ import { GlassCard } from '../components/common/GlassCard';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { tariffApi, formatCurrency } from '../services/tariffApi';
 
-export const AdminTariff = ({ onNavigateToPublicTariff }) => {
+export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
   // Auth state
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return Boolean(sessionStorage.getItem('scr_admin_auth'));
@@ -277,8 +277,8 @@ export const AdminTariff = ({ onNavigateToPublicTariff }) => {
   // --- LOGIN SCREEN ---
   if (!isAuthenticated) {
     return (
-      <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', background: 'var(--bg-foundation)' }}>
-        <GlassCard variant="standard" style={{ maxWidth: '440px', width: '100%', padding: '36px', background: '#FFFFFF', boxShadow: '0 20px 40px rgba(0,0,0,0.08)' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 20px', background: '#0B0F17' }}>
+        <GlassCard variant="standard" style={{ maxWidth: '440px', width: '100%', padding: '36px', background: '#FFFFFF', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', borderRadius: '20px' }}>
           <div style={{ textAlign: 'center', marginBottom: '28px' }}>
             <div style={{ width: '64px', height: '64px', borderRadius: '16px', background: '#12151C', margin: '0 auto 16px auto', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #C5A059' }}>
               <Lock size={28} color="#C5A059" />
@@ -331,7 +331,32 @@ export const AdminTariff = ({ onNavigateToPublicTariff }) => {
               Sign In to Tariff Manager
             </PremiumButton>
 
-            <div style={{ textAlign: 'center', marginTop: '12px', fontSize: '0.78rem', color: 'var(--color-slate-400)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '14px', paddingTop: '14px', borderTop: '1px solid rgba(226, 232, 240, 0.8)' }}>
+              {onExitAdmin && (
+                <button
+                  type="button"
+                  onClick={onExitAdmin}
+                  style={{ background: 'none', border: 'none', color: '#64748B', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#0F172A'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#64748B'}
+                >
+                  ← Back to Main Site
+                </button>
+              )}
+              {onNavigateToPublicTariff && (
+                <button
+                  type="button"
+                  onClick={onNavigateToPublicTariff}
+                  style={{ background: 'none', border: 'none', color: '#0284C7', fontSize: '0.82rem', fontWeight: '600', cursor: 'pointer', padding: 0 }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#0369A1'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#0284C7'}
+                >
+                  View Public Rate Card →
+                </button>
+              )}
+            </div>
+
+            <div style={{ textAlign: 'center', marginTop: '8px', fontSize: '0.75rem', color: 'var(--color-slate-400)' }}>
               Protected Database Management Layer • Siddhu Car Rentals
             </div>
           </form>
@@ -387,6 +412,28 @@ export const AdminTariff = ({ onNavigateToPublicTariff }) => {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {onExitAdmin && (
+              <button
+                onClick={onExitAdmin}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  background: 'rgba(255,255,255,0.08)',
+                  color: '#CBD5E1',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  fontSize: '0.82rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+                title="Return to public customer website"
+              >
+                <span>← Back to Site</span>
+              </button>
+            )}
+
             {onNavigateToPublicTariff && (
               <button
                 onClick={onNavigateToPublicTariff}
