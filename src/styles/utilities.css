@@ -217,3 +217,354 @@
   height: 100%;
 }
 
+/* ==========================================================================
+   About Page: Our Heritage Card & S-Class Chauffeur Image
+   ========================================================================== */
+.about-heritage-card {
+  background: linear-gradient(145deg, #FFFFFF, #FDFBF7);
+  border-radius: 36px;
+  padding: 48px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(197, 160, 89, 0.18);
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 52px;
+  align-items: center;
+  position: relative;
+}
+
+.about-heritage-text {
+  padding-right: 8px;
+}
+
+.about-heritage-title {
+  font-size: clamp(1.85rem, 4vw, 2.7rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: #1A1A1A;
+  margin-bottom: 22px;
+  letter-spacing: -0.02em;
+}
+
+.about-heritage-divider {
+  width: 60px;
+  height: 4px;
+  background: var(--accent-gold-primary);
+  margin-bottom: 24px;
+  border-radius: 2px;
+}
+
+.about-heritage-p {
+  font-size: 1.05rem;
+  color: #4A4A4A;
+  line-height: 1.8;
+  margin-bottom: 18px;
+}
+
+.about-heritage-img-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.about-heritage-gold-border {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  bottom: 16px;
+  left: 16px;
+  border: 2px solid var(--accent-gold-primary);
+  border-radius: 32px;
+  z-index: 0;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.about-heritage-img-frame {
+  position: relative;
+  z-index: 1;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(197, 160, 89, 0.25);
+  height: 440px;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-heritage-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  background: #FFFFFF;
+}
+
+@media (max-width: 991px) {
+  .about-heritage-card {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding: 36px 28px;
+    border-radius: 28px;
+  }
+
+  .about-heritage-text {
+    padding-right: 0;
+  }
+
+  .about-heritage-img-frame {
+    height: 380px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-heritage-card {
+    padding: 24px 16px;
+    border-radius: 22px;
+    gap: 28px;
+  }
+
+  .about-heritage-title {
+    font-size: clamp(1.65rem, 6vw, 2.1rem);
+    margin-bottom: 16px;
+  }
+
+  .about-heritage-divider {
+    margin-bottom: 18px;
+  }
+
+  .about-heritage-p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .about-heritage-gold-border {
+    display: none;
+  }
+
+  .about-heritage-img-frame {
+    height: auto;
+    aspect-ratio: 4 / 3;
+    min-height: 220px;
+    max-height: 320px;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  }
+
+  .about-heritage-img {
+    padding: 4px;
+  }
+}
+
+/* ==========================================================================
+   About Page: Mission & Vision Grid Layout
+   ========================================================================== */
+.about-mission-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+@media (max-width: 991px) {
+  .about-mission-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-mission-grid {
+    gap: 28px;
+  }
+}
+
+/* ==========================================================================
+   About Page: Fleet Slider Responsive
+   ========================================================================== */
+.about-fleet-slider {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  background: #0B111E;
+  user-select: none;
+}
+
+.about-slider-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 600ms cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
+
+.about-slider-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: radial-gradient(ellipse at center, #1E293B 0%, #0B111E 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-slider-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  padding: 16px;
+}
+
+.about-slider-badge-fleet {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--accent-gold-primary);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.about-slider-counter {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.about-slider-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 4;
+  transition: all 0.2s ease;
+}
+
+.about-slider-nav-prev {
+  left: 10px;
+}
+
+.about-slider-nav-next {
+  right: 10px;
+}
+
+.about-slider-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(11, 17, 30, 0.95) 0%, rgba(11, 17, 30, 0.6) 60%, transparent 100%);
+  padding: 36px 18px 14px;
+  z-index: 3;
+  color: #FFFFFF;
+  pointer-events: none;
+}
+
+.about-slider-dots {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  z-index: 4;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .about-fleet-slider {
+    aspect-ratio: 16 / 10;
+    min-height: 220px;
+    border-radius: 18px;
+  }
+
+  .about-slider-img {
+    padding: 8px 24px;
+  }
+
+  .about-slider-badge-fleet {
+    top: 10px;
+    left: 10px;
+    font-size: 0.62rem;
+    padding: 3px 8px;
+    gap: 4px;
+  }
+
+  .about-slider-counter {
+    top: 10px;
+    right: 10px;
+    font-size: 0.65rem;
+    padding: 3px 8px;
+  }
+
+  .about-slider-nav-btn {
+    width: 30px;
+    height: 30px;
+    background: rgba(15, 23, 42, 0.6);
+  }
+
+  .about-slider-nav-prev {
+    left: 6px;
+  }
+
+  .about-slider-nav-next {
+    right: 6px;
+  }
+
+  .about-slider-overlay {
+    padding: 24px 12px 10px;
+  }
+
+  .about-slider-title {
+    font-size: 0.92rem !important;
+  }
+
+  .about-slider-dots {
+    bottom: 5px;
+  }
+}
+
+

@@ -183,41 +183,24 @@ const AboutFleetSlider = () => {
 
   return (
     <div
+      className="about-fleet-slider"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      style={{
-        position: 'relative',
-        borderRadius: '24px',
-        overflow: 'hidden',
-        boxShadow: '0 20px 40px -15px rgba(0,0,0,0.25)',
-        border: '1px solid rgba(0,0,0,0.1)',
-        minHeight: '340px',
-        aspectRatio: '4/3',
-        background: '#0B111E',
-        userSelect: 'none'
-      }}
     >
       {/* Horizontal Sliding Track */}
       <div
+        className="about-slider-track"
         style={{
-          display: 'flex',
-          width: '100%',
-          height: '100%',
-          transform: `translateX(-${currentIndex * 100}%)`,
-          transition: 'transform 600ms cubic-bezier(0.25, 1, 0.5, 1)',
-          willChange: 'transform'
+          transform: `translateX(-${currentIndex * 100}%)`
         }}
       >
         {ABOUT_CAR_SLIDES.map((slide, idx) => (
           <div
             key={idx}
+            className="about-slider-slide"
             style={{
-              flex: '0 0 100%',
-              width: '100%',
-              height: '100%',
-              position: 'relative',
               background: slide.fit === 'contain' ? 'radial-gradient(ellipse at center, #1E293B 0%, #0B111E 100%)' : '#0B111E'
             }}
           >
@@ -225,66 +208,20 @@ const AboutFleetSlider = () => {
               src={slide.src}
               alt={slide.name}
               loading={idx < 3 ? 'eager' : 'lazy'}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: slide.fit,
-                display: 'block',
-                padding: slide.fit === 'contain' ? '28px' : '0'
-              }}
+              className="about-slider-img"
             />
           </div>
         ))}
       </div>
 
       {/* Top Left Fleet Badge */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '16px',
-          left: '16px',
-          background: 'rgba(15, 23, 42, 0.85)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          color: 'var(--accent-gold-primary)',
-          padding: '6px 14px',
-          borderRadius: '9999px',
-          fontSize: '0.75rem',
-          fontWeight: '700',
-          letterSpacing: '0.04em',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          border: '1px solid rgba(245, 158, 11, 0.35)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-          zIndex: 3,
-          pointerEvents: 'none'
-        }}
-      >
+      <div className="about-slider-badge-fleet">
         <Car size={14} />
         <span>SIDDHU VERIFIED FLEET</span>
       </div>
 
       {/* Top Right Slide Counter */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '16px',
-          right: '16px',
-          background: 'rgba(15, 23, 42, 0.85)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          color: '#FFFFFF',
-          padding: '4px 12px',
-          borderRadius: '9999px',
-          fontSize: '0.72rem',
-          fontWeight: '700',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-          zIndex: 3,
-          pointerEvents: 'none'
-        }}
-      >
+      <div className="about-slider-counter">
         {currentIndex + 1} / {ABOUT_CAR_SLIDES.length}
       </div>
 
@@ -292,93 +229,21 @@ const AboutFleetSlider = () => {
       <button
         onClick={prevSlide}
         aria-label="Previous car"
-        style={{
-          position: 'absolute',
-          left: '12px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          background: 'rgba(15, 23, 42, 0.75)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          color: '#FFFFFF',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          zIndex: 4,
-          transition: 'all 0.2s ease',
-          opacity: isHovered ? 1 : 0.7
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = 'var(--accent-gold-primary)';
-          e.currentTarget.style.color = '#000000';
-          e.currentTarget.style.transform = 'translateY(-50%) scale(1.08)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'rgba(15, 23, 42, 0.75)';
-          e.currentTarget.style.color = '#FFFFFF';
-          e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
-        }}
+        className="about-slider-nav-btn about-slider-nav-prev"
       >
-        <ChevronLeft size={20} />
+        <ChevronLeft size={18} />
       </button>
 
       <button
         onClick={nextSlide}
         aria-label="Next car"
-        style={{
-          position: 'absolute',
-          right: '12px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          background: 'rgba(15, 23, 42, 0.75)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          color: '#FFFFFF',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          zIndex: 4,
-          transition: 'all 0.2s ease',
-          opacity: isHovered ? 1 : 0.7
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = 'var(--accent-gold-primary)';
-          e.currentTarget.style.color = '#000000';
-          e.currentTarget.style.transform = 'translateY(-50%) scale(1.08)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'rgba(15, 23, 42, 0.75)';
-          e.currentTarget.style.color = '#FFFFFF';
-          e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
-        }}
+        className="about-slider-nav-btn about-slider-nav-next"
       >
-        <ChevronRight size={20} />
+        <ChevronRight size={18} />
       </button>
 
       {/* Bottom Gradient Overlay with Vehicle Details */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: 'linear-gradient(to top, rgba(11, 17, 30, 0.95) 0%, rgba(11, 17, 30, 0.7) 60%, transparent 100%)',
-          padding: '40px 20px 16px',
-          zIndex: 3,
-          color: '#FFFFFF',
-          pointerEvents: 'none'
-        }}
-      >
+      <div className="about-slider-overlay">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
           <span
             style={{
@@ -399,6 +264,7 @@ const AboutFleetSlider = () => {
           </span>
         </div>
         <div
+          className="about-slider-title"
           style={{
             fontSize: '1.08rem',
             fontWeight: '800',
@@ -415,18 +281,7 @@ const AboutFleetSlider = () => {
       </div>
 
       {/* Slide Progress Dots */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '8px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          gap: '4px',
-          zIndex: 4,
-          alignItems: 'center'
-        }}
-      >
+      <div className="about-slider-dots">
         {ABOUT_CAR_SLIDES.map((_, idx) => (
           <button
             key={idx}
@@ -633,75 +488,35 @@ export const About = ({ onReserveClick }) => {
       {/* 4. OUR STORY & HISTORY (PREMIUM EDITORIAL LAYOUT) */}
       <section className="section-padding" style={{ position: 'relative' }}>
         <div className="container">
-          <div style={{ 
-            background: 'linear-gradient(145deg, #ffffff, #FDFBF7)', 
-            borderRadius: '40px', 
-            padding: '48px', 
-            boxShadow: '0 20px 40px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(197, 160, 89, 0.15)',
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
-            gap: '64px', 
-            alignItems: 'center' 
-          }}>
+          <div className="about-heritage-card">
             
             {/* Story Text */}
-            <div style={{ paddingRight: '12px' }}>
+            <div className="about-heritage-text">
               <Badge variant="gold" icon={Sparkles} style={{ marginBottom: '24px' }}>Our Heritage</Badge>
-              <h2 style={{ 
-                fontSize: '2.8rem', 
-                fontWeight: '800', 
-                lineHeight: '1.2', 
-                color: '#1A1A1A', 
-                marginBottom: '24px',
-                letterSpacing: '-0.02em'
-              }}>
+              <h2 className="about-heritage-title">
                 Born in Bengaluru’s<br/>
                 <span style={{ color: 'var(--accent-gold-primary)' }}>Silicon Valley Boom.</span>
               </h2>
               
-              <div style={{ 
-                width: '60px', 
-                height: '4px', 
-                background: 'var(--accent-gold-primary)', 
-                marginBottom: '28px',
-                borderRadius: '2px'
-              }}></div>
+              <div className="about-heritage-divider" />
 
-              <p className="text-body" style={{ fontSize: '1.1rem', color: '#4A4A4A', lineHeight: '1.8', marginBottom: '20px' }}>
+              <p className="text-body about-heritage-p">
                 Siddhu Car Rentals was established with a clear mandate: to completely redefine executive travel in Bengaluru. As the city expanded into India's technology capital, corporate founders, international board delegates, and high-net-worth individuals required mobility that matched stringent global standards.
               </p>
               
-              <p className="text-body" style={{ fontSize: '1.1rem', color: '#4A4A4A', lineHeight: '1.8' }}>
+              <p className="text-body about-heritage-p" style={{ marginBottom: 0 }}>
                 Starting with a select fleet of executive sedans, we built our undisputed reputation on surgical punctuality, pristine vehicle hygiene, and uniformed, English-speaking chauffeurs trained in executive NDA etiquette.
               </p>
             </div>
 
             {/* Story Image */}
-            <div style={{ position: 'relative' }}>
-              <div style={{ 
-                position: 'absolute', 
-                top: '-20px', 
-                right: '-20px', 
-                bottom: '20px', 
-                left: '20px', 
-                border: '2px solid var(--accent-gold-primary)', 
-                borderRadius: '32px',
-                zIndex: 0,
-                opacity: 0.3
-              }}></div>
-              <div style={{ 
-                position: 'relative',
-                zIndex: 1,
-                borderRadius: '32px', 
-                overflow: 'hidden', 
-                boxShadow: '0 24px 48px rgba(0,0,0,0.15)', 
-                border: '1px solid rgba(255,255,255,0.4)', 
-                height: '450px' 
-              }}>
+            <div className="about-heritage-img-wrapper">
+              <div className="about-heritage-gold-border" />
+              <div className="about-heritage-img-frame">
                 <img 
                   src="/images/sclass_chauffeur.png" 
                   alt="Premium Mercedes S-Class Chauffeur Service" 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transform: 'scale(1.02)' }} 
+                  className="about-heritage-img"
                 />
               </div>
             </div>
@@ -713,7 +528,7 @@ export const About = ({ onReserveClick }) => {
       {/* 4. OUR MISSION & VISION (ALTERNATING LAYOUT) */}
       <section className="section-padding" style={{ background: 'var(--bg-foundation-alt)' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px', alignItems: 'center' }}>
+          <div className="about-mission-grid">
             
             {/* Vision Image / Continuous Fleet Showcase Slider */}
             <AboutFleetSlider />
