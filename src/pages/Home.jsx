@@ -28,6 +28,7 @@ import { SITE_CONFIG } from '../config/site';
 import { RouteLocationInput } from '../components/home/RouteLocationInput';
 import { WhatsAppIcon } from '../components/common/WhatsAppEnquiryMenu';
 import { testimonialsData } from '../data/testimonialsData';
+import { useSiteContent } from '../hooks/useSiteContent';
 
 const getTodayDateStr = () => {
   const d = new Date();
@@ -38,6 +39,7 @@ const getTodayDateStr = () => {
 };
 
 export const Home = ({ onViewVehicleDetail, onNavigate }) => {
+  const { content } = useSiteContent();
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
   const heroRef = useRef(null);
@@ -353,7 +355,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
       {/* ========================================================================= */}
       {/* 1. SIDDHU CAR RENTALS — ELEGANT ADVENTURE HERO SECTION (CINEMATIC TRAVEL) */}
       {/* ========================================================================= */}
-      <CinematicHero onExploreFleet={scrollToFleet} onGetQuote={scrollToEnquiry} />
+      <CinematicHero onExploreFleet={scrollToFleet} onGetQuote={scrollToEnquiry} heroContent={content.hero} />
 
       <CarRentalSearch onNavigate={onNavigate} />
 
@@ -2333,7 +2335,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
 
 
 
-      <ScrollStory />
+      <ScrollStory storyItems={content.story} />
 
 
       {/* 4. FEATURED FLEET (Redesigned Showroom Slider & Interactive Showcase) */}
@@ -2803,7 +2805,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
 
       {/* 5. OUR SERVICES */}
 
-      <OurServices onNavigate={onNavigate} />
+      <OurServices onNavigate={onNavigate} servicesList={content.services} />
 
 
       {/* 6. POPULAR DESTINATIONS (Asymmetric Travel Catalog) */}
@@ -2821,107 +2823,110 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
           {/* Staggered Editorial Collage Row */}
           <div className="destination-collage-grid" style={{ marginTop: '48px' }}>
             
-            {/* Featured Hero: Mysore Palace */}
-            <div
-              className="dest-collage-card hero-dest-card"
-              onClick={() => handleSelectDestination({
-                name: 'Mysuru (Mysore)',
-                dist: '140 km',
-                rate: 'From ₹15/km',
-                img: '/images/destinations/mysuru.jpg',
-                type: 'outstation'
-              })}
-              title="Click to get quote for Bengaluru to Mysuru (Mysore)"
-            >
-              <img
-                src="/images/destinations/mysuru.jpg"
-                alt="Mysore Palace — Royal Heritage & Chauffeur Tour Mysuru"
-                className="dest-img"
-              />
-              <div className="dest-glass-label">
-                <div className="dest-tag-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div className="dest-tag" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-coral-primary)', fontWeight: '700', marginBottom: '2px' }}>
-                    Palaces & Silk Heritage • 140 km
+            {/* Featured Hero: Card 1 */}
+            {(() => {
+              const hero1 = (content.destinations?.heroItems && content.destinations.heroItems[0]) || {
+                name: 'Mysore Palace (Mysuru)', dist: '140 km', rate: 'From ₹15/km', img: '/images/destinations/mysore_palace.jpg', type: 'outstation', tag: 'Palaces & Silk Heritage • 140 km', desc: 'Uniformed Chauffeur Guaranteed • On-Time Pickup'
+              };
+              return (
+                <div
+                  className="dest-collage-card hero-dest-card"
+                  onClick={() => handleSelectDestination(hero1)}
+                  title={`Click to get quote for Bengaluru to ${hero1.name}`}
+                >
+                  <img
+                    src={hero1.img}
+                    alt={hero1.name}
+                    className="dest-img"
+                  />
+                  <div className="dest-glass-label">
+                    <div className="dest-tag-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div className="dest-tag" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-coral-primary)', fontWeight: '700', marginBottom: '2px' }}>
+                        {hero1.tag || `${hero1.name} • ${hero1.dist}`}
+                      </div>
+                      <span className="dest-quote-btn" style={{ fontSize: '0.72rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 10px', borderRadius: '999px', fontWeight: '700' }}>
+                        Get Quote →
+                      </span>
+                    </div>
+                    <h4 className="dest-title" style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.45rem', color: 'var(--color-slate-900)' }}>{hero1.name}</h4>
+                    <div className="dest-desc" style={{ fontSize: '0.76rem', color: 'var(--color-slate-600)', marginTop: '4px' }}>
+                      {hero1.desc || 'Scenic chauffeur drive with verified driver'}
+                    </div>
                   </div>
-                  <span className="dest-quote-btn" style={{ fontSize: '0.72rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 10px', borderRadius: '999px', fontWeight: '700' }}>
-                    Get Quote →
-                  </span>
                 </div>
-                <h4 className="dest-title" style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.45rem', color: 'var(--color-slate-900)' }}>Mysore Palace (Mysuru)</h4>
-                <div className="dest-desc" style={{ fontSize: '0.76rem', color: 'var(--color-slate-600)', marginTop: '4px' }}>
-                  Uniformed Chauffeur Guaranteed • On-Time Pickup
-                </div>
-              </div>
-            </div>
+              );
+            })()}
 
-            {/* Stacked Right Column: Bangalore Airport & Coorg */}
+            {/* Stacked Right Column: Card 2 & Card 3 */}
             <div className="dest-right-stack">
               
-              {/* Bangalore Airport Kempegowda */}
-              <div
-                className="dest-collage-card stacked-dest-card"
-                onClick={() => handleSelectDestination({
-                  name: 'Kempegowda International Airport (BLR)',
-                  dist: '38 km',
-                  rate: 'Flat Airport Tariff',
-                  img: '/images/destinations/bangalore_airport.jpg',
-                  type: 'airport'
-                })}
-                title="Click to get quote for Bangalore Airport VIP Transfer"
-              >
-                <img
-                  src="/images/destinations/bangalore_airport.jpg"
-                  alt="Bangalore Airport (BLR) — Kempegowda International Airport VIP Chauffeur Transfer"
-                  className="dest-img"
-                />
-                <div className="dest-glass-label">
-                  <div className="dest-tag-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div className="dest-tag" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-sky-primary)', fontWeight: '700', marginBottom: '2px' }}>
-                      VIP Flight Transfers • 38 km
+              {/* Card 2 */}
+              {(() => {
+                const hero2 = (content.destinations?.heroItems && content.destinations.heroItems[1]) || {
+                  name: 'Kempegowda International Airport (BLR)', dist: '38 km', rate: 'Flat Airport Tariff', img: '/images/destinations/bangalore_airport.jpg', type: 'airport', tag: 'VIP Flight Transfers • 38 km', desc: 'Flight tracking & punctual luxury chauffeur pickup'
+                };
+                return (
+                  <div
+                    className="dest-collage-card stacked-dest-card"
+                    onClick={() => handleSelectDestination(hero2)}
+                    title={`Click to get quote for ${hero2.name}`}
+                  >
+                    <img
+                      src={hero2.img}
+                      alt={hero2.name}
+                      className="dest-img"
+                    />
+                    <div className="dest-glass-label">
+                      <div className="dest-tag-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div className="dest-tag" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-sky-primary)', fontWeight: '700', marginBottom: '2px' }}>
+                          {hero2.tag || `${hero2.name} • ${hero2.dist}`}
+                        </div>
+                        <span className="dest-quote-btn" style={{ fontSize: '0.68rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 8px', borderRadius: '999px', fontWeight: '700' }}>
+                          Get Quote →
+                        </span>
+                      </div>
+                      <h4 className="dest-title" style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', color: 'var(--color-slate-900)' }}>{hero2.name}</h4>
+                      <div className="dest-desc" style={{ fontSize: '0.72rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
+                        {hero2.desc || 'Flight tracking & punctual luxury chauffeur pickup'}
+                      </div>
                     </div>
-                    <span className="dest-quote-btn" style={{ fontSize: '0.68rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 8px', borderRadius: '999px', fontWeight: '700' }}>
-                      Get Quote →
-                    </span>
                   </div>
-                  <h4 className="dest-title" style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', color: 'var(--color-slate-900)' }}>Bangalore Airport (BLR)</h4>
-                  <div className="dest-desc" style={{ fontSize: '0.72rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
-                    Flight tracking & punctual luxury chauffeur pickup
-                  </div>
-                </div>
-              </div>
+                );
+              })()}
 
-              {/* Coorg Hills */}
-              <div
-                className="dest-collage-card stacked-dest-card"
-                onClick={() => handleSelectDestination({
-                  name: 'Coorg (Madikeri)',
-                  dist: '260 km',
-                  rate: 'From ₹15/km',
-                  img: '/images/destinations/coorg.jpg',
-                  type: 'outstation'
-                })}
-                title="Click to get quote for Bengaluru to Coorg Hills"
-              >
-                <img
-                  src="/images/destinations/coorg.jpg"
-                  alt="Coorg — Misty Coffee Valleys, Abbey Falls & Madikeri Hills"
-                  className="dest-img"
-                />
-                <div className="dest-glass-label">
-                  <div className="dest-tag-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div className="dest-tag" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-mint-primary)', fontWeight: '700', marginBottom: '2px' }}>
-                      Misty Coffee Valleys • 260 km
+              {/* Card 3 */}
+              {(() => {
+                const hero3 = (content.destinations?.heroItems && content.destinations.heroItems[2]) || {
+                  name: 'Coorg (Madikeri)', dist: '260 km', rate: 'From ₹15/km', img: '/images/destinations/coorg.jpg', type: 'outstation', tag: 'Misty Coffee Valleys • 260 km', desc: 'Scenic Western Ghats mountain drive with verified driver'
+                };
+                return (
+                  <div
+                    className="dest-collage-card stacked-dest-card"
+                    onClick={() => handleSelectDestination(hero3)}
+                    title={`Click to get quote for Bengaluru to ${hero3.name}`}
+                  >
+                    <img
+                      src={hero3.img}
+                      alt={hero3.name}
+                      className="dest-img"
+                    />
+                    <div className="dest-glass-label">
+                      <div className="dest-tag-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div className="dest-tag" style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--accent-mint-primary)', fontWeight: '700', marginBottom: '2px' }}>
+                          {hero3.tag || `${hero3.name} • ${hero3.dist}`}
+                        </div>
+                        <span className="dest-quote-btn" style={{ fontSize: '0.68rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 8px', borderRadius: '999px', fontWeight: '700' }}>
+                          Get Quote →
+                        </span>
+                      </div>
+                      <h4 className="dest-title" style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', color: 'var(--color-slate-900)' }}>{hero3.name}</h4>
+                      <div className="dest-desc" style={{ fontSize: '0.72rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
+                        {hero3.desc || 'Scenic Western Ghats mountain drive with verified driver'}
+                      </div>
                     </div>
-                    <span className="dest-quote-btn" style={{ fontSize: '0.68rem', background: '#0284C7', color: '#FFFFFF', padding: '2px 8px', borderRadius: '999px', fontWeight: '700' }}>
-                      Get Quote →
-                    </span>
                   </div>
-                  <h4 className="dest-title" style={{ margin: 0, fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', color: 'var(--color-slate-900)' }}>Coorg Hills (Madikeri)</h4>
-                  <div className="dest-desc" style={{ fontSize: '0.72rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
-                    Scenic Western Ghats mountain drive with verified driver
-                  </div>
-                </div>
-              </div>
+                );
+              })()}
 
             </div>
 
@@ -2938,7 +2943,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
 
           {/* Horizontal Scrolling Ribbon — Unique Destinations without duplicates */}
           <div className="dest-scroll-ribbon">
-            {[
+            {(content.destinations?.ribbonItems || [
               { name: 'Hampi Heritage', desc: 'UNESCO Stone Heritage & Ruins', dist: '340 km', img: '/images/destinations/hampi.jpg', alt: 'Hampi UNESCO Stone Heritage Chariot & Ruins', bg: '#FDFBF7', rate: 'From ₹15/km', fare: '300 km/day min', type: 'outstation' },
               { name: 'Chikmagalur', desc: 'Coffee Estates & Cloud Peaks', dist: '240 km', img: '/images/destinations/chikmagalur.jpg', alt: 'Chikmagalur Mullayanagiri Peak & Coffee Estates', bg: '#F0F9FF', rate: 'From ₹15/km', fare: '300 km/day min', type: 'outstation' },
               { name: 'Ooty & Nilgiris', desc: 'Botanical Valleys & Pine Lakes', dist: '270 km', img: '/images/destinations/ooty.jpg', alt: 'Ooty Queen of Hill Stations & Botanical Gardens', bg: '#F5F3FF', rate: 'From ₹15/km', fare: '300 km/day min', type: 'outstation' },
@@ -2948,7 +2953,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
               { name: 'Nandi Hills', desc: 'Sunrise Cloud Bed & Historic Fort', dist: '60 km', img: '/images/destinations/nandi_hills.jpg', alt: 'Nandi Hills Sunrise Viewpoint & Tipu Sultan Fortress', bg: '#FFF7ED', rate: 'From ₹15/km', fare: 'Round Trip Local', type: 'outstation' },
               { name: 'Bangalore Palace', desc: 'Tudor Style Royal Architecture', dist: '15 km', img: '/images/destinations/bangalore_palace.jpg', alt: 'Bangalore Palace Heritage Royal Grounds', bg: '#FDFBF7', rate: 'Local Package', fare: '4h / 8h Local', type: 'local' },
               { name: 'Lalbagh Gardens', desc: 'Botanical Glass House & Florals', dist: '10 km', img: '/images/destinations/lalbagh_glass_house.jpg', alt: 'Lalbagh Botanical Garden Historic Glass House', bg: '#F0FDF4', rate: 'Local Package', fare: '4h / 8h Local', type: 'local' }
-            ].map((d, index) => (
+            ]).map((d, index) => (
               <div
                 key={index}
                 className="dest-ribbon-card"
@@ -3262,85 +3267,117 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             <div className="testimonials-cards-panel">
               
               {/* Card 1: Large Featured Quote */}
-              <div className="editorial-quote-card card-featured">
-                <div className="quote-serif">“</div>
-                <div style={{ zIndex: 2, position: 'relative' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                    <div style={{ display: 'flex', gap: '2px' }}>
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={15} fill="#FABB05" color="#FABB05" />
-                      ))}
-                    </div>
-                    <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#1A73E8', background: 'rgba(26, 115, 232, 0.08)', padding: '2px 8px', borderRadius: '6px' }}>
-                      Verified Client Experience
-                    </span>
-                  </div>
-                  <p className="quote-text-large">
-                    Siddhu Car Rentals handled our international board delegation with complete perfection. The Mercedes S-Class was pristine and the chauffeur was impeccably punctual.
-                  </p>
-                  <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#0F766E', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.95rem' }}>
-                        A
+              {(() => {
+                const feat = content.testimonials?.featured || {
+                  rating: 5,
+                  tag: 'Verified Client Experience',
+                  quote: 'Siddhu Car Rentals handled our international board delegation with complete perfection. The Mercedes S-Class was pristine and the chauffeur was impeccably punctual.',
+                  name: 'Ananth Narayan',
+                  role: 'Managing Director',
+                  company: 'Global Tech Capital',
+                  badge: 'VIP Guest',
+                  avatarBg: '#0F766E'
+                };
+                return (
+                  <div className="editorial-quote-card card-featured">
+                    <div className="quote-serif">“</div>
+                    <div style={{ zIndex: 2, position: 'relative' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                        <div style={{ display: 'flex', gap: '2px' }}>
+                          {[...Array(feat.rating || 5)].map((_, i) => (
+                            <Star key={i} size={15} fill="#FABB05" color="#FABB05" />
+                          ))}
+                        </div>
+                        <span style={{ fontSize: '0.74rem', fontWeight: '700', color: '#1A73E8', background: 'rgba(26, 115, 232, 0.08)', padding: '2px 8px', borderRadius: '6px' }}>
+                          {feat.tag || 'Verified Client Experience'}
+                        </span>
                       </div>
-                      <div>
-                        <div className="quote-author">Ananth Narayan</div>
-                        <div className="quote-author-title">Managing Director • Global Tech Capital</div>
+                      <p className="quote-text-large">
+                        {feat.quote}
+                      </p>
+                      <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: feat.avatarBg || '#0F766E', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.95rem' }}>
+                            {(feat.name || 'A').charAt(0)}
+                          </div>
+                          <div>
+                            <div className="quote-author">{feat.name}</div>
+                            <div className="quote-author-title">
+                              {feat.role}{feat.company ? ` • ${feat.company}` : ''}
+                            </div>
+                          </div>
+                        </div>
+                        <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--accent-indigo-primary)', background: 'rgba(79,70,229,0.08)', padding: '4px 10px', borderRadius: '6px' }}>
+                          {feat.badge || 'VIP Guest'}
+                        </span>
                       </div>
                     </div>
-                    <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', color: 'var(--accent-indigo-primary)', background: 'rgba(79,70,229,0.08)', padding: '4px 10px', borderRadius: '6px' }}>VIP Guest</span>
                   </div>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Marquee Row for Sub Cards */}
               <div className="testimonial-marquee-wrapper">
                 <div className="testimonial-marquee-track">
-                  <div className="marquee-set">
-                    {testimonialsData.filter(t => t.id !== 1).map((item) => (
-                      <div
-                        key={item.id}
-                        className="editorial-quote-card card-sub"
-                        style={{ background: item.bg || '#F8FAFC', borderLeft: `3px solid ${item.borderLeft || '#0284C7'}` }}
-                      >
-                        <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
-                          {[...Array(item.rating || 5)].map((_, i) => (
-                            <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
-                          ))}
-                        </div>
-                        <p className="quote-text-small">
-                          {item.review}
-                        </p>
-                        <div style={{ marginTop: '16px' }}>
-                          <div className="quote-author-sub">{item.name}</div>
-                          <div className="quote-author-title-sub">{item.title}{item.company ? ` • ${item.company}` : ''}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  {(() => {
+                    const list = (content.testimonials?.list && Array.isArray(content.testimonials.list) && content.testimonials.list.length > 0)
+                      ? content.testimonials.list
+                      : testimonialsData.filter(t => t.id !== 1);
 
-                  <div className="marquee-set">
-                    {testimonialsData.filter(t => t.id !== 1).map((item) => (
-                      <div
-                        key={`dup-${item.id}`}
-                        className="editorial-quote-card card-sub"
-                        style={{ background: item.bg || '#F8FAFC', borderLeft: `3px solid ${item.borderLeft || '#0284C7'}` }}
-                      >
-                        <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
-                          {[...Array(item.rating || 5)].map((_, i) => (
-                            <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
+                    return (
+                      <>
+                        <div className="marquee-set">
+                          {list.map((item) => (
+                            <div
+                              key={item.id}
+                              className="editorial-quote-card card-sub"
+                              style={{ background: item.bg || '#F8FAFC', borderLeft: `3px solid ${item.borderLeft || '#0284C7'}` }}
+                            >
+                              <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                                {[...Array(item.rating || 5)].map((_, i) => (
+                                  <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
+                                ))}
+                              </div>
+                              <p className="quote-text-small">
+                                {item.review}
+                              </p>
+                              <div style={{ marginTop: '16px' }}>
+                                <div className="quote-author-sub">{item.name}</div>
+                                <div className="quote-author-title-sub">
+                                  {item.role || item.title}{item.company ? ` • ${item.company}` : ''}
+                                </div>
+                              </div>
+                            </div>
                           ))}
                         </div>
-                        <p className="quote-text-small">
-                          {item.review}
-                        </p>
-                        <div style={{ marginTop: '16px' }}>
-                          <div className="quote-author-sub">{item.name}</div>
-                          <div className="quote-author-title-sub">{item.title}{item.company ? ` • ${item.company}` : ''}</div>
+
+                        <div className="marquee-set">
+                          {list.map((item) => (
+                            <div
+                              key={`dup-${item.id}`}
+                              className="editorial-quote-card card-sub"
+                              style={{ background: item.bg || '#F8FAFC', borderLeft: `3px solid ${item.borderLeft || '#0284C7'}` }}
+                            >
+                              <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
+                                {[...Array(item.rating || 5)].map((_, i) => (
+                                  <Star key={i} size={12} fill="#FABB05" color="#FABB05" />
+                                ))}
+                              </div>
+                              <p className="quote-text-small">
+                                {item.review}
+                              </p>
+                              <div style={{ marginTop: '16px' }}>
+                                <div className="quote-author-sub">{item.name}</div>
+                                <div className="quote-author-title-sub">
+                                  {item.role || item.title}{item.company ? ` • ${item.company}` : ''}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
@@ -3565,10 +3602,10 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                   <div>
                     <div style={{ fontWeight: '700', color: 'var(--color-slate-900)' }}>Headquarters Address</div>
                     <div style={{ fontSize: '0.9rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
-                      #314, 12th Main, 15th Cross, JP Nagar 5th Phase, Bengaluru - 560078
+                      {content.contact?.address || '#314, 12th Main, 15th Cross, JP Nagar 5th Phase, Bengaluru - 560078'}
                     </div>
                     <a
-                      href="https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+%23314%2C+12th+Main%2C+15th+Cross%2C+JP+Nagar+5th+Phase%2C+Bengaluru+-+560078"
+                      href={`https://www.google.com/maps/search/?api=1&query=${content.contact?.gmapsQuery || 'siddhu+car+rentals+%23314%2C+12th+Main%2C+15th+Cross%2C+JP+Nagar+5th+Phase%2C+Bengaluru+-+560078'}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{
@@ -3593,7 +3630,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                   <div>
                     <div style={{ fontWeight: '700', color: 'var(--color-slate-900)' }}>24/7 Dispatch Desk</div>
                     <div style={{ fontSize: '0.9rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
-                      +91 76250 59665 / +91 81472 04327
+                      {content.contact?.phonePrimary || '+91 76250 59665'}{content.contact?.phoneSecondary ? ` / ${content.contact.phoneSecondary}` : ''}
                     </div>
                   </div>
                 </div>
@@ -3603,7 +3640,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                   <div>
                     <div style={{ fontWeight: '700', color: 'var(--color-slate-900)' }}>WhatsApp Priority Desk</div>
                     <div style={{ fontSize: '0.9rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
-                      +91 76250 59665 (Instant Reply)
+                      {content.contact?.whatsappNumber || '+91 76250 59665'} ({content.contact?.whatsappSubtext || 'Instant Reply'})
                     </div>
                   </div>
                 </div>
@@ -3613,7 +3650,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
                   <div>
                     <div style={{ fontWeight: '700', color: 'var(--color-slate-900)' }}>Corporate Email</div>
                     <div style={{ fontSize: '0.9rem', color: 'var(--color-slate-600)', marginTop: '2px' }}>
-                      reservations@siddhucarrentals.com
+                      {content.contact?.email || 'reservations@siddhucarrentals.com'}
                     </div>
                   </div>
                 </div>
@@ -3624,7 +3661,7 @@ export const Home = ({ onViewVehicleDetail, onNavigate }) => {
             <GlassCard variant="standard" style={{ padding: '12px', height: '100%', minHeight: '340px' }}>
               <iframe
                 title="Siddhu Car Rentals Location Bengaluru"
-                src="https://www.google.com/maps/embed?origin=mfe&pb=!1m2!2m1!1ssiddhu+car+rentals+JP+Nagar+5th+Phase+Bengaluru"
+                src={content.contact?.gmapsEmbedUrl || "https://www.google.com/maps/embed?origin=mfe&pb=!1m2!2m1!1ssiddhu+car+rentals+JP+Nagar+5th+Phase+Bengaluru"}
                 width="100%"
                 height="320"
                 style={{ border: 0, borderRadius: '12px' }}

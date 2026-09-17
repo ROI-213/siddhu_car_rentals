@@ -95,7 +95,11 @@ const StoryItem = ({ item, index, progress }) => {
   );
 };
 
-export const ScrollStory = () => {
+export const ScrollStory = ({ storyItems = null }) => {
+  const activeStoryData = (storyItems && Array.isArray(storyItems) && storyItems.length > 0)
+    ? storyItems
+    : storyData;
+
   const containerRef = useRef(null);
   const [activeStoryIdx, setActiveStoryIdx] = useState(0);
   const touchStartX = useRef(null);
@@ -103,17 +107,17 @@ export const ScrollStory = () => {
   // Auto-advance story on mobile view
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveStoryIdx((prev) => (prev + 1) % storyData.length);
+      setActiveStoryIdx((prev) => (prev + 1) % activeStoryData.length);
     }, 4500);
     return () => clearInterval(timer);
-  }, []);
+  }, [activeStoryData.length]);
 
   const handlePrev = () => {
-    setActiveStoryIdx((prev) => (prev === 0 ? storyData.length - 1 : prev - 1));
+    setActiveStoryIdx((prev) => (prev === 0 ? activeStoryData.length - 1 : prev - 1));
   };
 
   const handleNext = () => {
-    setActiveStoryIdx((prev) => (prev + 1) % storyData.length);
+    setActiveStoryIdx((prev) => (prev + 1) % activeStoryData.length);
   };
 
   const handleTouchStart = (e) => {
@@ -138,9 +142,11 @@ export const ScrollStory = () => {
 
   // Step indicator active number logic
   const activeNumber = useTransform(scrollYProgress, (p) => {
-    const idx = Math.min(5, Math.floor(p / 0.2 + 0.5));
-    return storyData[idx].id;
+    const idx = Math.min(activeStoryData.length - 1, Math.floor(p / (1 / activeStoryData.length) + 0.5));
+    return activeStoryData[idx]?.id || '01';
   });
+
+  const currentItem = activeStoryData[activeStoryIdx] || activeStoryData[0];
 
   return (
     <>
@@ -159,9 +165,9 @@ export const ScrollStory = () => {
               className="story-mobile-img"
             />
             <div className="story-mobile-badge">
-              <span className="story-mobile-badge-curr">{storyData[activeStoryIdx].id}</span>
+              <span className="story-mobile-badge-curr">{currentItem.id}</span>
               <span className="story-mobile-badge-sep">/</span>
-              <span className="story-mobile-badge-total">06</span>
+              <span className="story-mobile-badge-total">{String(activeStoryData.length).padStart(2, '0')}</span>
             </div>
           </div>
 
@@ -169,7 +175,7 @@ export const ScrollStory = () => {
           <div className="story-mobile-card">
             <AnimatePresence mode="wait">
               <motion.div
-                key={storyData[activeStoryIdx].id}
+                key={currentItem.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
@@ -177,19 +183,19 @@ export const ScrollStory = () => {
                 className="story-mobile-content"
               >
                 <div className="story-category-label">
-                  <span>{storyData[activeStoryIdx].id}</span>
+                  <span>{currentItem.id}</span>
                   <span className="dot">•</span>
-                  <span>{storyData[activeStoryIdx].label}</span>
+                  <span>{currentItem.label}</span>
                 </div>
 
                 <h3 className="story-mobile-heading">
-                  {storyData[activeStoryIdx].title.split('\n').map((line, i) => (
+                  {(currentItem.title || '').split('\n').map((line, i) => (
                     <span key={i} className="story-heading-line">{line}</span>
                   ))}
                 </h3>
 
                 <p className="story-mobile-desc">
-                  {storyData[activeStoryIdx].desc}
+                  {currentItem.desc}
                 </p>
               </motion.div>
             </AnimatePresence>
@@ -206,9 +212,9 @@ export const ScrollStory = () => {
               </button>
 
               <div className="story-mobile-dots">
-                {storyData.map((item, idx) => (
+                {activeStoryData.map((item, idx) => (
                   <button
-                    key={item.id}
+                    key={item.id || idx}
                     type="button"
                     onClick={() => setActiveStoryIdx(idx)}
                     className={`story-mobile-dot ${idx === activeStoryIdx ? 'active' : ''}`}
@@ -250,9 +256,9 @@ export const ScrollStory = () => {
             {/* RIGHT: SCROLL-LINKED ABSOLUTE CONTENT AREA */}
             <div className="story-right-pane-wrapper">
               <div className="story-content-viewport">
-                {storyData.map((item, index) => (
+                {activeStoryData.map((item, index) => (
                   <StoryItem 
-                    key={item.id} 
+                    key={item.id || index} 
                     item={item} 
                     index={index} 
                     progress={scrollYProgress} 

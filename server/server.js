@@ -234,6 +234,34 @@ app.get('/api/terms', async (req, res) => {
   }
 });
 
+// 8b. Dynamic CMS Content Endpoints
+app.get('/api/content', async (req, res) => {
+  try {
+    const { key } = req.query;
+    if (key) {
+      const data = await db.getContent(key);
+      return res.json({ success: true, data });
+    }
+    const all = await db.getAllContent();
+    res.json({ success: true, data: all });
+  } catch (err) {
+    console.error('Error fetching content:', err);
+    res.status(500).json({ success: false, error: 'Failed to fetch content from database.' });
+  }
+});
+
+app.put('/api/content/:key', async (req, res) => {
+  try {
+    const { key } = req.params;
+    const contentData = req.body;
+    const saved = await db.setContent(key, contentData);
+    res.json({ success: true, message: `Content for "${key}" saved successfully.`, data: saved });
+  } catch (err) {
+    console.error(`Error saving content for "${req.params.key}":`, err);
+    res.status(500).json({ success: false, error: 'Failed to save content to database.' });
+  }
+});
+
 // 9. POST /api/admin/login - Simple secure Admin authentication
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body;

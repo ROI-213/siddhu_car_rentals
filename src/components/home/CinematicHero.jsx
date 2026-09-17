@@ -3,7 +3,18 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { ChevronRight, MapPin } from 'lucide-react';
 import './CinematicHero.css';
 
-export const CinematicHero = ({ onExploreFleet, onGetQuote }) => {
+export const CinematicHero = ({ onExploreFleet, onGetQuote, heroContent = {} }) => {
+  const {
+    routePill = "BENGALURU & BEYOND",
+    titleLine1 = "PREMIUM CHAUFFEUR-DRIVEN",
+    titleLine2 = "CAR RENTALS IN BANGALORE",
+    sublineBadge = "Self-Drive Not Available • Verified Chauffeurs • All Premium Cars",
+    supportingText = "Premium car rentals with professional chauffeurs for airport transfers, local trips, outstation travel, corporate bookings, and special events across Bangalore and South India.",
+    btnExploreText = "EXPLORE FLEET",
+    btnQuoteText = "GET QUOTE",
+    backgroundImage = "/images/siddhu_adventure_hero.jpg"
+  } = heroContent;
+
   const { scrollY } = useScroll();
   
   // Subtle atmospheric movement for the background
@@ -20,7 +31,7 @@ export const CinematicHero = ({ onExploreFleet, onGetQuote }) => {
         style={{ y: backgroundY }}
       >
         <img 
-          src="/images/siddhu_adventure_hero.jpg" 
+          src={backgroundImage} 
           alt="Premium luxury transportation scene" 
           className="cinematic-bg-img"
         />
@@ -36,12 +47,12 @@ export const CinematicHero = ({ onExploreFleet, onGetQuote }) => {
         >
           <div className="cinematic-route-pill">
             <MapPin size={13} className="route-icon" />
-            <span>BENGALURU & BEYOND</span>
+            <span>{routePill}</span>
           </div>
 
           <h1 className="cinematic-main-heading">
-            PREMIUM CHAUFFEUR-DRIVEN<br />
-            <span className="heading-subline">CAR RENTALS IN BANGALORE</span>
+            {titleLine1}<br />
+            <span className="heading-subline">{titleLine2}</span>
           </h1>
 
           <h2 style={{
@@ -53,11 +64,11 @@ export const CinematicHero = ({ onExploreFleet, onGetQuote }) => {
             textTransform: 'uppercase',
             fontFamily: 'var(--font-ui)'
           }}>
-            Self-Drive Not Available • Verified Chauffeurs • All Premium Cars
+            {sublineBadge}
           </h2>
 
           <p className="cinematic-supporting-text">
-            Premium car rentals with professional chauffeurs for airport transfers, local trips, outstation travel, corporate bookings, and special events across Bangalore and South India.
+            {supportingText}
           </p>
 
           <motion.div 
@@ -67,11 +78,11 @@ export const CinematicHero = ({ onExploreFleet, onGetQuote }) => {
             transition={{ duration: 0.8, delay: 0.6 }}
           >
             <button className="cinematic-btn-primary" onClick={onExploreFleet}>
-              <span>EXPLORE FLEET</span>
+              <span>{btnExploreText}</span>
               <ChevronRight size={16} className="btn-arrow" />
             </button>
             <button className="cinematic-btn-secondary" onClick={onGetQuote}>
-              <span>GET QUOTE</span>
+              <span>{btnQuoteText}</span>
             </button>
           </motion.div>
         </motion.div>

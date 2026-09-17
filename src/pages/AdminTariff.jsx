@@ -21,11 +21,13 @@ import {
   RotateCcw,
   Sparkles,
   Eye,
-  EyeOff
+  EyeOff,
+  Car
 } from 'lucide-react';
 import { GlassCard } from '../components/common/GlassCard';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { tariffApi, formatCurrency } from '../services/tariffApi';
+import { AdminHomeContent } from '../components/admin/AdminHomeContent';
 
 export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
   // Auth state
@@ -36,7 +38,11 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
   const [adminPassword, setAdminPassword] = useState('');
   const [authError, setAuthError] = useState('');
 
-  // Active Tab & Data
+  // Main Section: 'tariffs' | 'home_content'
+  const [mainAdminSection, setMainAdminSection] = useState('tariffs');
+  const [homeContentSubTab, setHomeContentSubTab] = useState('hero');
+
+  // Active Tab & Data for Tariffs
   const [activeTab, setActiveTab] = useState('disposal'); // 'disposal' | 'outstation'
   const [tariffs, setTariffs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -482,8 +488,72 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
       {/* Main Container */}
       <div className="container" style={{ marginTop: '32px' }}>
         
-        {/* Controls, Category Tabs & Add Button */}
+        {/* Primary Admin Navigation: Tariffs vs Home Page Content */}
         <div style={{
+          display: 'flex',
+          gap: '12px',
+          marginBottom: '24px',
+          borderBottom: '2px solid rgba(226, 232, 240, 0.8)',
+          paddingBottom: '16px',
+          flexWrap: 'wrap'
+        }}>
+          <button
+            type="button"
+            onClick={() => setMainAdminSection('tariffs')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 24px',
+              borderRadius: '12px',
+              border: 'none',
+              background: mainAdminSection === 'tariffs' ? '#12151C' : '#FFFFFF',
+              color: mainAdminSection === 'tariffs' ? '#C5A059' : 'var(--color-slate-700)',
+              fontWeight: '800',
+              fontSize: '0.95rem',
+              cursor: 'pointer',
+              boxShadow: mainAdminSection === 'tariffs' ? '0 4px 14px rgba(0,0,0,0.12)' : '0 2px 6px rgba(0,0,0,0.02)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Car size={18} />
+            <span>Vehicle Tariffs & Pricing</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setMainAdminSection('home_content')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 24px',
+              borderRadius: '12px',
+              border: 'none',
+              background: mainAdminSection === 'home_content' ? '#12151C' : '#FFFFFF',
+              color: mainAdminSection === 'home_content' ? '#C5A059' : 'var(--color-slate-700)',
+              fontWeight: '800',
+              fontSize: '0.95rem',
+              cursor: 'pointer',
+              boxShadow: mainAdminSection === 'home_content' ? '0 4px 14px rgba(0,0,0,0.12)' : '0 2px 6px rgba(0,0,0,0.02)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <Layers size={18} />
+            <span>Home Page Content CMS</span>
+          </button>
+        </div>
+
+        {mainAdminSection === 'home_content' ? (
+          <AdminHomeContent
+            activeSubTab={homeContentSubTab}
+            onSubTabChange={setHomeContentSubTab}
+            showToast={showToast}
+          />
+        ) : (
+          <>
+            {/* Controls, Category Tabs & Add Button */}
+            <div style={{
           background: '#FFFFFF',
           borderRadius: '16px',
           padding: '20px 24px',
@@ -882,6 +952,8 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
             </div>
           )}
         </div>
+          </>
+        )}
 
       </div>
 

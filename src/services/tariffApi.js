@@ -150,6 +150,46 @@ export const tariffApi = {
     }
   },
 
+  // 10. Fetch Dynamic Site Content (Hero, Contact, Testimonials, Destinations, etc.)
+  async getContent(key = null) {
+    try {
+      const url = key ? `${API_BASE}/content?key=${encodeURIComponent(key)}` : `${API_BASE}/content`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      const json = await res.json();
+      return json.data;
+    } catch (err) {
+      console.warn('API getContent fallback to local cache:', err);
+      const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
+      return key ? cache[key] || null : cache;
+    }
+  },
+
+  // 11. Save Dynamic Site Content (Admin)
+  async saveContent(key, data) {
+    try {
+      const res = await fetch(`${API_BASE}/content/${encodeURIComponent(key)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) throw new Error(json.error || 'Failed to save content');
+      
+      // Update local fallback cache
+      const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
+      cache[key] = json.data;
+      localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
+      return json.data;
+    } catch (err) {
+      console.warn('API saveContent failed, saving to local fallback cache:', err);
+      const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
+      cache[key] = data;
+      localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
+      return data;
+    }
+  },
+
   // --- LOCAL FALLBACK HELPERS ---
   getLocalTariffs({ usage_type, search, all } = {}) {
     let list = JSON.parse(localStorage.getItem('scr_tariffs_cache_v5') || 'null');

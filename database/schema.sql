@@ -47,3 +47,10 @@ CREATE TABLE IF NOT EXISTS terms_conditions (
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Create Dynamic Site Content / CMS Table for Home Page & Settings
+CREATE TABLE IF NOT EXISTS site_content (
+    section_key VARCHAR(100) PRIMARY KEY,
+    content_data JSONB NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

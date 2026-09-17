@@ -385,5 +385,49 @@ export const db = {
       saveLocalData(defaultData);
       return true;
     }
+  },
+
+  async getContent(key) {
+    if (usePostgres) {
+      const res = await pool.query('SELECT content_data FROM site_content WHERE section_key = $1', [key]);
+      return res.rows[0]?.content_data || null;
+    } else {
+      const data = loadLocalData();
+      return (data.site_content && data.site_content[key]) || null;
+    }
+  },
+
+  async setContent(key, contentData) {
+    if (usePostgres) {
+      const query = `
+        INSERT INTO site_content (section_key, content_data, updated_at)
+        VALUES ($1, $2, CURRENT_TIMESTAMP)
+        ON CONFLICT (section_key)
+        DO UPDATE SET content_data = $2, updated_at = CURRENT_TIMESTAMP
+        RETURNING content_data;
+      `;
+      const res = await pool.query(query, [key, JSON.stringify(contentData)]);
+      return res.rows[0]?.content_data || contentData;
+    } else {
+      const data = loadLocalData();
+      if (!data.site_content) data.site_content = {};
+      data.site_content[key] = contentData;
+      saveLocalData(data);
+      return contentData;
+    }
+  },
+
+  async getAllContent() {
+    if (usePostgres) {
+      const res = await pool.query('SELECT section_key, content_data FROM site_content');
+      const map = {};
+      for (const row of res.rows) {
+        map[row.section_key] = row.content_data;
+      }
+      return map;
+    } else {
+      const data = loadLocalData();
+      return data.site_content || {};
+    }
   }
 };

@@ -62,9 +62,13 @@ const SERVICES = [
   }
 ];
 
-export const OurServices = ({ onNavigate }) => {
+export const OurServices = ({ onNavigate, servicesList = null }) => {
   const [selectedServiceId, setSelectedServiceId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const activeServices = (servicesList && Array.isArray(servicesList) && servicesList.length > 0)
+    ? servicesList.map((s, idx) => ({ ...SERVICES[idx], ...s }))
+    : SERVICES;
 
   const handleBookNow = (service, e) => {
     if (e) e.stopPropagation();
@@ -96,7 +100,7 @@ export const OurServices = ({ onNavigate }) => {
 
           {/* Row 1: 2 Cards */}
           <div className="os-row os-row-2 os-row-top">
-            {SERVICES.slice(0, 2).map((service) => (
+            {activeServices.slice(0, 2).map((service) => (
               <div key={service.id} className="os-card os-card-2" onClick={(e) => handleBookNow(service, e)}>
                 <div className="os-image-box">
                   <img src={service.image} alt={service.title} loading="lazy" />
@@ -120,7 +124,7 @@ export const OurServices = ({ onNavigate }) => {
 
           {/* Row 2: 3 Cards */}
           <div className="os-row os-row-3 os-row-middle">
-            {SERVICES.slice(2, 5).map((service) => (
+            {activeServices.slice(2, 5).map((service) => (
               <div key={service.id} className="os-card os-card-3" onClick={(e) => handleBookNow(service, e)}>
                 <div className="os-image-box">
                   <img src={service.image} alt={service.title} loading="lazy" />
@@ -144,7 +148,7 @@ export const OurServices = ({ onNavigate }) => {
 
           {/* Row 3: 2 Cards */}
           <div className="os-row os-row-2 os-row-bottom">
-            {SERVICES.slice(5, 7).map((service) => (
+            {activeServices.slice(5, 7).map((service) => (
               <div key={service.id} className="os-card os-card-2" onClick={(e) => handleBookNow(service, e)}>
                 <div className="os-image-box">
                   <img src={service.image} alt={service.title} loading="lazy" />
