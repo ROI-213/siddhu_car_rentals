@@ -15,25 +15,26 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'siddhu@2026';
 
-app.use(cors());
-app.use(express.json());
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json({ limit: '20mb' }));
 
 let isInitialized = false;
 async function ensureDb() {
   if (!isInitialized) {
-    await initDb();
-    isInitialized = true;
+    try {
+      await initDb();
+      if (db.isPostgres()) {
+        isInitialized = true;
+      }
+    } catch (err) {
+      console.error('Database connection error in ensureDb:', err);
+    }
   }
 }
 
 app.use(async (req, res, next) => {
-  try {
-    await ensureDb();
-    next();
-  } catch (err) {
-    console.error('Database connection error:', err);
-    next(err);
-  }
+  await ensureDb();
+  next();
 });
 
 // Validation helper
@@ -268,17 +269,23 @@ app.get('/api/content', async (req, res) => {
   }
 });
 
-app.put('/api/content/:key', async (req, res) => {
+const handleSaveContent = async (req, res) => {
   try {
     const { key } = req.params;
     const contentData = req.body;
+    if (!contentData || typeof contentData !== 'object') {
+      return res.status(400).json({ success: false, error: 'Valid content JSON body is required.' });
+    }
     const saved = await db.setContent(key, contentData);
     res.json({ success: true, message: `Content for "${key}" saved successfully.`, data: saved });
   } catch (err) {
     console.error(`Error saving content for "${req.params.key}":`, err);
-    res.status(500).json({ success: false, error: 'Failed to save content to database.' });
+    res.status(500).json({ success: false, error: 'Failed to save content to database: ' + err.message });
   }
-});
+};
+
+app.put('/api/content/:key', handleSaveContent);
+app.post('/api/content/:key', handleSaveContent);
 
 // 9. POST /api/admin/login - Simple secure Admin authentication
 app.post('/api/admin/login', (req, res) => {

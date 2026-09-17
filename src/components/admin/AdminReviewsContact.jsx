@@ -130,6 +130,7 @@ export const AdminReviewsContact = ({ showToast }) => {
     setSaving(true);
     try {
       await tariffApi.saveContent('testimonials_page', reviewsData);
+      window.dispatchEvent(new Event('scr_site_content_updated'));
       if (showToast) showToast('Reviews & Testimonials content saved successfully!', 'success');
     } catch (err) {
       console.error(err);
@@ -143,6 +144,7 @@ export const AdminReviewsContact = ({ showToast }) => {
     setSaving(true);
     try {
       await tariffApi.saveContent('contact_page', contactData);
+      window.dispatchEvent(new Event('scr_site_content_updated'));
       if (showToast) showToast('Contact page details & dispatch info saved successfully!', 'success');
     } catch (err) {
       console.error(err);

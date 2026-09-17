@@ -44,6 +44,9 @@ export const Testimonials = ({ onReserveClick }) => {
 
   useEffect(() => {
     loadDynamicContent();
+    const handleUpdate = () => loadDynamicContent();
+    window.addEventListener('scr_site_content_updated', handleUpdate);
+    return () => window.removeEventListener('scr_site_content_updated', handleUpdate);
   }, []);
 
   const loadDynamicContent = async () => {

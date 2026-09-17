@@ -152,21 +152,46 @@ export const tariffApi = {
 
   // 10. Fetch Dynamic Site Content (Hero, Contact, Testimonials, Destinations, etc.)
   async getContent(key = null) {
+    const localCache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
     try {
       const url = key ? `${API_BASE}/content?key=${encodeURIComponent(key)}` : `${API_BASE}/content`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const json = await res.json();
-      return json.data;
+
+      if (key) {
+        if (json.data !== null && json.data !== undefined) {
+          localCache[key] = json.data;
+          localStorage.setItem('scr_site_content_cache', JSON.stringify(localCache));
+          return json.data;
+        }
+        // Fall back to local cache if database record is empty
+        return localCache[key] || null;
+      } else {
+        if (json.data && typeof json.data === 'object' && Object.keys(json.data).length > 0) {
+          const merged = { ...localCache, ...json.data };
+          localStorage.setItem('scr_site_content_cache', JSON.stringify(merged));
+          return merged;
+        }
+        return localCache;
+      }
     } catch (err) {
       console.warn('API getContent fallback to local cache:', err);
-      const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-      return key ? cache[key] || null : cache;
+      return key ? localCache[key] || null : localCache;
     }
   },
 
   // 11. Save Dynamic Site Content (Admin)
   async saveContent(key, data) {
+    // 1. Immediately update local fallback cache so UI is instantaneous and resilient
+    try {
+      const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
+      cache[key] = data;
+      localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
+    } catch (e) {
+      console.warn('LocalStorage save error:', e);
+    }
+
     try {
       const res = await fetch(`${API_BASE}/content/${encodeURIComponent(key)}`, {
         method: 'PUT',
@@ -174,18 +199,15 @@ export const tariffApi = {
         body: JSON.stringify(data)
       });
       const json = await res.json();
-      if (!res.ok || !json.success) throw new Error(json.error || 'Failed to save content');
+      if (!res.ok || !json.success) throw new Error(json.error || 'Failed to save content to PostgreSQL');
       
-      // Update local fallback cache
+      const savedData = json.data || data;
       const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-      cache[key] = json.data;
+      cache[key] = savedData;
       localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
-      return json.data;
+      return savedData;
     } catch (err) {
-      console.warn('API saveContent failed, saving to local fallback cache:', err);
-      const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-      cache[key] = data;
-      localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
+      console.warn('API saveContent failed, preserved in local fallback cache:', err);
       return data;
     }
   },
@@ -198,22 +220,33 @@ export const tariffApi = {
         localStorage.setItem('scr_fleet_cache', JSON.stringify(data));
         return data;
       }
-      return JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
+      const local = JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
+      return (Array.isArray(local) && local.length > 0) ? local : null;
     } catch (err) {
       console.warn('getFleet error, reading local cache:', err);
-      return JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
+      const local = JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
+      return (Array.isArray(local) && local.length > 0) ? local : null;
     }
   },
 
   // 13. Save Dynamic Fleet
   async saveFleet(fleetList) {
+    // 1. Immediately store in local cache
+    try {
+      localStorage.setItem('scr_fleet_cache', JSON.stringify(fleetList));
+    } catch (e) {
+      console.warn('LocalStorage fleet save error:', e);
+    }
+
     try {
       const saved = await this.saveContent('fleet', fleetList);
-      localStorage.setItem('scr_fleet_cache', JSON.stringify(saved));
-      return saved;
+      if (Array.isArray(saved) && saved.length > 0) {
+        localStorage.setItem('scr_fleet_cache', JSON.stringify(saved));
+        return saved;
+      }
+      return fleetList;
     } catch (err) {
-      console.warn('saveFleet error, saving to local cache:', err);
-      localStorage.setItem('scr_fleet_cache', JSON.stringify(fleetList));
+      console.warn('saveFleet remote error, saved to local cache:', err);
       return fleetList;
     }
   },

@@ -35,6 +35,9 @@ export const Contact = () => {
 
   useEffect(() => {
     loadDynamicContactData();
+    const handleUpdate = () => loadDynamicContactData();
+    window.addEventListener('scr_site_content_updated', handleUpdate);
+    return () => window.removeEventListener('scr_site_content_updated', handleUpdate);
   }, []);
 
   const loadDynamicContactData = async () => {

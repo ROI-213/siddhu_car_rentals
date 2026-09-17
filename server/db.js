@@ -71,7 +71,11 @@ const DEFAULT_TERMS = [
 ];
 
 // In-Memory / File Fallback Storage
-const dataFilePath = path.join(rootDir, 'database', 'data.json');
+const isVercel = Boolean(process.env.VERCEL);
+const originalDataFilePath = path.join(rootDir, 'database', 'data.json');
+const dataFilePath = isVercel
+  ? path.join('/tmp', 'siddhu_data.json')
+  : originalDataFilePath;
 
 function loadLocalData() {
   try {
@@ -79,13 +83,21 @@ function loadLocalData() {
       const raw = fs.readFileSync(dataFilePath, 'utf8');
       return JSON.parse(raw);
     }
+    // If on Vercel and /tmp doesn't have it yet, try copying from original
+    if (isVercel && fs.existsSync(originalDataFilePath)) {
+      const raw = fs.readFileSync(originalDataFilePath, 'utf8');
+      const parsed = JSON.parse(raw);
+      saveLocalData(parsed);
+      return parsed;
+    }
   } catch (err) {
     console.error('Error loading local data.json:', err.message);
   }
   const defaultData = {
     tariffs: [...DEFAULT_DISPOSAL_TARIFFS, ...DEFAULT_OUTSTATION_TARIFFS],
     terms: DEFAULT_TERMS,
-    nextId: 41
+    nextId: 41,
+    site_content: {}
   };
   saveLocalData(defaultData);
   return defaultData;
@@ -105,58 +117,96 @@ function saveLocalData(data) {
 let pool = null;
 let usePostgres = false;
 
+const DEFAULT_DATABASE_URL = 'postgresql://siddh876:tInlqWg3BkGLd1Yg6qfd98cex@168.119.64.101:5432/siddh876';
+
 export async function initDb() {
-  const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
-  const pgHost = process.env.PGHOST || 'localhost';
-  const pgUser = process.env.PGUSER || 'postgres';
-  const pgPassword = process.env.PGPASSWORD || '';
-  const pgDatabase = process.env.PGDATABASE || 'siddhu_car_rentals';
-  const pgPort = parseInt(process.env.PGPORT || '5432', 10);
+  if (pool && usePostgres) return;
 
-  if (connectionString || process.env.PGHOST || process.env.PGDATABASE) {
-    try {
-      const config = connectionString 
-        ? { connectionString, ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false }
-        : {
-            host: pgHost,
-            user: pgUser,
-            password: pgPassword,
-            database: pgDatabase,
-            port: pgPort,
-            ssl: process.env.PGSSL === 'true' ? { rejectUnauthorized: false } : false
-          };
+  const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL || DEFAULT_DATABASE_URL;
+  const useSsl = process.env.PGSSL === 'true';
 
-      pool = new Pool(config);
-      // Test connection
-      const client = await pool.connect();
-      console.log(' Successfully connected to PostgreSQL Database');
-      usePostgres = true;
+  try {
+    const config = {
+      connectionString,
+      ssl: useSsl ? { rejectUnauthorized: false } : false,
+      connectionTimeoutMillis: 8000,
+      idleTimeoutMillis: 30000,
+      max: 10
+    };
 
-      // Initialize schema if tables do not exist
-      const schemaSqlPath = path.join(rootDir, 'database', 'schema.sql');
-      if (fs.existsSync(schemaSqlPath)) {
-        const schemaSql = fs.readFileSync(schemaSqlPath, 'utf8');
-        await client.query(schemaSql);
-        console.log(' PostgreSQL Schema verified/created.');
+    pool = new Pool(config);
+    // Test connection
+    const client = await pool.connect();
+    console.log('✓ Successfully connected to PostgreSQL Database at 168.119.64.101');
+    usePostgres = true;
+
+    // Ensure site_content table exists
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS site_content (
+        section_key VARCHAR(100) PRIMARY KEY,
+        content_data JSONB NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Ensure tariffs table exists
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS tariffs (
+        id SERIAL PRIMARY KEY,
+        location VARCHAR(100) NOT NULL DEFAULT 'BANGALORE',
+        usage_type VARCHAR(50) NOT NULL,
+        vehicle_variant VARCHAR(255) NOT NULL,
+        service_type VARCHAR(100) NOT NULL DEFAULT 'Garage to Garage',
+        four_hours_forty_km INTEGER DEFAULT NULL,
+        eight_hours_eighty_km INTEGER DEFAULT NULL,
+        extra_hour INTEGER DEFAULT NULL,
+        extra_km INTEGER DEFAULT NULL,
+        night_local_bata INTEGER DEFAULT NULL,
+        airport_transfer INTEGER DEFAULT NULL,
+        minimum_km_per_day INTEGER DEFAULT NULL,
+        rate_per_km INTEGER DEFAULT NULL,
+        outstation_extra_km INTEGER DEFAULT NULL,
+        driver_allowance INTEGER DEFAULT NULL,
+        display_order INTEGER NOT NULL DEFAULT 0,
+        is_active BOOLEAN NOT NULL DEFAULT TRUE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Ensure terms_conditions table exists
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS terms_conditions (
+        id SERIAL PRIMARY KEY,
+        clause_key VARCHAR(10) NOT NULL,
+        clause_text TEXT NOT NULL,
+        display_order INTEGER NOT NULL DEFAULT 0,
+        is_active BOOLEAN NOT NULL DEFAULT TRUE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Check if tariffs table is empty, if so populate from seed
+    const countRes = await client.query('SELECT COUNT(*) FROM tariffs');
+    if (parseInt(countRes.rows[0].count, 10) === 0) {
+      for (const t of DEFAULT_DISPOSAL_TARIFFS) {
+        await client.query(`
+          INSERT INTO tariffs (location, usage_type, vehicle_variant, service_type, four_hours_forty_km, eight_hours_eighty_km, extra_hour, extra_km, night_local_bata, airport_transfer, display_order, is_active)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        `, [t.location, t.usage_type, t.vehicle_variant, t.service_type, t.four_hours_forty_km, t.eight_hours_eighty_km, t.extra_hour, t.extra_km, t.night_local_bata, t.airport_transfer, t.display_order, t.is_active]);
       }
-
-      // Check if tariffs table is empty, if so populate from seed.sql
-      const countRes = await client.query('SELECT COUNT(*) FROM tariffs');
-      if (parseInt(countRes.rows[0].count, 10) === 0) {
-        const seedSqlPath = path.join(rootDir, 'database', 'seed.sql');
-        if (fs.existsSync(seedSqlPath)) {
-          const seedSql = fs.readFileSync(seedSqlPath, 'utf8');
-          await client.query(seedSql);
-          console.log(' PostgreSQL Seed data inserted successfully (20 Disposal + 20 Outstation + Terms).');
-        }
+      for (const t of DEFAULT_OUTSTATION_TARIFFS) {
+        await client.query(`
+          INSERT INTO tariffs (location, usage_type, vehicle_variant, service_type, minimum_km_per_day, rate_per_km, outstation_extra_km, driver_allowance, display_order, is_active)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        `, [t.location, t.usage_type, t.vehicle_variant, t.service_type, t.minimum_km_per_day, t.rate_per_km, t.outstation_extra_km, t.driver_allowance, t.display_order, t.is_active]);
       }
-      client.release();
-    } catch (err) {
-      console.warn('⚠️ PostgreSQL connection failed, switching to persistent local storage mode:', err.message);
-      usePostgres = false;
+      console.log('✓ PostgreSQL seed tariffs inserted.');
     }
-  } else {
-    console.log('ℹ️ No PostgreSQL environment variables provided; using local storage mode.');
+
+    client.release();
+  } catch (err) {
+    console.warn('⚠️ PostgreSQL connection failed, switching to persistent local storage mode:', err.message);
     usePostgres = false;
   }
 }
