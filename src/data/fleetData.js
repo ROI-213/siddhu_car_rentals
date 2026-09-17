@@ -675,12 +675,13 @@ export const fleetData = [
     "chauffeurIncluded": true,
     "bestFor": "C-Suite Delegations, VIP Airport Meet-and-Greet, Interstate Executive Group Tours",
     "bestSuitedFor": ["C-Suite Delegations", "Airport VIP Shuttles", "Luxury Corporate Offsites", "High-Profile Events"],
-    "image": "/images/traveller_front.jpg",
+    "image": "/images/fleet/urbania_front_quarter.jpg",
     "gallery": [
-      "/images/traveller_front.jpg",
-      "/images/traveller_int_1.jpg",
-      "/images/traveller_int_2.jpg",
-      "/images/traveller_int_3.jpg"
+      "/images/fleet/urbania_front_quarter.jpg",
+      "/images/fleet/urbania_front.jpg",
+      "/images/fleet/urbania_rear.jpg",
+      "/images/fleet/urbania_interior_cabin.jpg",
+      "/images/fleet/urbania_interior_seats.png"
     ],
     "rating": 4.9,
     "transmission": "Mercedes-Derived 5-Speed Manual",
@@ -713,12 +714,13 @@ export const fleetData = [
     "chauffeurIncluded": true,
     "bestFor": "Large Executive Delegations, High-Capacity Airport Transfers, Destination Weddings",
     "bestSuitedFor": ["Large Executive Delegations", "High-Capacity Airport Transfers", "Destination Weddings", "Interstate Tours"],
-    "image": "/images/traveller_front.jpg",
+    "image": "/images/fleet/urbania_front_quarter.jpg",
     "gallery": [
-      "/images/traveller_front.jpg",
-      "/images/traveller_int_1.jpg",
-      "/images/traveller_int_2.jpg",
-      "/images/traveller_int_3.jpg"
+      "/images/fleet/urbania_front_quarter.jpg",
+      "/images/fleet/urbania_front.jpg",
+      "/images/fleet/urbania_rear.jpg",
+      "/images/fleet/urbania_interior_cabin.jpg",
+      "/images/fleet/urbania_interior_seats.png"
     ],
     "rating": 4.9,
     "transmission": "Mercedes-Derived 5-Speed Manual",
