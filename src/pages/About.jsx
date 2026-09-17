@@ -106,7 +106,7 @@ const ABOUT_CAR_SLIDES = [
     fit: "cover"
   },
   {
-    name: "Toyota Innova (Classic VIP)",
+    name: "Toyota Innova",
     badge: "Corporate Favorite",
     category: "Family & Corporate MPVs",
     src: "/images/fleet/innova_white_front.jpg",

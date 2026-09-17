@@ -438,7 +438,7 @@ export const fleetData = [
   },
   {
     "id": "innova",
-    "name": "Toyota Innova (Classic VIP)",
+    "name": "Toyota Innova",
     "modelYear": "2024–2025 Executive Fleet",
     "category": "Executive MPVs",
     "categoryKey": "executive",
@@ -461,8 +461,8 @@ export const fleetData = [
     "fuelType": "Diesel Turbo",
     "ac": "Dual-Zone Climate AC",
     "badgeText": "Family & Corporate Favorite",
-    "regPlate": "KA 05 MN 4488",
-    "description": "Pristine white classic Toyota Innova (KA 05 MN 4488) in immaculate showroom condition. Featuring spacious 7-passenger seating, comfortable dual-tone interior, dual-zone AC, and professional uniformed chauffeurs for airport transit, corporate disposals, and family getaways.",
+    "regPlate": "SIDDHU CAR RENTALS",
+    "description": "Pristine white Toyota Innova in immaculate showroom condition with clean 'SIDDHU CAR RENTALS' commercial plate. Featuring spacious 7-passenger seating, comfortable dual-tone interior, dual-zone AC, and professional uniformed chauffeurs for airport transit, corporate disposals, and family getaways.",
     "amenities": [
       "7-Passenger Seating",
       "Dual AC Vents",
