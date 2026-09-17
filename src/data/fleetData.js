@@ -461,8 +461,8 @@ export const fleetData = [
     "fuelType": "Diesel Turbo",
     "ac": "Dual-Zone Climate AC",
     "badgeText": "Family & Corporate Favorite",
-    "regPlate": "SIDDHU CAR RENTALS",
-    "description": "Pristine white Toyota Innova in immaculate showroom condition with clean 'SIDDHU CAR RENTALS' commercial plate. Featuring spacious 7-passenger seating, comfortable dual-tone interior, dual-zone AC, and professional uniformed chauffeurs for airport transit, corporate disposals, and family getaways.",
+    "regPlate": "KA 05 MN 4488",
+    "description": "Pristine white classic Toyota Innova (KA 05 MN 4488) in immaculate showroom condition. Featuring spacious 7-passenger seating, comfortable dual-tone interior, dual-zone AC, and professional uniformed chauffeurs for airport transit, corporate disposals, and family getaways.",
     "amenities": [
       "7-Passenger Seating",
       "Dual AC Vents",
@@ -610,7 +610,7 @@ export const fleetData = [
     "fuelType": "Diesel Turbo",
     "ac": "Multi-Zone High Capacity Roof AC",
     "badgeText": "VIP Luxury Lounge",
-    "regPlate": "KA 05 AP 9988",
+    "regPlate": "KA 05 AP 8016",
     "description": "Exclusive custom luxury Toyota HiAce Commuter VIP Lounge featuring diamond-stitched beige leather recliner captain seats, ceiling ambient LED mood lighting, large entertainment TV screen, surround audio console, and window privacy curtains for high-profile executive delegations, VIP airport transits, and corporate roadshows in Bengaluru.",
     "amenities": [
       "Diamond Recliner Captain Seats",
