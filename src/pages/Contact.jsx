@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Crown, MapPin, PhoneCall, MessageSquare, Clock, CheckCircle2,
   User, Calendar, FileText, ChevronRight, Star, ShieldCheck, Zap,
@@ -11,12 +11,15 @@ import { Input } from '../components/common/Input';
 import { LocationAutocompleteInput } from '../components/common/LocationAutocompleteInput';
 import { WhatsAppButton } from '../components/common/WhatsAppButton';
 import { WhatsAppIcon } from '../components/common/WhatsAppEnquiryMenu';
+import { tariffApi } from '../services/tariffApi';
+import { DEFAULT_CONTACT_DATA } from '../components/admin/AdminReviewsContact';
 import { SITE_CONFIG } from '../config/site';
 import './Contact.css';
 
 export const Contact = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [tripType, setTripType] = useState('local');
+  const [pageData, setPageData] = useState(DEFAULT_CONTACT_DATA);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -29,6 +32,26 @@ export const Contact = () => {
     vehicleType: '',
     notes: ''
   });
+
+  useEffect(() => {
+    loadDynamicContactData();
+  }, []);
+
+  const loadDynamicContactData = async () => {
+    try {
+      const data = await tariffApi.getContent('contact_page');
+      if (data && typeof data === 'object') {
+        setPageData({
+          hero: { ...DEFAULT_CONTACT_DATA.hero, ...(data.hero || {}) },
+          stats: Array.isArray(data.stats) && data.stats.length > 0 ? data.stats : DEFAULT_CONTACT_DATA.stats,
+          dispatch: { ...DEFAULT_CONTACT_DATA.dispatch, ...(data.dispatch || {}) },
+          trustPills: Array.isArray(data.trustPills) && data.trustPills.length > 0 ? data.trustPills : DEFAULT_CONTACT_DATA.trustPills
+        });
+      }
+    } catch (err) {
+      console.warn('Error loading dynamic contact data:', err);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,7 +80,8 @@ export const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const waUrl = `https://wa.me/${SITE_CONFIG.whatsapp.phone}?text=${encodeURIComponent(whatsappMessage)}`;
+    const phoneNum = pageData.dispatch?.whatsappNumber || SITE_CONFIG.whatsapp.phone;
+    const waUrl = `https://wa.me/${phoneNum}?text=${encodeURIComponent(whatsappMessage)}`;
     window.open(waUrl, '_blank', 'noopener,noreferrer');
     setFormSubmitted(true);
     setTimeout(() => setFormSubmitted(false), 7000);
@@ -68,21 +92,21 @@ export const Contact = () => {
 
       {/* 1. HERO */}
       <PageHero
-        badge="24/7 Dispatch & Concierge"
+        badge={pageData.hero?.badge || "24/7 Dispatch & Concierge"}
         badgeIcon={Headphones}
-        title="We're Here to Drive"
-        titleHighlight="Your Journey"
-        description="Premium chauffeur-driven car rentals across Bengaluru. Airport transfers, outstation trips, corporate fleets & luxury rides — one call away, 24/7."
+        title={pageData.hero?.title || "We're Here to Drive"}
+        titleHighlight={pageData.hero?.titleHighlight || "Your Journey"}
+        description={pageData.hero?.description || "Premium chauffeur-driven car rentals across Bengaluru. Airport transfers, outstation trips, corporate fleets & luxury rides — one call away, 24/7."}
         breadcrumbs={['Contact Us']}
-        image="/images/siddhu_white_car_bengaluru_road.jpg"
+        image={pageData.hero?.image || "/images/siddhu_white_car_bengaluru_road.jpg"}
       >
         <div className="contact-hero-actions">
           <a
-            href="tel:+917625059665"
+            href={`tel:${(pageData.dispatch?.primaryPhone || '+917625059665').replace(/\s+/g, '')}`}
             className="contact-hero-btn-call"
           >
             <PhoneCall size={18} color="#C5A059" />
-            <span>+91 76250 59665</span>
+            <span>{pageData.dispatch?.primaryPhone || '+91 76250 59665'}</span>
           </a>
           <WhatsAppButton
             message="Hello Siddhu Car Rentals, I would like to enquire about your car rental services."
@@ -98,19 +122,23 @@ export const Contact = () => {
       <div style={{ background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)', borderBottom: '1px solid rgba(197,160,89,0.3)' }}>
         <div className="container">
           <div className="contact-stats-grid">
-            {[
-              { icon: Clock, value: '24/7', label: 'Always Available' },
-              { icon: Zap, value: '< 15 Min', label: 'Quote Response' },
-              { icon: Star, value: '4.9 ★', label: 'Customer Rating' },
-              { icon: Car, value: '20+ Vehicles', label: 'Ready Fleet' },
-              { icon: ShieldCheck, value: '100%', label: 'Verified Drivers' },
-            ].map((stat, i) => (
-              <div key={i} className="contact-stat-item">
-                <stat.icon size={20} color="#C5A059" />
-                <div className="contact-stat-val">{stat.value}</div>
-                <div className="contact-stat-lbl">{stat.label}</div>
-              </div>
-            ))}
+            {(pageData.stats || [
+              { value: '24/7', label: 'Always Available' },
+              { value: '< 15 Min', label: 'Quote Response' },
+              { value: '4.9 ★', label: 'Customer Rating' },
+              { value: '20+ Vehicles', label: 'Ready Fleet' },
+              { value: '100%', label: 'Verified Drivers' },
+            ]).map((stat, i) => {
+              const icons = [Clock, Zap, Star, Car, ShieldCheck];
+              const IconComp = icons[i % icons.length] || Star;
+              return (
+                <div key={i} className="contact-stat-item">
+                  <IconComp size={20} color="#C5A059" />
+                  <div className="contact-stat-val">{stat.value}</div>
+                  <div className="contact-stat-lbl">{stat.label}</div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -238,22 +266,22 @@ export const Contact = () => {
                   <PhoneCall size={13} /> Direct Contact
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <a href="tel:+917625059665" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 13px', borderRadius: '10px', background: 'rgba(197,160,89,0.06)', border: '1px solid rgba(197,160,89,0.18)' }}>
+                  <a href={`tel:${(pageData.dispatch?.primaryPhone || '+917625059665').replace(/\s+/g, '')}`} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 13px', borderRadius: '10px', background: 'rgba(197,160,89,0.06)', border: '1px solid rgba(197,160,89,0.18)' }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '9px', background: 'rgba(197,160,89,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <PhoneCall size={17} color="#C5A059" />
                     </div>
                     <div>
                       <div style={{ fontSize: '0.66rem', fontWeight: '700', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>24/7 Dispatch</div>
-                      <div style={{ fontSize: '0.94rem', fontWeight: '800', color: '#0F172A' }}>+91 76250 59665</div>
+                      <div style={{ fontSize: '0.94rem', fontWeight: '800', color: '#0F172A' }}>{pageData.dispatch?.primaryPhone || '+91 76250 59665'}</div>
                     </div>
                   </a>
-                  <a href="tel:+918147204327" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 13px', borderRadius: '10px', background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(0,0,0,0.07)' }}>
+                  <a href={`tel:${(pageData.dispatch?.secondaryPhone || '+918147204327').replace(/\s+/g, '')}`} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 13px', borderRadius: '10px', background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(0,0,0,0.07)' }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '9px', background: 'rgba(15,23,42,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <PhoneCall size={17} color="#64748B" />
                     </div>
                     <div>
                       <div style={{ fontSize: '0.66rem', fontWeight: '700', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Alternate</div>
-                      <div style={{ fontSize: '0.94rem', fontWeight: '800', color: '#0F172A' }}>+91 81472 04327</div>
+                      <div style={{ fontSize: '0.94rem', fontWeight: '800', color: '#0F172A' }}>{pageData.dispatch?.secondaryPhone || '+91 81472 04327'}</div>
                     </div>
                   </a>
                   <WhatsAppButton message="Hello Siddhu Car Rentals, I would like to enquire about your car rental services." style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 13px', borderRadius: '10px', background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.22)', textDecoration: 'none', cursor: 'pointer' }}>
@@ -275,17 +303,17 @@ export const Contact = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
                     <Navigation size={15} color="#94A3B8" style={{ marginTop: '2px', flexShrink: 0 }} />
-                    <p style={{ fontSize: '0.84rem', color: '#475569', lineHeight: '1.6', margin: 0 }}>
-                      #314, 12th Main, 15th Cross,<br />JP Nagar 5th Phase,<br />Bengaluru – 560 078
+                    <p style={{ fontSize: '0.84rem', color: '#475569', lineHeight: '1.6', margin: 0, whiteSpace: 'pre-line' }}>
+                      {pageData.dispatch?.officeAddress || '#314, 12th Main, 15th Cross, JP Nagar 5th Phase, Bengaluru – 560 078'}
                     </p>
                   </div>
-                  <a href="https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+5th+Phase+Bengaluru" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.78rem', fontWeight: '700', color: '#2563EB', textDecoration: 'none', padding: '6px 12px', borderRadius: '7px', background: 'rgba(37,99,235,0.07)', width: 'fit-content' }}>
+                  <a href={pageData.dispatch?.gmapsQueryUrl || "https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+5th+Phase+Bengaluru"} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.78rem', fontWeight: '700', color: '#2563EB', textDecoration: 'none', padding: '6px 12px', borderRadius: '7px', background: 'rgba(37,99,235,0.07)', width: 'fit-content' }}>
                     <MapPin size={13} /> Get Directions
                   </a>
                   <div style={{ display: 'flex', gap: '9px', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
                     <Clock size={14} color="#C5A059" />
                     <div>
-                      <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0F172A' }}>Open 24 hours</div>
+                      <div style={{ fontSize: '0.8rem', fontWeight: '700', color: '#0F172A' }}>{pageData.dispatch?.operatingHours || 'Open 24 hours'}</div>
                       <div style={{ fontSize: '0.71rem', color: '#94A3B8' }}>7 days · 365 days a year</div>
                     </div>
                   </div>
@@ -294,16 +322,20 @@ export const Contact = () => {
 
               <GlassCard variant="standard" style={{ padding: '18px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                  {[
-                    { icon: ShieldCheck, label: 'Verified Drivers', color: '#10B981' },
-                    { icon: Car, label: 'KA Yellow Board', color: '#3B82F6' },
-                    { icon: Building2, label: 'GST Invoicing', color: '#8B5CF6' }
-                  ].map((badge, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px 4px', borderRadius: '10px', background: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.06)', gap: '5px', textAlign: 'center' }}>
-                      <badge.icon size={18} color={badge.color} />
-                      <div style={{ fontSize: '0.66rem', fontWeight: '700', color: '#475569', lineHeight: 1.2 }}>{badge.label}</div>
-                    </div>
-                  ))}
+                  {(pageData.trustPills || [
+                    { label: 'Verified Drivers', color: '#10B981' },
+                    { label: 'KA Yellow Board', color: '#3B82F6' },
+                    { label: 'GST Invoicing', color: '#8B5CF6' }
+                  ]).map((badge, i) => {
+                    const icons = [ShieldCheck, Car, Building2];
+                    const IconComp = icons[i % icons.length] || ShieldCheck;
+                    return (
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px 4px', borderRadius: '10px', background: 'rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.06)', gap: '5px', textAlign: 'center' }}>
+                        <IconComp size={18} color={badge.color || '#C5A059'} />
+                        <div style={{ fontSize: '0.66rem', fontWeight: '700', color: '#475569', lineHeight: 1.2 }}>{badge.label}</div>
+                      </div>
+                    );
+                  })}
                 </div>
               </GlassCard>
             </div>
@@ -334,8 +366,10 @@ export const Contact = () => {
                   </div>
                   <div style={{ flex: 1 }}>
                     <h4 style={{ margin: '0 0 6px', fontSize: '0.94rem', fontWeight: '700', color: '#0F172A' }}>Office Address</h4>
-                    <p style={{ fontSize: '0.86rem', color: '#64748B', lineHeight: '1.6', margin: '0 0 8px' }}>#314, 12th Main, 15th Cross, JP Nagar 5th Phase, Bengaluru – 560 078</p>
-                    <a href="https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+5th+Phase+Bengaluru" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: '700', color: '#2563EB', textDecoration: 'none', padding: '5px 12px', borderRadius: '7px', background: 'rgba(37,99,235,0.07)' }}>
+                    <p style={{ fontSize: '0.86rem', color: '#64748B', lineHeight: '1.6', margin: '0 0 8px', whiteSpace: 'pre-line' }}>
+                      {pageData.dispatch?.officeAddress || '#314, 12th Main, 15th Cross, JP Nagar 5th Phase, Bengaluru – 560 078'}
+                    </p>
+                    <a href={pageData.dispatch?.gmapsQueryUrl || "https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+5th+Phase+Bengaluru"} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: '700', color: '#2563EB', textDecoration: 'none', padding: '5px 12px', borderRadius: '7px', background: 'rgba(37,99,235,0.07)' }}>
                       <MapPin size={13} /> Get Directions
                     </a>
                   </div>
@@ -349,8 +383,12 @@ export const Contact = () => {
                   </div>
                   <div>
                     <h4 style={{ margin: '0 0 6px', fontSize: '0.94rem', fontWeight: '700', color: '#0F172A' }}>24/7 Dispatch Desk</h4>
-                    <a href="tel:+917625059665" style={{ display: 'block', fontSize: '0.96rem', fontWeight: '700', color: '#0F172A', textDecoration: 'none', marginBottom: '2px' }}>+91 76250 59665</a>
-                    <a href="tel:+918147204327" style={{ display: 'block', fontSize: '0.84rem', fontWeight: '600', color: '#64748B', textDecoration: 'none' }}>+91 81472 04327</a>
+                    <a href={`tel:${(pageData.dispatch?.primaryPhone || '+917625059665').replace(/\s+/g, '')}`} style={{ display: 'block', fontSize: '0.96rem', fontWeight: '700', color: '#0F172A', textDecoration: 'none', marginBottom: '2px' }}>
+                      {pageData.dispatch?.primaryPhone || '+91 76250 59665'}
+                    </a>
+                    <a href={`tel:${(pageData.dispatch?.secondaryPhone || '+918147204327').replace(/\s+/g, '')}`} style={{ display: 'block', fontSize: '0.84rem', fontWeight: '600', color: '#64748B', textDecoration: 'none' }}>
+                      {pageData.dispatch?.secondaryPhone || '+91 81472 04327'}
+                    </a>
                   </div>
                 </div>
               </GlassCard>
@@ -363,7 +401,7 @@ export const Contact = () => {
                   <div>
                     <h4 style={{ margin: '0 0 6px', fontSize: '0.94rem', fontWeight: '700', color: '#0F172A' }}>WhatsApp Enquiry</h4>
                     <WhatsAppButton message="Hello Siddhu Car Rentals, I would like to enquire about your car rental services." style={{ fontSize: '0.88rem', fontWeight: '700', color: '#25D366', background: 'none', border: 'none', padding: 0, textDecoration: 'underline', cursor: 'pointer' }}>
-                      +91 76250 59665 (Instant Quote)
+                      {pageData.dispatch?.whatsappLabel || '+91 76250 59665 (Instant Quote)'}
                     </WhatsAppButton>
                   </div>
                 </div>
@@ -376,7 +414,7 @@ export const Contact = () => {
                   </div>
                   <div>
                     <h4 style={{ margin: '0 0 4px', fontSize: '0.94rem', fontWeight: '700', color: '#0F172A' }}>Operating Hours</h4>
-                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0 }}>24 Hours / 7 Days / 365 Days</p>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', margin: 0 }}>{pageData.dispatch?.operatingHours || '24 Hours / 7 Days / 365 Days'}</p>
                   </div>
                 </div>
               </GlassCard>
@@ -385,13 +423,13 @@ export const Contact = () => {
             <GlassCard variant="standard" className="contact-map-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                 <span style={{ fontWeight: '700', fontSize: '0.88rem', color: '#0F172A' }}>📍 JP Nagar 5th Phase, Bengaluru</span>
-                <a href="https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+5th+Phase+Bengaluru" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.76rem', fontWeight: '700', color: '#2563EB', textDecoration: 'none', padding: '4px 10px', borderRadius: '7px', background: 'rgba(37,99,235,0.07)' }}>
+                <a href={pageData.dispatch?.gmapsQueryUrl || "https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+5th+Phase+Bengaluru"} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.76rem', fontWeight: '700', color: '#2563EB', textDecoration: 'none', padding: '4px 10px', borderRadius: '7px', background: 'rgba(37,99,235,0.07)' }}>
                   <MapPin size={13} /> Directions
                 </a>
               </div>
               <iframe
                 title="Siddhu Car Rentals Location"
-                src="https://www.google.com/maps/embed?origin=mfe&pb=!1m2!2m1!1ssiddhu+car+rentals+JP+Nagar+5th+Phase+Bengaluru"
+                src={pageData.dispatch?.gmapsEmbedUrl || "https://www.google.com/maps/embed?origin=mfe&pb=!1m2!2m1!1ssiddhu+car+rentals+JP+Nagar+5th+Phase+Bengaluru"}
                 className="contact-map-iframe"
                 allowFullScreen=""
                 loading="lazy"

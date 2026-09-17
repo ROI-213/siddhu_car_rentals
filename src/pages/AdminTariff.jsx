@@ -31,6 +31,7 @@ import { AdminHomeContent } from '../components/admin/AdminHomeContent';
 import { AdminFleetManager } from '../components/admin/AdminFleetManager';
 import { AdminCorporateContent } from '../components/admin/AdminCorporateContent';
 import { AdminOutstationContent } from '../components/admin/AdminOutstationContent';
+import { AdminReviewsContact } from '../components/admin/AdminReviewsContact';
 
 export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
   // Auth state
@@ -614,6 +615,29 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
             <span style={{ fontSize: '1.1rem' }}>🛣️</span>
             <span>Outstation Page CMS</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setMainAdminSection('reviews_contact')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 24px',
+              borderRadius: '12px',
+              border: 'none',
+              background: mainAdminSection === 'reviews_contact' ? '#12151C' : '#FFFFFF',
+              color: mainAdminSection === 'reviews_contact' ? '#C5A059' : 'var(--color-slate-700)',
+              fontWeight: '800',
+              fontSize: '0.95rem',
+              cursor: 'pointer',
+              boxShadow: mainAdminSection === 'reviews_contact' ? '0 4px 14px rgba(0,0,0,0.12)' : '0 2px 6px rgba(0,0,0,0.02)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <span style={{ fontSize: '1.1rem' }}>⭐</span>
+            <span>Reviews & Contact CMS</span>
+          </button>
         </div>
 
         {mainAdminSection === 'fleet' ? (
@@ -628,6 +652,8 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
           <AdminCorporateContent showToast={showToast} />
         ) : mainAdminSection === 'outstation' ? (
           <AdminOutstationContent showToast={showToast} />
+        ) : mainAdminSection === 'reviews_contact' ? (
+          <AdminReviewsContact showToast={showToast} />
         ) : (
           <>
             {/* Controls, Category Tabs & Add Button */}

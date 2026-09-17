@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Crown, Star, Quote, CheckCircle, ShieldCheck, Filter } from 'lucide-react';
 import { PageHero } from '../components/common/PageHero';
 import { GlassCard } from '../components/common/GlassCard';
 import { SectionHeader } from '../components/common/SectionHeader';
 import { Badge } from '../components/common/Badge';
 import { CTASection } from '../components/common/CTASection';
+import { tariffApi } from '../services/tariffApi';
+import { testimonialsData as fallbackTestimonials } from '../data/testimonialsData';
 
 const GoogleIcon = ({ size = 16 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
@@ -15,38 +17,78 @@ const GoogleIcon = ({ size = 16 }) => (
   </svg>
 );
 
-import { testimonialsData } from '../data/testimonialsData';
-
 export const Testimonials = ({ onReserveClick }) => {
   const [filterCategory, setFilterCategory] = useState('all');
+  const [content, setContent] = useState({
+    hero: {
+      badge: 'Client Feedback',
+      title: 'What Our Clients',
+      titleHighlight: 'Say About Us',
+      description: 'Read genuine feedback from travellers who have experienced our chauffeur-driven fleet across Bengaluru and beyond.',
+      image: '/images/hero_luxury_sedan.jpg'
+    },
+    googleReviewsCard: {
+      badge: 'Google Reviews',
+      title: 'See What Google Says',
+      titleHighlight: 'About Us',
+      description: 'Browse our Google Business Profile for unfiltered customer reviews and ratings from real journeys.',
+      companyName: 'Siddhu Car Rentals',
+      addressLine: 'JP Nagar, Bengaluru — Luxury Car Rentals & Chauffeur Services',
+      ratingScore: '5.0',
+      reviewCountLabel: 'See our rating on Google',
+      gmapsUrl: 'https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+Bengaluru',
+      btnText: 'View All Google Reviews'
+    },
+    testimonialsList: fallbackTestimonials
+  });
 
+  useEffect(() => {
+    loadDynamicContent();
+  }, []);
+
+  const loadDynamicContent = async () => {
+    try {
+      const data = await tariffApi.getContent('testimonials_page');
+      if (data && typeof data === 'object') {
+        setContent(prev => ({
+          hero: { ...prev.hero, ...(data.hero || {}) },
+          googleReviewsCard: { ...prev.googleReviewsCard, ...(data.googleReviewsCard || {}) },
+          testimonialsList: Array.isArray(data.testimonialsList) && data.testimonialsList.length > 0 ? data.testimonialsList : fallbackTestimonials
+        }));
+      }
+    } catch (err) {
+      console.warn('Using cached testimonials data:', err);
+    }
+  };
+
+  const currentList = content.testimonialsList;
   const filteredTestimonials = filterCategory === 'all'
-    ? testimonialsData
-    : testimonialsData.filter(t => t.category === filterCategory);
+    ? currentList
+    : currentList.filter(t => t.category === filterCategory);
 
   return (
     <div style={{ overflowX: 'hidden' }}>
 
       {/* 1. HERO SECTION */}
       <PageHero
-        badge="Client Feedback"
+        badge={content.hero.badge || 'Client Feedback'}
         badgeIcon={Star}
-        title="What Our Clients"
-        titleHighlight="Say About Us"
-        description="Read genuine feedback from travellers who have experienced our chauffeur-driven fleet across Bengaluru and beyond."
+        title={content.hero.title || 'What Our Clients'}
+        titleHighlight={content.hero.titleHighlight || 'Say About Us'}
+        description={content.hero.description || 'Read genuine feedback from travellers who have experienced our chauffeur-driven fleet across Bengaluru and beyond.'}
         breadcrumbs={['Testimonials']}
-        image="/images/hero_luxury_sedan.jpg"
+        image={content.hero.image || '/images/hero_luxury_sedan.jpg'}
       />
 
       {/* 2. GOOGLE REVIEWS SECTION */}
       <section className="section-padding" style={{ background: 'var(--bg-foundation-alt)' }}>
         <div className="container">
           <SectionHeader
-            badge="Google Reviews"
+            badge={content.googleReviewsCard?.badge || "Google Reviews"}
             badgeIcon={Star}
-            title="See What Google Says"
-            titleHighlight="About Us"
-            description="Browse our Google Business Profile for unfiltered customer reviews and ratings from real journeys."
+            title={content.googleReviewsCard?.title || "See What Google Says"}
+            titleHighlight={content.googleReviewsCard?.titleHighlight || "About Us"}
+            description={content.googleReviewsCard?.description || "Browse our Google Business Profile for unfiltered customer reviews and ratings from real journeys."}
             align="center"
           />
 
@@ -65,10 +107,10 @@ export const Testimonials = ({ onReserveClick }) => {
                 <span style={{ fontSize: '3rem', fontWeight: '900', color: '#1A73E8', fontFamily: 'var(--font-editorial)' }}>G</span>
               </div>
               <h3 style={{ fontSize: '1.3rem', fontWeight: '700', color: 'var(--color-slate-900)', marginBottom: '8px' }}>
-                Siddhu Car Rentals
+                {content.googleReviewsCard?.companyName || 'Siddhu Car Rentals'}
               </h3>
               <p style={{ fontSize: '0.88rem', color: 'var(--color-slate-500)', marginBottom: '16px' }}>
-                JP Nagar, Bengaluru — Luxury Car Rentals & Chauffeur Services
+                {content.googleReviewsCard?.addressLine || 'JP Nagar, Bengaluru — Luxury Car Rentals & Chauffeur Services'}
               </p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', gap: '2px' }}>
@@ -82,7 +124,7 @@ export const Testimonials = ({ onReserveClick }) => {
                 <span style={{ fontSize: '0.88rem', color: 'var(--color-slate-500)' }}>on Google</span>
               </div>
               <a
-                href="https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+Bengaluru"
+                href={content.googleReviewsCard?.gmapsUrl || "https://www.google.com/maps/search/?api=1&query=siddhu+car+rentals+JP+Nagar+Bengaluru"}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -104,7 +146,7 @@ export const Testimonials = ({ onReserveClick }) => {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                 </svg>
-                View All Google Reviews
+                {content.googleReviewsCard?.btnText || 'View All Google Reviews'}
               </a>
               <p style={{ fontSize: '0.78rem', color: 'var(--color-slate-400)', marginTop: '12px' }}>
                 Opens Google Maps — see all customer reviews and ratings
@@ -130,7 +172,7 @@ export const Testimonials = ({ onReserveClick }) => {
           {/* Category Filters */}
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px', marginBottom: '40px' }}>
             {[
-              { id: 'all', label: `All Reviews (${testimonialsData.length})` },
+              { id: 'all', label: `All Reviews (${currentList.length})` },
               { id: 'corporate', label: 'Corporate Mobility' },
               { id: 'airport', label: 'Airport VIP Transfers' },
               { id: 'outstation', label: 'Outstation Tours' },
