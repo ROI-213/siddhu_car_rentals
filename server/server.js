@@ -98,10 +98,14 @@ function sanitizeTariffInput(body) {
 
   for (const k of numKeys) {
     if (clean[k] === '' || clean[k] === null || clean[k] === undefined || clean[k] === 'N/A' || clean[k] === 'null') {
-      clean[k] = null;
+      clean[k] = k === 'display_order' ? 0 : null;
     } else {
       clean[k] = parseInt(clean[k], 10);
     }
+  }
+
+  if (clean.display_order === null || clean.display_order === undefined || isNaN(clean.display_order)) {
+    clean.display_order = 0;
   }
 
   clean.vehicle_variant = (clean.vehicle_variant || '').trim();

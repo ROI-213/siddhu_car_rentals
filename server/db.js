@@ -245,12 +245,13 @@ export const db = {
           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, CURRENT_TIMESTAMP
         ) RETURNING *;
       `;
+      const safeDisplayOrder = (display_order === null || display_order === undefined || isNaN(display_order)) ? 0 : parseInt(display_order, 10);
       const values = [
         location, usage_type, vehicle_variant, service_type,
         four_hours_forty_km, eight_hours_eighty_km, extra_hour, extra_km,
         night_local_bata, airport_transfer,
         minimum_km_per_day, rate_per_km, outstation_extra_km, driver_allowance,
-        display_order, is_active
+        safeDisplayOrder, is_active
       ];
       const result = await pool.query(query, values);
       return result.rows[0];

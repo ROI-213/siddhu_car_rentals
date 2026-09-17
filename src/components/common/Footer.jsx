@@ -205,6 +205,15 @@ export const Footer = ({ onNavigate }) => {
             >
               Cancellation Policy
             </button>
+            <button
+              onClick={() => handleNav('admin')}
+              style={{ background: 'none', border: 'none', color: 'rgba(197, 160, 89, 0.8)', cursor: 'pointer', padding: 0, font: 'inherit', transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#FFFFFF'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(197, 160, 89, 0.8)'}
+              title="PostgreSQL Tariff Control Panel"
+            >
+              🔒 Admin Portal
+            </button>
           </div>
         </div>
 

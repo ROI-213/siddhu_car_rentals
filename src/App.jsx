@@ -1,4 +1,4 @@
-import React, { useState, Component } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import { Navbar } from './components/common/Navbar';
 import { Footer } from './components/common/Footer';
 import { FloatingUI } from './components/common/FloatingUI';
@@ -73,9 +73,27 @@ class ErrorBoundary extends Component {
 
 
 export function App() {
-  const [activePage, setActivePage] = useState('home');
+  const getInitialPage = () => {
+    const hash = window.location.hash.replace('#', '').trim();
+    if (hash) return hash;
+    const path = window.location.pathname.replace('/', '').trim();
+    if (path === 'admin') return 'admin';
+    if (path === 'tariff' || path === 'pricing') return 'tariff';
+    return 'home';
+  };
+
+  const [activePage, setActivePage] = useState(getInitialPage);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [selectedVehicleSlug, setSelectedVehicleSlug] = useState(null);
+
+  useEffect(() => {
+    const onHashChange = () => {
+      const hash = window.location.hash.replace('#', '').trim();
+      if (hash) setActivePage(hash);
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
 
   const pageSEOKey = activePage === 'vehicle-detail' && selectedVehicle
     ? 'vehicle-detail'
@@ -89,6 +107,7 @@ export function App() {
 
   const handleNavigate = (id) => {
     setActivePage(id);
+    window.location.hash = id === 'home' ? '' : id;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
