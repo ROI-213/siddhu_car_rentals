@@ -756,8 +756,8 @@ export const fleetData = [
     "image": "/images/fleet/studio_mini_bus.jpg",
     "gallery": [
       "/images/fleet/studio_mini_bus.jpg",
-      "/images/fleet/force_traveller_interior_seats.jpg",
-      "/images/fleet/force_traveller_cabin_view.jpg"
+      "/images/fleet/luxury_bus_interior.jpg",
+      "/images/fleet/luxury_bus_interior_front.jpg"
     ],
     "rating": 4.8,
     "transmission": "Manual",
@@ -793,8 +793,8 @@ export const fleetData = [
     "image": "/images/fleet/studio_mini_bus.jpg",
     "gallery": [
       "/images/fleet/studio_mini_bus.jpg",
-      "/images/fleet/force_traveller_cabin_view.jpg",
-      "/images/fleet/force_traveller_roof_tv.jpg"
+      "/images/fleet/luxury_bus_interior.jpg",
+      "/images/fleet/luxury_bus_interior_front.jpg"
     ],
     "rating": 4.8,
     "transmission": "Manual",
@@ -830,8 +830,8 @@ export const fleetData = [
     "image": "/images/fleet/studio_large_bus.jpg",
     "gallery": [
       "/images/fleet/studio_large_bus.jpg",
-      "/images/fleet/force_traveller_interior_seats.jpg",
-      "/images/fleet/force_traveller_roof_tv.jpg"
+      "/images/fleet/luxury_bus_interior.jpg",
+      "/images/fleet/luxury_bus_interior_front.jpg"
     ],
     "rating": 4.9,
     "transmission": "Manual",
@@ -867,8 +867,8 @@ export const fleetData = [
     "image": "/images/fleet/studio_large_bus.jpg",
     "gallery": [
       "/images/fleet/studio_large_bus.jpg",
-      "/images/fleet/force_traveller_interior_seats.jpg",
-      "/images/fleet/force_traveller_cabin_view.jpg"
+      "/images/fleet/luxury_bus_interior.jpg",
+      "/images/fleet/luxury_bus_interior_front.jpg"
     ],
     "rating": 4.9,
     "transmission": "Heavy-Duty Manual",
@@ -904,8 +904,8 @@ export const fleetData = [
     "image": "/images/fleet/studio_large_bus.jpg",
     "gallery": [
       "/images/fleet/studio_large_bus.jpg",
-      "/images/fleet/force_traveller_interior_seats.jpg",
-      "/images/fleet/force_traveller_roof_tv.jpg"
+      "/images/fleet/luxury_bus_interior.jpg",
+      "/images/fleet/luxury_bus_interior_front.jpg"
     ],
     "rating": 4.9,
     "transmission": "Heavy-Duty Manual",
