@@ -116,9 +116,11 @@ function saveLocalData(data) {
 // PostgreSQL Connection Setup
 let pool = null;
 let usePostgres = false;
+let isAttempted = false;
 
 export async function initDb() {
-  if (pool && usePostgres) return;
+  if (isAttempted && (pool || usePostgres)) return;
+  isAttempted = true;
 
   const connectionString =
     process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRESQL_URL;
@@ -134,7 +136,7 @@ export async function initDb() {
         ssl: sslEnabled ? { rejectUnauthorized: false } : false,
         max: parseInt(process.env.DB_POOL_MAX || '10', 10),
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 10000
+        connectionTimeoutMillis: 3000
       }
     : {
         host: process.env.DB_HOST || process.env.PGHOST || '127.0.0.1',
@@ -145,7 +147,7 @@ export async function initDb() {
         ssl: sslEnabled ? { rejectUnauthorized: false } : false,
         max: parseInt(process.env.DB_POOL_MAX || '10', 10),
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 10000
+        connectionTimeoutMillis: 3000
       };
 
   try {

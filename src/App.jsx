@@ -74,12 +74,15 @@ class ErrorBoundary extends Component {
 
 export function App() {
   const getInitialPage = () => {
-    const hash = window.location.hash.replace('#', '').trim();
+    const hash = window.location.hash.replace('#', '').trim().toLowerCase();
+    if (hash === 'admin' || hash.startsWith('admin')) return 'admin';
     if (hash) return hash;
-    const path = window.location.pathname.replace('/', '').trim();
-    if (path === 'admin') return 'admin';
+
+    // Support /admin, /admin/, /tariff, etc.
+    const path = window.location.pathname.toLowerCase().replace(/^\/+|\/+$/g, '').trim();
+    if (path === 'admin' || path.startsWith('admin')) return 'admin';
     if (path === 'tariff' || path === 'pricing') return 'tariff';
-    return 'home';
+    return path || 'home';
   };
 
   const [activePage, setActivePage] = useState(getInitialPage);
@@ -87,12 +90,27 @@ export function App() {
   const [selectedVehicleSlug, setSelectedVehicleSlug] = useState(null);
 
   useEffect(() => {
-    const onHashChange = () => {
-      const hash = window.location.hash.replace('#', '').trim();
-      if (hash) setActivePage(hash);
+    const onRouteSync = () => {
+      const hash = window.location.hash.replace('#', '').trim().toLowerCase();
+      if (hash) {
+        setActivePage(hash);
+        return;
+      }
+      const path = window.location.pathname.toLowerCase().replace(/^\/+|\/+$/g, '').trim();
+      if (path === 'admin' || path.startsWith('admin')) {
+        setActivePage('admin');
+      } else if (path === 'tariff' || path === 'pricing') {
+        setActivePage('tariff');
+      } else if (!path) {
+        setActivePage('home');
+      }
     };
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    window.addEventListener('hashchange', onRouteSync);
+    window.addEventListener('popstate', onRouteSync);
+    return () => {
+      window.removeEventListener('hashchange', onRouteSync);
+      window.removeEventListener('popstate', onRouteSync);
+    };
   }, []);
 
   const pageSEOKey = activePage === 'vehicle-detail' && selectedVehicle
