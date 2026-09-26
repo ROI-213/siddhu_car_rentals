@@ -43,6 +43,14 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
 
   useEffect(() => {
     fetchTariffsAndTerms();
+
+    const handleUpdate = () => fetchTariffsAndTerms();
+    window.addEventListener('scr_tariffs_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('scr_tariffs_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
   }, [activeCategory]);
 
   const fetchTariffsAndTerms = async () => {

@@ -44,8 +44,10 @@ export const useFleetData = () => {
 
     const handleFleetUpdate = () => fetchFleet();
     window.addEventListener('scr_fleet_updated', handleFleetUpdate);
+    window.addEventListener('storage', handleFleetUpdate);
     return () => {
       window.removeEventListener('scr_fleet_updated', handleFleetUpdate);
+      window.removeEventListener('storage', handleFleetUpdate);
     };
   }, [fetchFleet]);
 

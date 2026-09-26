@@ -62,8 +62,10 @@ export const useSiteContent = () => {
 
     const handleCustomUpdate = () => fetchContent();
     window.addEventListener('scr_site_content_updated', handleCustomUpdate);
+    window.addEventListener('storage', handleCustomUpdate);
     return () => {
       window.removeEventListener('scr_site_content_updated', handleCustomUpdate);
+      window.removeEventListener('storage', handleCustomUpdate);
     };
   }, [fetchContent]);
 

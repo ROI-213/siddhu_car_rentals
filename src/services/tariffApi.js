@@ -38,6 +38,11 @@ export const tariffApi = {
 
   // 3. Create Tariff (Admin)
   async createTariff(tariffData) {
+    const localRecord = tariffApi.createLocalTariff(tariffData);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('scr_tariffs_updated'));
+    }
+
     try {
       const res = await fetch(`${API_BASE}/tariffs`, {
         method: 'POST',
@@ -48,15 +53,23 @@ export const tariffApi = {
       if (!res.ok || !data.success) {
         throw new Error(data.errors ? data.errors.join(', ') : data.error || 'Failed to create tariff');
       }
-      return data.data;
+      if (data.data && data.data.id) {
+        tariffApi.updateLocalTariff(localRecord.id, data.data);
+      }
+      return data.data || localRecord;
     } catch (err) {
-      console.warn('API create failed, updating local fallback storage:', err);
-      return tariffApi.createLocalTariff(tariffData);
+      console.warn('API create failed, preserved in local fallback storage:', err);
+      return localRecord;
     }
   },
 
   // 4. Update Tariff (Admin)
   async updateTariff(id, tariffData) {
+    const localRecord = tariffApi.updateLocalTariff(id, tariffData);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('scr_tariffs_updated'));
+    }
+
     try {
       const res = await fetch(`${API_BASE}/tariffs/${id}`, {
         method: 'PUT',
@@ -67,15 +80,23 @@ export const tariffApi = {
       if (!res.ok || !data.success) {
         throw new Error(data.errors ? data.errors.join(', ') : data.error || 'Failed to update tariff');
       }
-      return data.data;
+      if (data.data) {
+        tariffApi.updateLocalTariff(id, data.data);
+      }
+      return data.data || localRecord;
     } catch (err) {
-      console.warn('API update failed, updating local fallback storage:', err);
-      return tariffApi.updateLocalTariff(id, tariffData);
+      console.warn('API update failed, preserved in local fallback storage:', err);
+      return localRecord;
     }
   },
 
   // 5. Delete Tariff (Admin)
   async deleteTariff(id) {
+    tariffApi.deleteLocalTariff(id);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('scr_tariffs_updated'));
+    }
+
     try {
       const res = await fetch(`${API_BASE}/tariffs/${id}`, {
         method: 'DELETE'
@@ -86,13 +107,25 @@ export const tariffApi = {
       }
       return true;
     } catch (err) {
-      console.warn('API delete failed, updating local fallback storage:', err);
-      return tariffApi.deleteLocalTariff(id);
+      console.warn('API delete failed, preserved in local fallback storage:', err);
+      return true;
     }
   },
 
   // 6. Batch Reorder
   async reorderTariffs(orderList) {
+    if (Array.isArray(orderList)) {
+      const list = tariffApi.getLocalTariffs({ all: true });
+      orderList.forEach(item => {
+        const t = list.find(x => x.id === item.id);
+        if (t) t.display_order = item.display_order;
+      });
+      localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('scr_tariffs_updated'));
+      }
+    }
+
     try {
       const res = await fetch(`${API_BASE}/tariffs-reorder`, {
         method: 'PUT',
@@ -101,7 +134,7 @@ export const tariffApi = {
       });
       return res.ok;
     } catch (err) {
-      console.warn('API reorder failed:', err);
+      console.warn('API reorder failed, preserved in local storage:', err);
       return true;
     }
   },
@@ -199,8 +232,18 @@ export const tariffApi = {
       const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
       cache[key] = data;
       localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
+      if (key === 'fleet') {
+        localStorage.setItem('scr_fleet_cache', JSON.stringify(data));
+      }
     } catch (e) {
       console.warn('LocalStorage save error:', e);
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('scr_site_content_updated', { detail: { key, data } }));
+      if (key === 'fleet') {
+        window.dispatchEvent(new CustomEvent('scr_fleet_updated', { detail: data }));
+      }
     }
 
     try {
@@ -209,14 +252,18 @@ export const tariffApi = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      const json = await res.json();
-      if (!res.ok || !json.success) throw new Error(json.error || 'Failed to save content to PostgreSQL');
-      
-      const savedData = json.data || data;
-      const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-      cache[key] = savedData;
-      localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
-      return savedData;
+      const json = await res.json().catch(() => null);
+      if (res.ok && json && json.success) {
+        const savedData = json.data || data;
+        const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
+        cache[key] = savedData;
+        localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
+        if (key === 'fleet') {
+          localStorage.setItem('scr_fleet_cache', JSON.stringify(savedData));
+        }
+        return savedData;
+      }
+      return data;
     } catch (err) {
       console.warn('API saveContent failed, preserved in local fallback cache:', err);
       return data;
@@ -245,8 +292,16 @@ export const tariffApi = {
     // 1. Immediately store in local cache
     try {
       localStorage.setItem('scr_fleet_cache', JSON.stringify(fleetList));
+      const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
+      cache['fleet'] = fleetList;
+      localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
     } catch (e) {
       console.warn('LocalStorage fleet save error:', e);
+    }
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('scr_fleet_updated', { detail: fleetList }));
+      window.dispatchEvent(new CustomEvent('scr_site_content_updated', { detail: { key: 'fleet', data: fleetList } }));
     }
 
     try {
