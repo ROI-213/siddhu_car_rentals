@@ -1,7 +1,7 @@
 const pg = require('pg');
 
 const pool = new pg.Pool({
-  connectionString: 'postgresql://siddh876:tInlqWg3BkGLd1Yg6qfd98cex@168.119.64.101:5432/siddh876',
+  connectionString: process.env.DATABASE_URL || 'postgresql://siddh876:tInlqWg3BkGLd1Yg6qfd98cex@127.0.0.1:5432/siddh876',
   ssl: false
 });
 

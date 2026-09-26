@@ -117,27 +117,47 @@ function saveLocalData(data) {
 let pool = null;
 let usePostgres = false;
 
-const DEFAULT_DATABASE_URL = 'postgresql://siddh876:tInlqWg3BkGLd1Yg6qfd98cex@168.119.64.101:5432/siddh876';
-
 export async function initDb() {
   if (pool && usePostgres) return;
 
-  const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL || DEFAULT_DATABASE_URL;
-  const useSsl = process.env.PGSSL === 'true';
+  const connectionString =
+    process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRESQL_URL;
+
+  const sslEnabled =
+    process.env.DB_SSL === 'true' ||
+    process.env.PGSSL === 'true' ||
+    (Boolean(connectionString) && connectionString.includes('sslmode=require'));
+
+  const poolConfig = connectionString
+    ? {
+        connectionString,
+        ssl: sslEnabled ? { rejectUnauthorized: false } : false,
+        max: parseInt(process.env.DB_POOL_MAX || '10', 10),
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000
+      }
+    : {
+        host: process.env.DB_HOST || process.env.PGHOST || '127.0.0.1',
+        port: parseInt(process.env.DB_PORT || process.env.PGPORT || '5432', 10),
+        database: process.env.DB_NAME || process.env.PGDATABASE || 'siddh876',
+        user: process.env.DB_USER || process.env.PGUSER || 'siddh876',
+        password: process.env.DB_PASSWORD || process.env.PGPASSWORD || 'tInlqWg3BkGLd1Yg6qfd98cex',
+        ssl: sslEnabled ? { rejectUnauthorized: false } : false,
+        max: parseInt(process.env.DB_POOL_MAX || '10', 10),
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000
+      };
 
   try {
-    const config = {
-      connectionString,
-      ssl: useSsl ? { rejectUnauthorized: false } : false,
-      connectionTimeoutMillis: 8000,
-      idleTimeoutMillis: 30000,
-      max: 10
-    };
+    pool = new Pool(poolConfig);
+    pool.on('error', (err) => {
+      console.error('Unexpected error on idle PostgreSQL client:', err);
+    });
 
-    pool = new Pool(config);
     // Test connection
     const client = await pool.connect();
-    console.log('✓ Successfully connected to PostgreSQL Database at 168.119.64.101');
+    const targetHost = poolConfig.host || (connectionString ? 'configured DATABASE_URL' : '127.0.0.1');
+    console.log(`✓ Successfully connected to PostgreSQL Database at ${targetHost}`);
     usePostgres = true;
 
     // Ensure site_content table exists
