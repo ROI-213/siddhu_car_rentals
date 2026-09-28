@@ -14,8 +14,10 @@ export const tariffApi = {
 
       const res = await fetch(`${API_BASE}/tariffs?${params.toString()}`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (!isJson) throw new Error('Non-JSON response from server');
       const data = await res.json();
-      return data.data || [];
+      return (data && Array.isArray(data.data) && data.data.length > 0) ? data.data : tariffApi.getLocalTariffs({ usage_type, search, all });
     } catch (err) {
       console.warn('API fetch failed, reading from local fallback storage:', err);
       return tariffApi.getLocalTariffs({ usage_type, search, all });
@@ -144,8 +146,10 @@ export const tariffApi = {
     try {
       const res = await fetch(`${API_BASE}/terms`);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (!isJson) throw new Error('Non-JSON response from server');
       const data = await res.json();
-      return data.data || [];
+      return (data && Array.isArray(data.data) && data.data.length > 0) ? data.data : DEFAULT_TERMS;
     } catch (err) {
       return DEFAULT_TERMS;
     }
@@ -201,6 +205,8 @@ export const tariffApi = {
       const url = key ? `${API_BASE}/content?key=${encodeURIComponent(key)}` : `${API_BASE}/content`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      if (!isJson) throw new Error('Non-JSON response from server');
       const json = await res.json();
 
       if (key) {

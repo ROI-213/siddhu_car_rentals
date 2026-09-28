@@ -48,7 +48,19 @@ export const pricingService = {
   },
 
   getLocalTariff(vehicleOrId) {
-    if (!vehicleOrId) return DEFAULT_DISPOSAL_TARIFFS[0] || null;
+    let tariffs = DEFAULT_DISPOSAL_TARIFFS;
+    try {
+      if (typeof window !== 'undefined') {
+        const cached = JSON.parse(localStorage.getItem('scr_tariffs_cache_v5') || 'null');
+        if (Array.isArray(cached) && cached.length > 0) {
+          tariffs = cached.filter(t => t.usage_type && t.usage_type.toLowerCase() === 'disposal');
+        }
+      }
+    } catch {
+      tariffs = DEFAULT_DISPOSAL_TARIFFS;
+    }
+
+    if (!vehicleOrId) return tariffs[0] || null;
 
     let vehicleObj = null;
     let vehicleId = '';
@@ -83,34 +95,46 @@ export const pricingService = {
 
     const variantName = this.getTariffVariantName(vehicleId);
     if (variantName) {
-      const match = DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant === variantName);
+      const match = tariffs.find(t => t.vehicle_variant === variantName);
       if (match) return match;
     }
     // Fallback search by ID or partial match
     const vLower = (vehicleId || '').toLowerCase();
-    if (vLower.includes('crysta')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('Crysta'));
-    if (vLower.includes('hycross')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('Hycross'));
-    if (vLower.includes('vellfi')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('Vellfi'));
-    if (vLower.includes('s-class') || vLower.includes('7-series') || vLower.includes('a8')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('latest model'));
-    if (vLower.includes('e-class') || vLower.includes('5-series') || vLower.includes('a6')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('Merc "E" Class'));
-    if (vLower.includes('q7')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant === 'AUDI Q7');
-    if (vLower.includes('fortuner') || vLower.includes('camry') || vLower.includes('accord')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('Camry'));
-    if (vLower.includes('innova') || vLower.includes('ertiga') || vLower.includes('carens')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('Innova,Ertiga'));
-    if (vLower.includes('dzire') || vLower.includes('etios') || vLower.includes('amaze')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes("D'zire"));
-    if (vLower.includes('urbania') && vLower.includes('16')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('16+1'));
-    if (vLower.includes('urbania')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('12+1'));
-    if (vLower.includes('commuter') || vLower.includes('hiace')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('Commuter'));
-    if (vLower.includes('traveller')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('Tempo Traveller'));
-    if (vLower.includes('21')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('21 Seater'));
-    if (vLower.includes('25')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('25 Seater'));
-    if (vLower.includes('32')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('32 Seater'));
-    if (vLower.includes('49')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('49 Seater'));
-    if (vLower.includes('45') || vLower.includes('bus')) return DEFAULT_DISPOSAL_TARIFFS.find(t => t.vehicle_variant.includes('45 Seater'));
-    return DEFAULT_DISPOSAL_TARIFFS[0] || null;
+    if (vLower.includes('crysta')) return tariffs.find(t => t.vehicle_variant.includes('Crysta')) || tariffs[0];
+    if (vLower.includes('hycross')) return tariffs.find(t => t.vehicle_variant.includes('Hycross')) || tariffs[0];
+    if (vLower.includes('vellfi')) return tariffs.find(t => t.vehicle_variant.includes('Vellfi')) || tariffs[0];
+    if (vLower.includes('s-class') || vLower.includes('7-series') || vLower.includes('a8')) return tariffs.find(t => t.vehicle_variant.includes('latest model')) || tariffs[0];
+    if (vLower.includes('e-class') || vLower.includes('5-series') || vLower.includes('a6')) return tariffs.find(t => t.vehicle_variant.includes('Merc "E" Class')) || tariffs[0];
+    if (vLower.includes('q7')) return tariffs.find(t => t.vehicle_variant === 'AUDI Q7') || tariffs[0];
+    if (vLower.includes('fortuner') || vLower.includes('camry') || vLower.includes('accord')) return tariffs.find(t => t.vehicle_variant.includes('Camry')) || tariffs[0];
+    if (vLower.includes('innova') || vLower.includes('ertiga') || vLower.includes('carens')) return tariffs.find(t => t.vehicle_variant.includes('Innova,Ertiga')) || tariffs[0];
+    if (vLower.includes('dzire') || vLower.includes('etios') || vLower.includes('amaze')) return tariffs.find(t => t.vehicle_variant.includes("D'zire")) || tariffs[0];
+    if (vLower.includes('urbania') && vLower.includes('16')) return tariffs.find(t => t.vehicle_variant.includes('16+1')) || tariffs[0];
+    if (vLower.includes('urbania')) return tariffs.find(t => t.vehicle_variant.includes('12+1')) || tariffs[0];
+    if (vLower.includes('commuter') || vLower.includes('hiace')) return tariffs.find(t => t.vehicle_variant.includes('Commuter')) || tariffs[0];
+    if (vLower.includes('traveller')) return tariffs.find(t => t.vehicle_variant.includes('Tempo Traveller')) || tariffs[0];
+    if (vLower.includes('21')) return tariffs.find(t => t.vehicle_variant.includes('21 Seater')) || tariffs[0];
+    if (vLower.includes('25')) return tariffs.find(t => t.vehicle_variant.includes('25 Seater')) || tariffs[0];
+    if (vLower.includes('32')) return tariffs.find(t => t.vehicle_variant.includes('32 Seater')) || tariffs[0];
+    if (vLower.includes('49')) return tariffs.find(t => t.vehicle_variant.includes('49 Seater')) || tariffs[0];
+    if (vLower.includes('45') || vLower.includes('bus')) return tariffs.find(t => t.vehicle_variant.includes('45 Seater')) || tariffs[0];
+    return tariffs[0] || null;
   },
 
   getOutstationTariff(vehicleOrId) {
-    if (!vehicleOrId) return DEFAULT_OUTSTATION_TARIFFS[0] || null;
+    let tariffs = DEFAULT_OUTSTATION_TARIFFS;
+    try {
+      if (typeof window !== 'undefined') {
+        const cached = JSON.parse(localStorage.getItem('scr_tariffs_cache_v5') || 'null');
+        if (Array.isArray(cached) && cached.length > 0) {
+          tariffs = cached.filter(t => t.usage_type && t.usage_type.toLowerCase() === 'outstation');
+        }
+      }
+    } catch {
+      tariffs = DEFAULT_OUTSTATION_TARIFFS;
+    }
+
+    if (!vehicleOrId) return tariffs[0] || null;
 
     let vehicleObj = null;
     let vehicleId = '';
@@ -143,30 +167,30 @@ export const pricingService = {
 
     const variantName = this.getTariffVariantName(vehicleId);
     if (variantName) {
-      const match = DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant === variantName);
+      const match = tariffs.find(t => t.vehicle_variant === variantName);
       if (match) return match;
     }
     // Fallback search by ID or partial match
     const vLower = (vehicleId || '').toLowerCase();
-    if (vLower.includes('crysta')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('Crysta'));
-    if (vLower.includes('hycross')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('Hycross'));
-    if (vLower.includes('vellfi')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('Vellfi'));
-    if (vLower.includes('s-class') || vLower.includes('7-series') || vLower.includes('a8')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('latest model'));
-    if (vLower.includes('e-class') || vLower.includes('5-series') || vLower.includes('a6')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('Merc "E" Class'));
-    if (vLower.includes('q7')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant === 'AUDI Q7');
-    if (vLower.includes('fortuner') || vLower.includes('camry') || vLower.includes('accord')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('Camry'));
-    if (vLower.includes('innova') || vLower.includes('ertiga') || vLower.includes('carens')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('Innova,Ertiga'));
-    if (vLower.includes('dzire') || vLower.includes('etios') || vLower.includes('amaze')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes("D'zire"));
-    if (vLower.includes('urbania') && vLower.includes('16')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('16+1'));
-    if (vLower.includes('urbania')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('12+1'));
-    if (vLower.includes('commuter') || vLower.includes('hiace')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('Commuter'));
-    if (vLower.includes('traveller')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('Tempo Traveller'));
-    if (vLower.includes('21')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('21 Seater'));
-    if (vLower.includes('25')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('25 Seater'));
-    if (vLower.includes('32')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('32 Seater'));
-    if (vLower.includes('49')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('49 Seater'));
-    if (vLower.includes('45') || vLower.includes('bus')) return DEFAULT_OUTSTATION_TARIFFS.find(t => t.vehicle_variant.includes('45 Seater'));
-    return DEFAULT_OUTSTATION_TARIFFS[0] || null;
+    if (vLower.includes('crysta')) return tariffs.find(t => t.vehicle_variant.includes('Crysta')) || tariffs[0];
+    if (vLower.includes('hycross')) return tariffs.find(t => t.vehicle_variant.includes('Hycross')) || tariffs[0];
+    if (vLower.includes('vellfi')) return tariffs.find(t => t.vehicle_variant.includes('Vellfi')) || tariffs[0];
+    if (vLower.includes('s-class') || vLower.includes('7-series') || vLower.includes('a8')) return tariffs.find(t => t.vehicle_variant.includes('latest model')) || tariffs[0];
+    if (vLower.includes('e-class') || vLower.includes('5-series') || vLower.includes('a6')) return tariffs.find(t => t.vehicle_variant.includes('Merc "E" Class')) || tariffs[0];
+    if (vLower.includes('q7')) return tariffs.find(t => t.vehicle_variant === 'AUDI Q7') || tariffs[0];
+    if (vLower.includes('fortuner') || vLower.includes('camry') || vLower.includes('accord')) return tariffs.find(t => t.vehicle_variant.includes('Camry')) || tariffs[0];
+    if (vLower.includes('innova') || vLower.includes('ertiga') || vLower.includes('carens')) return tariffs.find(t => t.vehicle_variant.includes('Innova,Ertiga')) || tariffs[0];
+    if (vLower.includes('dzire') || vLower.includes('etios') || vLower.includes('amaze')) return tariffs.find(t => t.vehicle_variant.includes("D'zire")) || tariffs[0];
+    if (vLower.includes('urbania') && vLower.includes('16')) return tariffs.find(t => t.vehicle_variant.includes('16+1')) || tariffs[0];
+    if (vLower.includes('urbania')) return tariffs.find(t => t.vehicle_variant.includes('12+1')) || tariffs[0];
+    if (vLower.includes('commuter') || vLower.includes('hiace')) return tariffs.find(t => t.vehicle_variant.includes('Commuter')) || tariffs[0];
+    if (vLower.includes('traveller')) return tariffs.find(t => t.vehicle_variant.includes('Tempo Traveller')) || tariffs[0];
+    if (vLower.includes('21')) return tariffs.find(t => t.vehicle_variant.includes('21 Seater')) || tariffs[0];
+    if (vLower.includes('25')) return tariffs.find(t => t.vehicle_variant.includes('25 Seater')) || tariffs[0];
+    if (vLower.includes('32')) return tariffs.find(t => t.vehicle_variant.includes('32 Seater')) || tariffs[0];
+    if (vLower.includes('49')) return tariffs.find(t => t.vehicle_variant.includes('49 Seater')) || tariffs[0];
+    if (vLower.includes('45') || vLower.includes('bus')) return tariffs.find(t => t.vehicle_variant.includes('45 Seater')) || tariffs[0];
+    return tariffs[0] || null;
   },
 
   getAirportTransferPrice(vehicleOrId) {
