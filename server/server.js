@@ -263,6 +263,34 @@ app.put('/api/content/:key', async (req, res) => {
   }
 });
 
+// 8c. Dedicated Fleet Endpoints
+app.get('/api/fleet', async (req, res) => {
+  try {
+    const data = await db.getContent('fleet');
+    res.json({ success: true, data: data || [] });
+  } catch (err) {
+    console.error('Error fetching fleet:', err);
+    res.status(500).json({ success: false, error: 'Failed to fetch fleet.' });
+  }
+});
+
+const handleSaveFleet = async (req, res) => {
+  try {
+    const fleetList = req.body;
+    if (!Array.isArray(fleetList)) {
+      return res.status(400).json({ success: false, error: 'Fleet must be an array of vehicles.' });
+    }
+    const saved = await db.setContent('fleet', fleetList);
+    res.json({ success: true, message: 'Fleet saved successfully.', data: saved });
+  } catch (err) {
+    console.error('Error saving fleet:', err);
+    res.status(500).json({ success: false, error: 'Failed to save fleet: ' + err.message });
+  }
+};
+
+app.put('/api/fleet', handleSaveFleet);
+app.post('/api/fleet', handleSaveFleet);
+
 // 9. POST /api/admin/login - Simple secure Admin authentication
 app.post('/api/admin/login', (req, res) => {
   const username = (req.body?.username || '').trim().toLowerCase();

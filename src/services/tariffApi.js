@@ -285,6 +285,24 @@ export const tariffApi = {
   // 12. Fetch Dynamic Fleet
   async getFleet() {
     try {
+      // 1. Try dedicated /api/fleet endpoint
+      try {
+        const res = await fetch(`${API_BASE}/fleet`);
+        if (res.ok) {
+          const isJson = res.headers.get('content-type')?.includes('application/json');
+          if (isJson) {
+            const json = await res.json();
+            if (json && Array.isArray(json.data) && json.data.length > 0) {
+              localStorage.setItem('scr_fleet_cache', JSON.stringify(json.data));
+              return json.data;
+            }
+          }
+        }
+      } catch (e) {
+        // continue to getContent fallback
+      }
+
+      // 2. Try getContent('fleet')
       const data = await this.getContent('fleet');
       if (Array.isArray(data) && data.length > 0) {
         localStorage.setItem('scr_fleet_cache', JSON.stringify(data));
