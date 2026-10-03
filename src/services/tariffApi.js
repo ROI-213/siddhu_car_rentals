@@ -178,7 +178,13 @@ export const tariffApi = {
     }
 
     // Direct credentials check for seamless login on static host or offline
-    if ((cleanUser === 'admin' || cleanUser === 'siddhu') && (cleanPass === 'siddhu@2026' || cleanPass === 'admin')) {
+    const validUsernames = [
+      'admin@siddhucartentals.com',
+      'admin@siddhucarrentals.com',
+      'admin',
+      'siddhu'
+    ];
+    if (validUsernames.includes(cleanUser) && (cleanPass === 'siddhu@2026' || cleanPass === 'admin')) {
       const authData = { success: true, token: 'local_token_' + Date.now(), user: { username: cleanUser, role: 'administrator' } };
       sessionStorage.setItem('scr_admin_auth', 'true');
       return authData;

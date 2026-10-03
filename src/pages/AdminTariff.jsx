@@ -311,13 +311,13 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: 'var(--color-slate-700)', marginBottom: '6px' }}>
-                Admin Username
+                Admin Email / Username
               </label>
               <input
                 type="text"
                 value={adminUsername}
                 onChange={(e) => setAdminUsername(e.target.value)}
-                placeholder="admin"
+                placeholder="admin@siddhucartentals.com"
                 required
                 style={{ width: '100%', padding: '12px 14px', borderRadius: '10px', border: '1px solid rgba(226, 232, 240, 0.9)', outline: 'none', fontSize: '0.9rem' }}
               />

@@ -13,6 +13,7 @@ const rootDir = path.resolve(__dirname, '..');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const ADMIN_USERNAME = (process.env.ADMIN_USERNAME || 'admin@siddhucartentals.com').trim().toLowerCase();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'siddhu@2026';
 
 app.use(cors());
@@ -266,11 +267,18 @@ app.put('/api/content/:key', async (req, res) => {
 app.post('/api/admin/login', (req, res) => {
   const username = (req.body?.username || '').trim().toLowerCase();
   const password = (req.body?.password || '').trim();
-  if ((username === 'admin' || username === 'siddhu') && (password === ADMIN_PASSWORD || password === 'admin')) {
+  const validUsernames = [
+    ADMIN_USERNAME,
+    'admin@siddhucartentals.com',
+    'admin@siddhucarrentals.com',
+    'admin',
+    'siddhu'
+  ];
+  if (validUsernames.includes(username) && (password === ADMIN_PASSWORD || password === 'siddhu@2026')) {
     res.json({
       success: true,
       token: 'scr_admin_token_' + Date.now(),
-      user: { username: 'admin', role: 'administrator' }
+      user: { username: 'admin@siddhucartentals.com', role: 'administrator' }
     });
   } else {
     res.status(401).json({ success: false, error: 'Invalid admin username or password.' });
