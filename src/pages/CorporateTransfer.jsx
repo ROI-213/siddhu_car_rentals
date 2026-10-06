@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Crown, Building2, ShieldCheck, Award, PhoneCall, MessageSquare, ChevronRight,
   CheckCircle2, Users, FileText, Calendar, MapPin, User, Mail, Download, Briefcase,
@@ -70,7 +70,22 @@ export const CorporateTransfer = () => {
     });
   };
 
-  const { content } = useSiteContent();
+  const { content, refreshContent } = useSiteContent();
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      if (typeof refreshContent === 'function') {
+        refreshContent();
+      }
+    };
+    window.addEventListener('scr_site_content_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('scr_site_content_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, [refreshContent]);
+
   const corporate = content?.corporate || DEFAULT_CORPORATE_CONTENT;
   const hero = corporate.hero || DEFAULT_CORPORATE_CONTENT.hero;
   const brochure = corporate.brochure || DEFAULT_CORPORATE_CONTENT.brochure;
@@ -608,6 +623,24 @@ export const CorporateTransfer = () => {
                     {vt.capacity}
                   </span>
                 </div>
+
+                {vt.image && (
+                  <div style={{
+                    marginBottom: '14px',
+                    height: '160px',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    background: '#0F172A',
+                    border: '1px solid rgba(197, 160, 89, 0.2)'
+                  }}>
+                    <img
+                      src={vt.image}
+                      alt={vt.tier}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      loading="lazy"
+                    />
+                  </div>
+                )}
 
                 <h3 style={{ fontFamily: 'var(--font-editorial)', fontSize: '1.25rem', color: '#0F172A', marginBottom: '6px' }}>
                   {vt.tier}

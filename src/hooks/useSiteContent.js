@@ -14,7 +14,16 @@ export const useSiteContent = () => {
         destinations: { ...DEFAULT_SITE_CONTENT.destinations, ...(cached.destinations || {}) },
         services: cached.services && Array.isArray(cached.services) ? cached.services : DEFAULT_SITE_CONTENT.services,
         story: cached.story && Array.isArray(cached.story) ? cached.story : DEFAULT_SITE_CONTENT.story,
-        corporate: { ...DEFAULT_SITE_CONTENT.corporate, ...(cached.corporate || {}) },
+        corporate: {
+          ...DEFAULT_SITE_CONTENT.corporate,
+          ...(cached.corporate || {}),
+          rateCard: Array.isArray(cached?.corporate?.rateCard) && cached.corporate.rateCard.length > 0
+            ? cached.corporate.rateCard
+            : DEFAULT_SITE_CONTENT.corporate.rateCard,
+          tiers: Array.isArray(cached?.corporate?.tiers) && cached.corporate.tiers.length > 0
+            ? cached.corporate.tiers
+            : DEFAULT_SITE_CONTENT.corporate.tiers
+        },
         outstation: { ...DEFAULT_SITE_CONTENT.outstation, ...(cached.outstation || {}) }
       };
     } catch {
@@ -42,7 +51,21 @@ export const useSiteContent = () => {
         },
         services: (all?.services && Array.isArray(all.services)) ? all.services : (cached.services && Array.isArray(cached.services)) ? cached.services : DEFAULT_SITE_CONTENT.services,
         story: (all?.story && Array.isArray(all.story)) ? all.story : (cached.story && Array.isArray(cached.story)) ? cached.story : DEFAULT_SITE_CONTENT.story,
-        corporate: { ...DEFAULT_SITE_CONTENT.corporate, ...(cached.corporate || {}), ...(all?.corporate || {}) },
+        corporate: {
+          ...DEFAULT_SITE_CONTENT.corporate,
+          ...(cached.corporate || {}),
+          ...(all?.corporate || {}),
+          rateCard: (Array.isArray(all?.corporate?.rateCard) && all.corporate.rateCard.length > 0)
+            ? all.corporate.rateCard
+            : (Array.isArray(cached?.corporate?.rateCard) && cached.corporate.rateCard.length > 0)
+              ? cached.corporate.rateCard
+              : DEFAULT_SITE_CONTENT.corporate.rateCard,
+          tiers: (Array.isArray(all?.corporate?.tiers) && all.corporate.tiers.length > 0)
+            ? all.corporate.tiers
+            : (Array.isArray(cached?.corporate?.tiers) && cached.corporate.tiers.length > 0)
+              ? cached.corporate.tiers
+              : DEFAULT_SITE_CONTENT.corporate.tiers
+        },
         outstation: { ...DEFAULT_SITE_CONTENT.outstation, ...(cached.outstation || {}), ...(all?.outstation || {}) }
       };
 
@@ -60,7 +83,22 @@ export const useSiteContent = () => {
   useEffect(() => {
     fetchContent();
 
-    const handleCustomUpdate = () => fetchContent();
+    const handleCustomUpdate = (e) => {
+      if (e?.detail?.key === 'corporate' && e.detail.data) {
+        const d = e.detail.data;
+        setContent(prev => ({
+          ...prev,
+          corporate: {
+            ...DEFAULT_SITE_CONTENT.corporate,
+            ...d,
+            rateCard: Array.isArray(d.rateCard) ? d.rateCard : prev.corporate.rateCard,
+            tiers: Array.isArray(d.tiers) ? d.tiers : prev.corporate.tiers
+          }
+        }));
+      }
+      fetchContent();
+    };
+
     window.addEventListener('scr_site_content_updated', handleCustomUpdate);
     window.addEventListener('storage', handleCustomUpdate);
     return () => {

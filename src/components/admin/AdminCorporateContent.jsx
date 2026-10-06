@@ -75,11 +75,16 @@ export const AdminCorporateContent = ({ showToast }) => {
     setSaving(true);
     try {
       const saved = await tariffApi.saveContent('corporate', toSave);
-      showToast('✓ Corporate Mobility CMS saved to PostgreSQL successfully!');
-      window.dispatchEvent(new Event('scr_site_content_updated'));
-      setCorpData(saved);
+      showToast('✓ Corporate Mobility CMS saved and published successfully!');
+      const finalData = saved || toSave;
+      setCorpData(finalData);
+      window.dispatchEvent(new CustomEvent('scr_site_content_updated', {
+        detail: { key: 'corporate', data: finalData }
+      }));
+      return finalData;
     } catch (err) {
       showToast('Error saving to database: ' + err.message, 'error');
+      return null;
     } finally {
       setSaving(false);
     }
@@ -111,7 +116,7 @@ export const AdminCorporateContent = ({ showToast }) => {
     setIsRateModalOpen(true);
   };
 
-  const handleSaveRateRow = (e) => {
+  const handleSaveRateRow = async (e) => {
     e.preventDefault();
     if (!editingRateRow.category.trim()) {
       alert('Vehicle category is required.');
@@ -124,14 +129,19 @@ export const AdminCorporateContent = ({ showToast }) => {
     } else {
       updated = [...corpData.rateCard, editingRateRow];
     }
-    setCorpData(prev => ({ ...prev, rateCard: updated }));
+    const nextData = { ...corpData, rateCard: updated };
+    setCorpData(nextData);
     setIsRateModalOpen(false);
     setEditingRateRow(null);
+    await handleSaveToPostgres(nextData);
   };
 
-  const handleDeleteRateRow = (id) => {
+  const handleDeleteRateRow = async (id) => {
     if (!window.confirm('Delete this corporate rate row?')) return;
-    setCorpData(prev => ({ ...prev, rateCard: prev.rateCard.filter(r => r.id !== id) }));
+    const updated = corpData.rateCard.filter(r => r.id !== id);
+    const nextData = { ...corpData, rateCard: updated };
+    setCorpData(nextData);
+    await handleSaveToPostgres(nextData);
   };
 
   // --- Pillar Handlers ---
@@ -162,24 +172,63 @@ export const AdminCorporateContent = ({ showToast }) => {
   };
 
   // --- Tier Matrix Handlers ---
+  const handleOpenAddTier = () => {
+    setEditingTier({
+      id: 'tier-' + Date.now(),
+      badge: 'Executive Fleet',
+      tier: '',
+      capacity: '4 Passengers • 3 Suitcases',
+      models: '',
+      bestFor: '',
+      features: ['Leather Seating', 'Chauffeur in Uniform', 'Mineral Water'],
+      featuresStr: 'Leather Seating, Chauffeur in Uniform, Mineral Water',
+      image: ''
+    });
+    setIsTierModalOpen(true);
+  };
+
   const handleOpenEditTier = (tier) => {
     setEditingTier({ ...tier, featuresStr: (tier.features || []).join(', ') });
     setIsTierModalOpen(true);
   };
 
-  const handleSaveTier = (e) => {
+  const handleSaveTier = async (e) => {
     e.preventDefault();
+    if (!editingTier.tier?.trim()) {
+      alert('Tier Title / Category Name is required.');
+      return;
+    }
     const feats = (editingTier.featuresStr || '')
       .split(',')
       .map(s => s.trim())
       .filter(Boolean);
 
-    const updated = corpData.tiers.map(t => 
-      t.id === editingTier.id ? { ...editingTier, features: feats } : t
-    );
-    setCorpData(prev => ({ ...prev, tiers: updated }));
+    const exists = corpData.tiers.some(t => t.id === editingTier.id);
+    const cleanTier = {
+      ...editingTier,
+      features: feats
+    };
+    delete cleanTier.featuresStr;
+
+    let updated;
+    if (exists) {
+      updated = corpData.tiers.map(t => t.id === editingTier.id ? cleanTier : t);
+    } else {
+      updated = [...corpData.tiers, cleanTier];
+    }
+    const nextData = { ...corpData, tiers: updated };
+    setCorpData(nextData);
     setIsTierModalOpen(false);
     setEditingTier(null);
+    await handleSaveToPostgres(nextData);
+  };
+
+  const handleDeleteTier = async (id) => {
+    if (!window.confirm('Delete this vehicle tier category?')) return;
+    const updated = corpData.tiers.filter(t => t.id !== id);
+    const nextData = { ...corpData, tiers: updated };
+    setCorpData(nextData);
+    await handleSaveToPostgres(nextData);
   };
 
   if (loading) {
@@ -507,42 +556,101 @@ export const AdminCorporateContent = ({ showToast }) => {
 
       {/* ── TAB 3: VEHICLE TIERS MATRIX ───────────────────────────────────── */}
       {activeTab === 'tiers' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
-          {corpData.tiers.map((tier, idx) => (
-            <div key={tier.id || idx} style={{ background: '#FFFFFF', borderRadius: '16px', padding: '22px', border: '1px solid rgba(226, 232, 240, 0.9)', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                <span style={{ fontSize: '0.7rem', fontWeight: '800', background: 'rgba(197,160,89,0.15)', color: '#8C6D2B', padding: '3px 10px', borderRadius: '999px', textTransform: 'uppercase' }}>
-                  {tier.badge}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleOpenEditTier(tier)}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: '#0284C7', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}
-                >
-                  <Edit3 size={14} />
-                  <span>Edit Tier</span>
-                </button>
-              </div>
-
-              <h4 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0F172A', margin: '0 0 4px 0' }}>{tier.tier}</h4>
-              <div style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: '600', marginBottom: '8px' }}>{tier.capacity}</div>
-              <div style={{ fontSize: '0.84rem', fontWeight: '700', color: 'var(--accent-gold-primary)', marginBottom: '10px' }}>{tier.models}</div>
-              <p style={{ fontSize: '0.82rem', color: '#475569', lineHeight: '1.5', flex: 1, marginBottom: '14px' }}>{tier.bestFor}</p>
-
-              <div style={{ padding: '10px 12px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-                <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '6px' }}>
-                  Amenities ({tier.features.length}):
-                </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                  {tier.features.map((f, fIdx) => (
-                    <span key={fIdx} style={{ fontSize: '0.72rem', background: '#FFFFFF', padding: '2px 8px', borderRadius: '4px', border: '1px solid #CBD5E1', color: '#334155' }}>
-                      ✓ {f}
-                    </span>
-                  ))}
-                </div>
-              </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{
+            background: '#FFFFFF',
+            borderRadius: '16px',
+            padding: '20px 24px',
+            border: '1px solid rgba(226, 232, 240, 0.9)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '12px'
+          }}>
+            <div>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0F172A', margin: 0 }}>
+                Corporate Vehicle Requirements & Fleet Tiers Matrix
+              </h3>
+              <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '2px 0 0 0' }}>
+                Displayed directly on the public Corporate page for enterprise procurement & travel desks.
+              </p>
             </div>
-          ))}
+            <button
+              type="button"
+              onClick={handleOpenAddTier}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '9px 18px',
+                borderRadius: '10px',
+                border: 'none',
+                background: '#C5A059',
+                color: '#0F172A',
+                fontSize: '0.84rem',
+                fontWeight: '700',
+                cursor: 'pointer'
+              }}
+            >
+              <Plus size={15} />
+              <span>Add Vehicle Tier</span>
+            </button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+            {corpData.tiers.map((tier, idx) => (
+              <div key={tier.id || idx} style={{ background: '#FFFFFF', borderRadius: '16px', padding: '22px', border: '1px solid rgba(226, 232, 240, 0.9)', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '0.7rem', fontWeight: '800', background: 'rgba(197,160,89,0.15)', color: '#8C6D2B', padding: '3px 10px', borderRadius: '999px', textTransform: 'uppercase' }}>
+                    {tier.badge}
+                  </span>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditTier(tier)}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: '#0284C7', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}
+                    >
+                      <Edit3 size={14} />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteTier(tier.id)}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'none', border: 'none', color: '#EF4444', fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer' }}
+                    >
+                      <Trash2 size={14} />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                </div>
+
+                {tier.image && (
+                  <div style={{ marginBottom: '12px', height: '140px', borderRadius: '10px', overflow: 'hidden', background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+                    <img src={tier.image} alt={tier.tier} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
+
+                <h4 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0F172A', margin: '0 0 4px 0' }}>{tier.tier}</h4>
+                <div style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: '600', marginBottom: '8px' }}>{tier.capacity}</div>
+                <div style={{ fontSize: '0.84rem', fontWeight: '700', color: 'var(--accent-gold-primary)', marginBottom: '10px' }}>{tier.models}</div>
+                <p style={{ fontSize: '0.82rem', color: '#475569', lineHeight: '1.5', flex: 1, marginBottom: '14px' }}>{tier.bestFor}</p>
+
+                <div style={{ padding: '10px 12px', background: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: '800', color: '#94A3B8', textTransform: 'uppercase', marginBottom: '6px' }}>
+                    Amenities ({(tier.features || []).length}):
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {(tier.features || []).map((f, fIdx) => (
+                      <span key={fIdx} style={{ fontSize: '0.72rem', background: '#FFFFFF', padding: '2px 8px', borderRadius: '4px', border: '1px solid #CBD5E1', color: '#334155' }}>
+                        ✓ {f}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -788,9 +896,10 @@ export const AdminCorporateContent = ({ showToast }) => {
                 </button>
                 <button
                   type="submit"
-                  style={{ padding: '9px 20px', borderRadius: '8px', border: 'none', background: '#C5A059', color: '#0F172A', fontWeight: '800', cursor: 'pointer' }}
+                  disabled={saving}
+                  style={{ padding: '9px 20px', borderRadius: '8px', border: 'none', background: '#C5A059', color: '#0F172A', fontWeight: '800', cursor: saving ? 'wait' : 'pointer' }}
                 >
-                  Apply Changes
+                  {saving ? 'Saving...' : 'Save & Publish Rate Row'}
                 </button>
               </div>
             </form>
@@ -819,19 +928,34 @@ export const AdminCorporateContent = ({ showToast }) => {
             boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
           }}>
             <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', marginBottom: '16px' }}>
-              Edit Tier: {editingTier.tier}
+              {editingTier.tier ? `Edit Tier: ${editingTier.tier}` : 'Add New Corporate Vehicle Tier'}
             </h3>
 
             <form onSubmit={handleSaveTier} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                  Tier Title / Category Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Tier 1: Chairman & Executive Fleet"
+                  value={editingTier.tier || ''}
+                  onChange={(e) => setEditingTier(prev => ({ ...prev, tier: e.target.value }))}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: '700' }}
+                />
+              </div>
+
               <div>
                 <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
                   Badge Text
                 </label>
                 <input
                   type="text"
-                  value={editingTier.badge}
+                  value={editingTier.badge || ''}
                   onChange={(e) => setEditingTier(prev => ({ ...prev, badge: e.target.value }))}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                  placeholder="e.g. Executive Fleet or Ultra Luxury"
                 />
               </div>
 
@@ -841,9 +965,10 @@ export const AdminCorporateContent = ({ showToast }) => {
                 </label>
                 <input
                   type="text"
-                  value={editingTier.models}
+                  value={editingTier.models || ''}
                   onChange={(e) => setEditingTier(prev => ({ ...prev, models: e.target.value }))}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                  placeholder="e.g. Mercedes-Benz S-Class, BMW 7 Series"
                 />
               </div>
 
@@ -853,9 +978,10 @@ export const AdminCorporateContent = ({ showToast }) => {
                 </label>
                 <input
                   type="text"
-                  value={editingTier.capacity}
+                  value={editingTier.capacity || ''}
                   onChange={(e) => setEditingTier(prev => ({ ...prev, capacity: e.target.value }))}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                  placeholder="e.g. 3 Passengers • 2 Suitcases"
                 />
               </div>
 
@@ -865,9 +991,10 @@ export const AdminCorporateContent = ({ showToast }) => {
                 </label>
                 <textarea
                   rows={2}
-                  value={editingTier.bestFor}
+                  value={editingTier.bestFor || ''}
                   onChange={(e) => setEditingTier(prev => ({ ...prev, bestFor: e.target.value }))}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                  placeholder="e.g. Board of directors, visiting global executives, CXO airport delegations."
                 />
               </div>
 
@@ -877,7 +1004,7 @@ export const AdminCorporateContent = ({ showToast }) => {
                 </label>
                 <input
                   type="text"
-                  value={editingTier.featuresStr}
+                  value={editingTier.featuresStr || ''}
                   onChange={(e) => setEditingTier(prev => ({ ...prev, featuresStr: e.target.value }))}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
                   placeholder="e.g. Nappa Leather, Privacy Glass, Laptop Charging"
@@ -904,9 +1031,10 @@ export const AdminCorporateContent = ({ showToast }) => {
                 </button>
                 <button
                   type="submit"
-                  style={{ padding: '9px 20px', borderRadius: '8px', border: 'none', background: '#C5A059', color: '#0F172A', fontWeight: '800', cursor: 'pointer' }}
+                  disabled={saving}
+                  style={{ padding: '9px 20px', borderRadius: '8px', border: 'none', background: '#C5A059', color: '#0F172A', fontWeight: '800', cursor: saving ? 'wait' : 'pointer' }}
                 >
-                  Apply
+                  {saving ? 'Saving...' : 'Save & Publish Tier'}
                 </button>
               </div>
             </form>
