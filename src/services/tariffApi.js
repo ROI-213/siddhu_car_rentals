@@ -6,6 +6,15 @@ const API_BASE = '/api';
 export const tariffApi = {
   // 1. Fetch Tariffs
   async getTariffs({ usage_type = null, search = '', all = false } = {}) {
+    const deletedIds = new Set(JSON.parse(localStorage.getItem('scr_deleted_tariffs') || '[]'));
+    const cachedList = JSON.parse(localStorage.getItem('scr_tariffs_cache_v5') || 'null') || [];
+    const customMap = new Map();
+    for (const item of cachedList) {
+      if (item && item.id && (item._is_custom || item._updated_at)) {
+        customMap.set(String(item.id), item);
+      }
+    }
+
     try {
       const params = new URLSearchParams();
       if (usage_type) params.append('usage_type', usage_type);
@@ -17,18 +26,58 @@ export const tariffApi = {
       const isJson = res.headers.get('content-type')?.includes('application/json');
       if (!isJson) throw new Error('Non-JSON response from server');
       const data = await res.json();
-      if (data && Array.isArray(data.data) && data.data.length > 0) {
-        // Sync with local cache
+      if (data && Array.isArray(data.data)) {
+        // 1. Filter out deleted tariffs
+        const serverRows = data.data.filter(d => !deletedIds.has(String(d.id)));
+
+        // 2. Merge server rows with locally edited tariffs
+        const mergedServerRows = serverRows.map(serverItem => {
+          const localItem = customMap.get(String(serverItem.id));
+          if (!localItem) return serverItem;
+
+          // Compare timestamps: if server has newer updated_at from DB, prefer server
+          const serverTime = serverItem.updated_at ? new Date(serverItem.updated_at).getTime() : 0;
+          const localTime = localItem._updated_at ? Number(localItem._updated_at) : 0;
+
+          if (serverTime > localTime) {
+            return serverItem;
+          }
+          // Local user edit is newer or server is reset seed -> preserve user's edit
+          return { ...serverItem, ...localItem };
+        });
+
+        // 3. Keep any custom-created tariffs that were not returned by server
+        const serverIds = new Set(mergedServerRows.map(s => String(s.id)));
+        const customAdded = cachedList.filter(c => 
+          c && c._is_custom && !serverIds.has(String(c.id)) && !deletedIds.has(String(c.id))
+        );
+
+        const finalCombined = [...mergedServerRows, ...customAdded];
+
+        // 4. Update the full cache in localStorage
         try {
-          const cached = JSON.parse(localStorage.getItem('scr_tariffs_cache_v5') || '[]');
-          const fetchedIds = new Set(data.data.map(d => String(d.id)));
-          const preserved = Array.isArray(cached) ? cached.filter(c => !fetchedIds.has(String(c.id))) : [];
-          const updated = [...data.data, ...preserved].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
-          localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(updated));
+          if (all) {
+            localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(finalCombined));
+          } else if (usage_type) {
+            const otherUsageTypes = cachedList.filter(c => 
+              c && c.usage_type && c.usage_type.toLowerCase() !== usage_type.toLowerCase() && !deletedIds.has(String(c.id))
+            );
+            const fullList = [...finalCombined, ...otherUsageTypes].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+            localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(fullList));
+          }
         } catch (e) {
           console.warn('Cache sync error:', e);
         }
-        return data.data;
+
+        // Apply filters for return value
+        let result = finalCombined;
+        if (!all) result = result.filter(t => t.is_active);
+        if (usage_type) result = result.filter(t => t.usage_type && t.usage_type.toLowerCase() === usage_type.toLowerCase());
+        if (search) {
+          const q = search.toLowerCase();
+          result = result.filter(t => (t.vehicle_variant && t.vehicle_variant.toLowerCase().includes(q)) || (t.service_type && t.service_type.toLowerCase().includes(q)));
+        }
+        return result.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
       }
       return tariffApi.getLocalTariffs({ usage_type, search, all });
     } catch (err) {
@@ -116,6 +165,16 @@ export const tariffApi = {
   // 5. Delete Tariff (Admin)
   async deleteTariff(id) {
     tariffApi.deleteLocalTariff(id);
+    try {
+      const deleted = JSON.parse(localStorage.getItem('scr_deleted_tariffs') || '[]');
+      if (!deleted.includes(String(id))) {
+        deleted.push(String(id));
+        localStorage.setItem('scr_deleted_tariffs', JSON.stringify(deleted));
+      }
+    } catch (e) {
+      console.warn('Error recording deleted tariff id:', e);
+    }
+
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'delete', id } }));
     }
@@ -233,6 +292,8 @@ export const tariffApi = {
   // 10. Fetch Dynamic Site Content (Hero, Contact, Testimonials, Destinations, etc.)
   async getContent(key = null) {
     const localCache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
+    const localTimestamps = JSON.parse(localStorage.getItem('scr_content_timestamps') || '{}');
+
     try {
       const url = key ? `${API_BASE}/content?key=${encodeURIComponent(key)}` : `${API_BASE}/content`;
       const res = await fetch(url);
@@ -242,16 +303,32 @@ export const tariffApi = {
       const json = await res.json();
 
       if (key) {
-        if (json.data !== null && json.data !== undefined) {
-          localCache[key] = json.data;
+        const serverData = json.data;
+        if (serverData !== null && serverData !== undefined) {
+          const localTime = localTimestamps[key] || (localCache[key]?._updated_at ? new Date(localCache[key]._updated_at).getTime() : 0);
+          const serverTime = serverData?._updated_at ? new Date(serverData._updated_at).getTime() : 0;
+
+          // If local has newer edits than server, preserve local!
+          if (localTime > serverTime && localCache[key]) {
+            return localCache[key];
+          }
+
+          localCache[key] = serverData;
           localStorage.setItem('scr_site_content_cache', JSON.stringify(localCache));
-          return json.data;
+          return serverData;
         }
-        // Fall back to local cache if database record is empty
         return localCache[key] || null;
       } else {
         if (json.data && typeof json.data === 'object' && Object.keys(json.data).length > 0) {
-          const merged = { ...localCache, ...json.data };
+          const merged = { ...localCache };
+          for (const [k, sData] of Object.entries(json.data)) {
+            const localTime = localTimestamps[k] || (localCache[k]?._updated_at ? new Date(localCache[k]._updated_at).getTime() : 0);
+            const serverTime = sData?._updated_at ? new Date(sData._updated_at).getTime() : 0;
+
+            if (serverTime >= localTime || !localCache[k]) {
+              merged[k] = sData;
+            }
+          }
           localStorage.setItem('scr_site_content_cache', JSON.stringify(merged));
           return merged;
         }
@@ -265,22 +342,33 @@ export const tariffApi = {
 
   // 11. Save Dynamic Site Content (Admin)
   async saveContent(key, data) {
+    const now = Date.now();
+    const payload = (typeof data === 'object' && data !== null && !Array.isArray(data))
+      ? { ...data, _updated_at: new Date(now).toISOString() }
+      : data;
+
     // 1. Immediately update local fallback cache so UI is instantaneous and resilient
     try {
       const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-      cache[key] = data;
+      cache[key] = payload;
       localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
+
+      const timestamps = JSON.parse(localStorage.getItem('scr_content_timestamps') || '{}');
+      timestamps[key] = now;
+      localStorage.setItem('scr_content_timestamps', JSON.stringify(timestamps));
+
       if (key === 'fleet') {
-        localStorage.setItem('scr_fleet_cache', JSON.stringify(data));
+        localStorage.setItem('scr_fleet_cache', JSON.stringify(payload));
+        localStorage.setItem('scr_fleet_updated_at', String(now));
       }
     } catch (e) {
       console.warn('LocalStorage save error:', e);
     }
 
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('scr_site_content_updated', { detail: { key, data } }));
+      window.dispatchEvent(new CustomEvent('scr_site_content_updated', { detail: { key, data: payload } }));
       if (key === 'fleet') {
-        window.dispatchEvent(new CustomEvent('scr_fleet_updated', { detail: data }));
+        window.dispatchEvent(new CustomEvent('scr_fleet_updated', { detail: payload }));
       }
     }
 
@@ -288,11 +376,11 @@ export const tariffApi = {
       const res = await fetch(`${API_BASE}/content/${encodeURIComponent(key)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(payload)
       });
       const json = await res.json().catch(() => null);
       if (res.ok && json && json.success) {
-        const savedData = json.data || data;
+        const savedData = json.data || payload;
         const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
         cache[key] = savedData;
         localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
@@ -301,16 +389,22 @@ export const tariffApi = {
         }
         return savedData;
       }
-      return data;
+      return payload;
     } catch (err) {
       console.warn('API saveContent failed, preserved in local fallback cache:', err);
-      return data;
+      return payload;
     }
   },
 
   // 12. Fetch Dynamic Fleet
   async getFleet() {
+    const cached = JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
+    const localUpdatedAt = Number(localStorage.getItem('scr_fleet_updated_at') || '0');
+
     try {
+      let serverData = null;
+      let serverUpdatedAt = 0;
+
       // 1. Try dedicated /api/fleet endpoint
       try {
         const res = await fetch(`${API_BASE}/fleet`);
@@ -319,8 +413,8 @@ export const tariffApi = {
           if (isJson) {
             const json = await res.json();
             if (json && Array.isArray(json.data) && json.data.length > 0) {
-              localStorage.setItem('scr_fleet_cache', JSON.stringify(json.data));
-              return json.data;
+              serverData = json.data;
+              if (json._updated_at) serverUpdatedAt = new Date(json._updated_at).getTime();
             }
           }
         }
@@ -328,29 +422,46 @@ export const tariffApi = {
         // continue to getContent fallback
       }
 
-      // 2. Try getContent('fleet')
-      const data = await this.getContent('fleet');
-      if (Array.isArray(data) && data.length > 0) {
-        localStorage.setItem('scr_fleet_cache', JSON.stringify(data));
-        return data;
+      // 2. Try getContent('fleet') if /api/fleet had no data
+      if (!serverData) {
+        const contentFleet = await this.getContent('fleet');
+        if (Array.isArray(contentFleet) && contentFleet.length > 0) {
+          serverData = contentFleet;
+          if (contentFleet._updated_at) serverUpdatedAt = new Date(contentFleet._updated_at).getTime();
+        }
       }
-      const local = JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
-      return (Array.isArray(local) && local.length > 0) ? local : null;
+
+      // If server returned fleet, check if local edits are newer
+      if (Array.isArray(serverData) && serverData.length > 0) {
+        if (localUpdatedAt > serverUpdatedAt && Array.isArray(cached) && cached.length > 0) {
+          // Local changes are newer than server, keep local!
+          return cached;
+        }
+        localStorage.setItem('scr_fleet_cache', JSON.stringify(serverData));
+        return serverData;
+      }
+
+      return (Array.isArray(cached) && cached.length > 0) ? cached : null;
     } catch (err) {
       console.warn('getFleet error, reading local cache:', err);
-      const local = JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
-      return (Array.isArray(local) && local.length > 0) ? local : null;
+      return (Array.isArray(cached) && cached.length > 0) ? cached : null;
     }
   },
 
   // 13. Save Dynamic Fleet
   async saveFleet(fleetList) {
+    const now = Date.now();
+    localStorage.setItem('scr_fleet_updated_at', String(now));
+
     // 1. Immediately store in local cache
     try {
       localStorage.setItem('scr_fleet_cache', JSON.stringify(fleetList));
       const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
       cache['fleet'] = fleetList;
       localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
+      const timestamps = JSON.parse(localStorage.getItem('scr_content_timestamps') || '{}');
+      timestamps['fleet'] = now;
+      localStorage.setItem('scr_content_timestamps', JSON.stringify(timestamps));
     } catch (e) {
       console.warn('LocalStorage fleet save error:', e);
     }
@@ -411,9 +522,27 @@ export const tariffApi = {
   createLocalTariff(item) {
     const list = tariffApi.getLocalTariffs({ all: true });
     const newId = Math.max(...list.map(x => x.id), 0) + 1;
-    const record = { ...item, id: newId, display_order: item.display_order || list.length + 1, is_active: item.is_active !== false };
+    const now = Date.now();
+    const record = { 
+      ...item, 
+      id: newId, 
+      display_order: item.display_order || list.length + 1, 
+      is_active: item.is_active !== false,
+      _is_custom: true,
+      _updated_at: now
+    };
     list.push(record);
     localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
+    try {
+      const customIds = JSON.parse(localStorage.getItem('scr_custom_tariffs') || '[]');
+      if (!customIds.includes(newId)) {
+        customIds.push(newId);
+        localStorage.setItem('scr_custom_tariffs', JSON.stringify(customIds));
+      }
+      const deletedIds = JSON.parse(localStorage.getItem('scr_deleted_tariffs') || '[]');
+      const filtered = deletedIds.filter(id => String(id) !== String(newId));
+      localStorage.setItem('scr_deleted_tariffs', JSON.stringify(filtered));
+    } catch (e) {}
     return record;
   },
 
@@ -422,23 +551,31 @@ export const tariffApi = {
     const idStr = String(id);
     const idNum = parseInt(id, 10);
     const idx = list.findIndex(x => String(x.id) === idStr || (!isNaN(idNum) && x.id === idNum));
+    const now = Date.now();
+    const updatedRecord = {
+      ...(idx !== -1 ? list[idx] : {}),
+      ...item,
+      id: idx !== -1 ? list[idx].id : (isNaN(idNum) ? id : idNum),
+      _is_custom: true,
+      _updated_at: now
+    };
     if (idx === -1) {
-      const newRecord = { ...item, id: isNaN(idNum) ? id : idNum };
-      list.push(newRecord);
-      try {
-        localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
-      } catch (e) {
-        console.warn('Cache write error:', e);
-      }
-      return newRecord;
+      list.push(updatedRecord);
+    } else {
+      list[idx] = updatedRecord;
     }
-    list[idx] = { ...list[idx], ...item };
     try {
       localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
+      const customIds = JSON.parse(localStorage.getItem('scr_custom_tariffs') || '[]');
+      const targetId = updatedRecord.id;
+      if (!customIds.includes(targetId)) {
+        customIds.push(targetId);
+        localStorage.setItem('scr_custom_tariffs', JSON.stringify(customIds));
+      }
     } catch (e) {
       console.warn('Cache write error:', e);
     }
-    return list[idx];
+    return updatedRecord;
   },
 
   deleteLocalTariff(id) {
@@ -448,6 +585,14 @@ export const tariffApi = {
     list = list.filter(x => String(x.id) !== idStr && (isNaN(idNum) || x.id !== idNum));
     try {
       localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
+      const deleted = JSON.parse(localStorage.getItem('scr_deleted_tariffs') || '[]');
+      if (!deleted.includes(idStr)) {
+        deleted.push(idStr);
+        localStorage.setItem('scr_deleted_tariffs', JSON.stringify(deleted));
+      }
+      const customIds = JSON.parse(localStorage.getItem('scr_custom_tariffs') || '[]');
+      const filteredCustom = customIds.filter(x => String(x) !== idStr);
+      localStorage.setItem('scr_custom_tariffs', JSON.stringify(filteredCustom));
     } catch (e) {
       console.warn('Cache write error:', e);
     }

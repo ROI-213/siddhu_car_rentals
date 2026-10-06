@@ -122,13 +122,24 @@ export async function initDb() {
   if (isAttempted && (pool || usePostgres)) return;
   isAttempted = true;
 
+  const isVercelEnv = Boolean(process.env.VERCEL);
   const connectionString =
     process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRESQL_URL;
+
+  const hasRemoteDb = Boolean(connectionString) || (process.env.DB_HOST && process.env.DB_HOST !== '127.0.0.1' && process.env.DB_HOST !== 'localhost');
+
+  // Skip 127.0.0.1 connection attempts immediately in Vercel serverless environment
+  if (isVercelEnv && !hasRemoteDb) {
+    console.log('✓ Vercel serverless environment active without remote DATABASE_URL; running resilient local storage mode.');
+    usePostgres = false;
+    return;
+  }
 
   const sslEnabled =
     process.env.DB_SSL === 'true' ||
     process.env.PGSSL === 'true' ||
-    (Boolean(connectionString) && connectionString.includes('sslmode=require'));
+    (Boolean(connectionString) && !connectionString.includes('sslmode=disable')) ||
+    isVercelEnv;
 
   const poolConfig = connectionString
     ? {
@@ -136,7 +147,7 @@ export async function initDb() {
         ssl: sslEnabled ? { rejectUnauthorized: false } : false,
         max: parseInt(process.env.DB_POOL_MAX || '10', 10),
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 3000
+        connectionTimeoutMillis: 2500
       }
     : {
         host: process.env.DB_HOST || process.env.PGHOST || '127.0.0.1',
@@ -147,7 +158,7 @@ export async function initDb() {
         ssl: sslEnabled ? { rejectUnauthorized: false } : false,
         max: parseInt(process.env.DB_POOL_MAX || '10', 10),
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 3000
+        connectionTimeoutMillis: 2500
       };
 
   try {
@@ -504,9 +515,13 @@ export const db = {
   async getContent(key) {
     if (usePostgres) {
       try {
-        const res = await pool.query('SELECT content_data FROM site_content WHERE section_key = $1', [key]);
+        const res = await pool.query('SELECT content_data, updated_at FROM site_content WHERE section_key = $1', [key]);
         if (res.rows.length > 0 && res.rows[0]?.content_data !== undefined && res.rows[0]?.content_data !== null) {
-          return res.rows[0].content_data;
+          const val = res.rows[0].content_data;
+          if (typeof val === 'object' && val !== null && !val._updated_at && res.rows[0].updated_at) {
+            val._updated_at = new Date(res.rows[0].updated_at).toISOString();
+          }
+          return val;
         }
       } catch (err) {
         console.warn(`PostgreSQL getContent(${key}) error, reading local content:`, err.message);
@@ -517,6 +532,10 @@ export const db = {
   },
 
   async setContent(key, contentData) {
+    const payload = (typeof contentData === 'object' && contentData !== null)
+      ? { ...contentData, _updated_at: contentData._updated_at || new Date().toISOString() }
+      : contentData;
+
     if (usePostgres) {
       try {
         const query = `
@@ -524,28 +543,36 @@ export const db = {
           VALUES ($1, $2, CURRENT_TIMESTAMP)
           ON CONFLICT (section_key)
           DO UPDATE SET content_data = $2, updated_at = CURRENT_TIMESTAMP
-          RETURNING content_data;
+          RETURNING content_data, updated_at;
         `;
-        const res = await pool.query(query, [key, JSON.stringify(contentData)]);
-        return res.rows[0]?.content_data || contentData;
+        const res = await pool.query(query, [key, JSON.stringify(payload)]);
+        const ret = res.rows[0]?.content_data || payload;
+        if (typeof ret === 'object' && ret !== null && res.rows[0]?.updated_at) {
+          ret._updated_at = new Date(res.rows[0].updated_at).toISOString();
+        }
+        return ret;
       } catch (err) {
         console.warn(`PostgreSQL setContent(${key}) error, writing local content:`, err.message);
       }
     }
     const data = loadLocalData();
     if (!data.site_content) data.site_content = {};
-    data.site_content[key] = contentData;
+    data.site_content[key] = payload;
     saveLocalData(data);
-    return contentData;
+    return payload;
   },
 
   async getAllContent() {
     if (usePostgres) {
       try {
-        const res = await pool.query('SELECT section_key, content_data FROM site_content');
+        const res = await pool.query('SELECT section_key, content_data, updated_at FROM site_content');
         const map = {};
         for (const row of res.rows) {
-          map[row.section_key] = row.content_data;
+          const val = row.content_data;
+          if (typeof val === 'object' && val !== null && !val._updated_at && row.updated_at) {
+            val._updated_at = new Date(row.updated_at).toISOString();
+          }
+          map[row.section_key] = val;
         }
         return map;
       } catch (err) {
