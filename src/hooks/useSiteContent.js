@@ -84,17 +84,41 @@ export const useSiteContent = () => {
     fetchContent();
 
     const handleCustomUpdate = (e) => {
-      if (e?.detail?.key === 'corporate' && e.detail.data) {
-        const d = e.detail.data;
-        setContent(prev => ({
-          ...prev,
-          corporate: {
-            ...DEFAULT_SITE_CONTENT.corporate,
-            ...d,
-            rateCard: Array.isArray(d.rateCard) ? d.rateCard : prev.corporate.rateCard,
-            tiers: Array.isArray(d.tiers) ? d.tiers : prev.corporate.tiers
+      const key = e?.detail?.key;
+      const data = e?.detail?.data;
+      if (key && data) {
+        setContent(prev => {
+          if (key === 'corporate') {
+            return {
+              ...prev,
+              corporate: {
+                ...DEFAULT_SITE_CONTENT.corporate,
+                ...data,
+                rateCard: Array.isArray(data.rateCard) ? data.rateCard : (prev.corporate?.rateCard || DEFAULT_SITE_CONTENT.corporate.rateCard),
+                tiers: Array.isArray(data.tiers) ? data.tiers : (prev.corporate?.tiers || DEFAULT_SITE_CONTENT.corporate.tiers)
+              }
+            };
           }
-        }));
+          if (key === 'outstation') {
+            return {
+              ...prev,
+              outstation: {
+                ...DEFAULT_SITE_CONTENT.outstation,
+                ...data,
+                tariffHeader: data.tariffHeader || prev.outstation?.tariffHeader,
+                destinations: Array.isArray(data.destinations) ? data.destinations : prev.outstation?.destinations,
+                options: Array.isArray(data.options) ? data.options : prev.outstation?.options,
+                terms: data.terms || prev.outstation?.terms
+              }
+            };
+          }
+          return {
+            ...prev,
+            [key]: typeof data === 'object' && !Array.isArray(data)
+              ? { ...(prev[key] || {}), ...data }
+              : data
+          };
+        });
       }
       fetchContent();
     };

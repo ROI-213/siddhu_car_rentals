@@ -194,6 +194,7 @@ export const tariffApi = {
         const data = await res.json().catch(() => null);
         if (data && data.success) {
           sessionStorage.setItem('scr_admin_auth', 'true');
+          localStorage.setItem('scr_admin_auth', 'true');
           return data;
         }
       }
@@ -211,6 +212,7 @@ export const tariffApi = {
     if (validUsernames.includes(cleanUser) && (cleanPass === 'siddhu@2026' || cleanPass === 'admin')) {
       const authData = { success: true, token: 'local_token_' + Date.now(), user: { username: cleanUser, role: 'administrator' } };
       sessionStorage.setItem('scr_admin_auth', 'true');
+      localStorage.setItem('scr_admin_auth', 'true');
       return authData;
     }
 

@@ -252,7 +252,7 @@ app.get('/api/content', async (req, res) => {
   }
 });
 
-app.put('/api/content/:key', async (req, res) => {
+const handleSaveContent = async (req, res) => {
   try {
     const { key } = req.params;
     const contentData = req.body;
@@ -262,7 +262,10 @@ app.put('/api/content/:key', async (req, res) => {
     console.error(`Error saving content for "${req.params.key}":`, err);
     res.status(500).json({ success: false, error: 'Failed to save content to database.' });
   }
-});
+};
+
+app.put('/api/content/:key', handleSaveContent);
+app.post('/api/content/:key', handleSaveContent);
 
 // 8c. Dedicated Fleet Endpoints
 app.get('/api/fleet', async (req, res) => {

@@ -36,7 +36,7 @@ import { AdminReviewsContact } from '../components/admin/AdminReviewsContact';
 export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
   // Auth state
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return Boolean(sessionStorage.getItem('scr_admin_auth'));
+    return Boolean(sessionStorage.getItem('scr_admin_auth') || localStorage.getItem('scr_admin_auth'));
   });
   const [adminUsername, setAdminUsername] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
@@ -113,6 +113,7 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
     try {
       const res = await tariffApi.loginAdmin(adminUsername, adminPassword);
       sessionStorage.setItem('scr_admin_auth', 'true');
+      localStorage.setItem('scr_admin_auth', 'true');
       setIsAuthenticated(true);
       showToast('Welcome to Siddhu Car Rentals Admin Portal');
     } catch (err) {
@@ -122,6 +123,7 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
 
   const handleLogout = () => {
     sessionStorage.removeItem('scr_admin_auth');
+    localStorage.removeItem('scr_admin_auth');
     setIsAuthenticated(false);
   };
 

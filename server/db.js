@@ -239,50 +239,56 @@ export const db = {
 
   async getTariffs({ usage_type, location, search, includeInactive = false } = {}) {
     if (usePostgres) {
-      let query = 'SELECT * FROM tariffs WHERE 1=1';
-      const params = [];
+      try {
+        let query = 'SELECT * FROM tariffs WHERE 1=1';
+        const params = [];
 
-      if (!includeInactive) {
-        query += ' AND is_active = TRUE';
-      }
-      if (usage_type) {
-        params.push(usage_type.toLowerCase());
-        query += ` AND LOWER(usage_type) = $${params.length}`;
-      }
-      if (location) {
-        params.push(`%${location}%`);
-        query += ` AND location ILIKE $${params.length}`;
-      }
-      if (search) {
-        params.push(`%${search}%`);
-        query += ` AND (vehicle_variant ILIKE $${params.length} OR service_type ILIKE $${params.length})`;
-      }
+        if (!includeInactive) {
+          query += ' AND is_active = TRUE';
+        }
+        if (usage_type) {
+          params.push(usage_type.toLowerCase());
+          query += ` AND LOWER(usage_type) = $${params.length}`;
+        }
+        if (location) {
+          params.push(`%${location}%`);
+          query += ` AND location ILIKE $${params.length}`;
+        }
+        if (search) {
+          params.push(`%${search}%`);
+          query += ` AND (vehicle_variant ILIKE $${params.length} OR service_type ILIKE $${params.length})`;
+        }
 
-      query += ' ORDER BY display_order ASC, id ASC';
-      const result = await pool.query(query, params);
-      return result.rows;
-    } else {
-      const data = loadLocalData();
-      let list = data.tariffs;
-      if (!includeInactive) list = list.filter(t => t.is_active);
-      if (usage_type) list = list.filter(t => t.usage_type.toLowerCase() === usage_type.toLowerCase());
-      if (location) list = list.filter(t => t.location.toLowerCase().includes(location.toLowerCase()));
-      if (search) {
-        const q = search.toLowerCase();
-        list = list.filter(t => t.vehicle_variant.toLowerCase().includes(q) || (t.service_type && t.service_type.toLowerCase().includes(q)));
+        query += ' ORDER BY display_order ASC, id ASC';
+        const result = await pool.query(query, params);
+        return result.rows;
+      } catch (err) {
+        console.warn('PostgreSQL getTariffs error, seamlessly reading local storage:', err.message);
       }
-      return list.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
     }
+    const data = loadLocalData();
+    let list = data.tariffs;
+    if (!includeInactive) list = list.filter(t => t.is_active);
+    if (usage_type) list = list.filter(t => t.usage_type.toLowerCase() === usage_type.toLowerCase());
+    if (location) list = list.filter(t => t.location.toLowerCase().includes(location.toLowerCase()));
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter(t => t.vehicle_variant.toLowerCase().includes(q) || (t.service_type && t.service_type.toLowerCase().includes(q)));
+    }
+    return list.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
   },
 
   async getTariffById(id) {
     if (usePostgres) {
-      const result = await pool.query('SELECT * FROM tariffs WHERE id = $1', [id]);
-      return result.rows[0] || null;
-    } else {
-      const data = loadLocalData();
-      return data.tariffs.find(t => t.id === parseInt(id, 10)) || null;
+      try {
+        const result = await pool.query('SELECT * FROM tariffs WHERE id = $1', [id]);
+        return result.rows[0] || null;
+      } catch (err) {
+        console.warn('PostgreSQL getTariffById error, seamlessly reading local storage:', err.message);
+      }
     }
+    const data = loadLocalData();
+    return data.tariffs.find(t => t.id === parseInt(id, 10)) || null;
   },
 
   async createTariff(tariffData) {
@@ -306,215 +312,245 @@ export const db = {
     } = tariffData;
 
     if (usePostgres) {
-      const query = `
-        INSERT INTO tariffs (
+      try {
+        const query = `
+          INSERT INTO tariffs (
+            location, usage_type, vehicle_variant, service_type,
+            four_hours_forty_km, eight_hours_eighty_km, extra_hour, extra_km,
+            night_local_bata, airport_transfer,
+            minimum_km_per_day, rate_per_km, outstation_extra_km, driver_allowance,
+            display_order, is_active, updated_at
+          ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, CURRENT_TIMESTAMP
+          ) RETURNING *;
+        `;
+        const safeDisplayOrder = (display_order === null || display_order === undefined || isNaN(display_order)) ? 0 : parseInt(display_order, 10);
+        const values = [
           location, usage_type, vehicle_variant, service_type,
           four_hours_forty_km, eight_hours_eighty_km, extra_hour, extra_km,
           night_local_bata, airport_transfer,
           minimum_km_per_day, rate_per_km, outstation_extra_km, driver_allowance,
-          display_order, is_active, updated_at
-        ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, CURRENT_TIMESTAMP
-        ) RETURNING *;
-      `;
-      const safeDisplayOrder = (display_order === null || display_order === undefined || isNaN(display_order)) ? 0 : parseInt(display_order, 10);
-      const values = [
-        location, usage_type, vehicle_variant, service_type,
-        four_hours_forty_km, eight_hours_eighty_km, extra_hour, extra_km,
-        night_local_bata, airport_transfer,
-        minimum_km_per_day, rate_per_km, outstation_extra_km, driver_allowance,
-        safeDisplayOrder, is_active
-      ];
-      const result = await pool.query(query, values);
-      return result.rows[0];
-    } else {
-      const data = loadLocalData();
-      const newId = data.nextId || (Math.max(...data.tariffs.map(t => t.id), 0) + 1);
-      const newRecord = {
-        id: newId,
-        location,
-        usage_type,
-        vehicle_variant,
-        service_type,
-        four_hours_forty_km,
-        eight_hours_eighty_km,
-        extra_hour,
-        extra_km,
-        night_local_bata,
-        airport_transfer,
-        minimum_km_per_day,
-        rate_per_km,
-        outstation_extra_km,
-        driver_allowance,
-        display_order: display_order || data.tariffs.length + 1,
-        is_active,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      data.tariffs.push(newRecord);
-      data.nextId = newId + 1;
-      saveLocalData(data);
-      return newRecord;
+          safeDisplayOrder, is_active
+        ];
+        const result = await pool.query(query, values);
+        return result.rows[0];
+      } catch (err) {
+        console.warn('PostgreSQL createTariff error, seamlessly falling back to local storage:', err.message);
+      }
     }
+    const data = loadLocalData();
+    const newId = data.nextId || (Math.max(...data.tariffs.map(t => t.id), 0) + 1);
+    const newRecord = {
+      id: newId,
+      location,
+      usage_type,
+      vehicle_variant,
+      service_type,
+      four_hours_forty_km,
+      eight_hours_eighty_km,
+      extra_hour,
+      extra_km,
+      night_local_bata,
+      airport_transfer,
+      minimum_km_per_day,
+      rate_per_km,
+      outstation_extra_km,
+      driver_allowance,
+      display_order: display_order || data.tariffs.length + 1,
+      is_active,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    data.tariffs.push(newRecord);
+    data.nextId = newId + 1;
+    saveLocalData(data);
+    return newRecord;
   },
 
   async updateTariff(id, tariffData) {
     const numId = parseInt(id, 10);
     if (usePostgres) {
-      const fields = [];
-      const values = [];
-      let idx = 1;
+      try {
+        const fields = [];
+        const values = [];
+        let idx = 1;
 
-      for (const [key, value] of Object.entries(tariffData)) {
-        if (key === 'id' || key === 'created_at') continue;
-        fields.push(`${key} = $${idx}`);
-        values.push(value);
-        idx++;
-      }
+        for (const [key, value] of Object.entries(tariffData)) {
+          if (key === 'id' || key === 'created_at') continue;
+          fields.push(`${key} = $${idx}`);
+          values.push(value);
+          idx++;
+        }
 
-      fields.push(`updated_at = CURRENT_TIMESTAMP`);
-      values.push(isNaN(numId) ? id : numId);
+        fields.push(`updated_at = CURRENT_TIMESTAMP`);
+        values.push(isNaN(numId) ? id : numId);
 
-      const query = `UPDATE tariffs SET ${fields.join(', ')} WHERE id = $${idx} RETURNING *;`;
-      let result = await pool.query(query, values);
-      if (result.rows.length === 0 && tariffData.vehicle_variant) {
-        // Fallback: match by vehicle_variant and usage_type if ID differed
-        const fallbackQuery = `UPDATE tariffs SET ${fields.join(', ')} WHERE LOWER(vehicle_variant) = LOWER($${idx}) AND LOWER(usage_type) = LOWER($${idx + 1}) RETURNING *;`;
-        const fallbackValues = [...values.slice(0, -1), tariffData.vehicle_variant, tariffData.usage_type || 'outstation'];
-        result = await pool.query(fallbackQuery, fallbackValues);
+        const query = `UPDATE tariffs SET ${fields.join(', ')} WHERE id = $${idx} RETURNING *;`;
+        let result = await pool.query(query, values);
+        if (result.rows.length === 0 && tariffData.vehicle_variant) {
+          // Fallback: match by vehicle_variant and usage_type if ID differed
+          const fallbackQuery = `UPDATE tariffs SET ${fields.join(', ')} WHERE LOWER(vehicle_variant) = LOWER($${idx}) AND LOWER(usage_type) = LOWER($${idx + 1}) RETURNING *;`;
+          const fallbackValues = [...values.slice(0, -1), tariffData.vehicle_variant, tariffData.usage_type || 'outstation'];
+          result = await pool.query(fallbackQuery, fallbackValues);
+        }
+        if (result.rows[0]) return result.rows[0];
+      } catch (err) {
+        console.warn('PostgreSQL updateTariff error, seamlessly updating local storage:', err.message);
       }
-      return result.rows[0] || null;
-    } else {
-      const data = loadLocalData();
-      let index = data.tariffs.findIndex(t => t.id === numId || String(t.id) === String(id));
-      if (index === -1 && tariffData.vehicle_variant) {
-        index = data.tariffs.findIndex(t => t.vehicle_variant.toLowerCase() === tariffData.vehicle_variant.toLowerCase() && t.usage_type.toLowerCase() === (tariffData.usage_type || '').toLowerCase());
-      }
-      if (index === -1) {
-        const newRecord = { ...tariffData, id: isNaN(numId) ? data.tariffs.length + 1 : numId, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
-        data.tariffs.push(newRecord);
-        saveLocalData(data);
-        return newRecord;
-      }
-      data.tariffs[index] = {
-        ...data.tariffs[index],
-        ...tariffData,
-        updated_at: new Date().toISOString()
-      };
-      saveLocalData(data);
-      return data.tariffs[index];
     }
+    const data = loadLocalData();
+    let index = data.tariffs.findIndex(t => t.id === numId || String(t.id) === String(id));
+    if (index === -1 && tariffData.vehicle_variant) {
+      index = data.tariffs.findIndex(t => t.vehicle_variant.toLowerCase() === tariffData.vehicle_variant.toLowerCase() && t.usage_type.toLowerCase() === (tariffData.usage_type || '').toLowerCase());
+    }
+    if (index === -1) {
+      const newRecord = { ...tariffData, id: isNaN(numId) ? data.tariffs.length + 1 : numId, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+      data.tariffs.push(newRecord);
+      saveLocalData(data);
+      return newRecord;
+    }
+    data.tariffs[index] = {
+      ...data.tariffs[index],
+      ...tariffData,
+      updated_at: new Date().toISOString()
+    };
+    saveLocalData(data);
+    return data.tariffs[index];
   },
 
   async deleteTariff(id) {
     if (usePostgres) {
-      const result = await pool.query('DELETE FROM tariffs WHERE id = $1 RETURNING *;', [id]);
-      return result.rowCount > 0;
-    } else {
-      const data = loadLocalData();
-      const initialLen = data.tariffs.length;
-      data.tariffs = data.tariffs.filter(t => t.id !== parseInt(id, 10));
-      saveLocalData(data);
-      return data.tariffs.length < initialLen;
+      try {
+        const result = await pool.query('DELETE FROM tariffs WHERE id = $1 RETURNING *;', [id]);
+        return result.rowCount > 0;
+      } catch (err) {
+        console.warn('PostgreSQL deleteTariff error, seamlessly deleting from local storage:', err.message);
+      }
     }
+    const data = loadLocalData();
+    const initialLen = data.tariffs.length;
+    data.tariffs = data.tariffs.filter(t => t.id !== parseInt(id, 10));
+    saveLocalData(data);
+    return data.tariffs.length < initialLen;
   },
 
   async reorderTariffs(orderList) {
     // orderList is array of { id, display_order }
     if (usePostgres) {
-      const client = await pool.connect();
       try {
-        await client.query('BEGIN');
-        for (const item of orderList) {
-          await client.query('UPDATE tariffs SET display_order = $1 WHERE id = $2', [item.display_order, item.id]);
+        const client = await pool.connect();
+        try {
+          await client.query('BEGIN');
+          for (const item of orderList) {
+            await client.query('UPDATE tariffs SET display_order = $1 WHERE id = $2', [item.display_order, item.id]);
+          }
+          await client.query('COMMIT');
+          return true;
+        } catch (err) {
+          await client.query('ROLLBACK');
+          throw err;
+        } finally {
+          client.release();
         }
-        await client.query('COMMIT');
-        return true;
       } catch (err) {
-        await client.query('ROLLBACK');
-        throw err;
-      } finally {
-        client.release();
+        console.warn('PostgreSQL reorderTariffs error, seamlessly updating local storage:', err.message);
       }
-    } else {
-      const data = loadLocalData();
-      for (const item of orderList) {
-        const t = data.tariffs.find(x => x.id === parseInt(item.id, 10));
-        if (t) t.display_order = item.display_order;
-      }
-      saveLocalData(data);
-      return true;
     }
+    const data = loadLocalData();
+    for (const item of orderList) {
+      const t = data.tariffs.find(x => x.id === parseInt(item.id, 10));
+      if (t) t.display_order = item.display_order;
+    }
+    saveLocalData(data);
+    return true;
   },
 
   async getTerms() {
     if (usePostgres) {
-      const result = await pool.query('SELECT * FROM terms_conditions WHERE is_active = TRUE ORDER BY display_order ASC');
-      return result.rows;
-    } else {
-      const data = loadLocalData();
-      return (data.terms || DEFAULT_TERMS).filter(t => t.is_active).sort((a, b) => a.display_order - b.display_order);
+      try {
+        const result = await pool.query('SELECT * FROM terms_conditions WHERE is_active = TRUE ORDER BY display_order ASC');
+        return result.rows;
+      } catch (err) {
+        console.warn('PostgreSQL getTerms error, reading local terms:', err.message);
+      }
     }
+    const data = loadLocalData();
+    return (data.terms || DEFAULT_TERMS).filter(t => t.is_active).sort((a, b) => a.display_order - b.display_order);
   },
 
   async resetSeed() {
     if (usePostgres) {
-      const seedSqlPath = path.join(rootDir, 'database', 'seed.sql');
-      const seedSql = fs.readFileSync(seedSqlPath, 'utf8');
-      await pool.query(seedSql);
-      return true;
-    } else {
-      const defaultData = {
-        tariffs: [...DEFAULT_DISPOSAL_TARIFFS, ...DEFAULT_OUTSTATION_TARIFFS],
-        terms: DEFAULT_TERMS,
-        nextId: 41
-      };
-      saveLocalData(defaultData);
-      return true;
+      try {
+        const seedSqlPath = path.join(rootDir, 'database', 'seed.sql');
+        if (fs.existsSync(seedSqlPath)) {
+          const seedSql = fs.readFileSync(seedSqlPath, 'utf8');
+          await pool.query(seedSql);
+          return true;
+        }
+      } catch (err) {
+        console.warn('PostgreSQL resetSeed error, resetting local storage:', err.message);
+      }
     }
+    const defaultData = {
+      tariffs: [...DEFAULT_DISPOSAL_TARIFFS, ...DEFAULT_OUTSTATION_TARIFFS],
+      terms: DEFAULT_TERMS,
+      nextId: 41,
+      site_content: {}
+    };
+    saveLocalData(defaultData);
+    return true;
   },
 
   async getContent(key) {
     if (usePostgres) {
-      const res = await pool.query('SELECT content_data FROM site_content WHERE section_key = $1', [key]);
-      return res.rows[0]?.content_data || null;
-    } else {
-      const data = loadLocalData();
-      return (data.site_content && data.site_content[key]) || null;
+      try {
+        const res = await pool.query('SELECT content_data FROM site_content WHERE section_key = $1', [key]);
+        return res.rows[0]?.content_data || null;
+      } catch (err) {
+        console.warn(`PostgreSQL getContent(${key}) error, reading local content:`, err.message);
+      }
     }
+    const data = loadLocalData();
+    return (data.site_content && data.site_content[key]) || null;
   },
 
   async setContent(key, contentData) {
     if (usePostgres) {
-      const query = `
-        INSERT INTO site_content (section_key, content_data, updated_at)
-        VALUES ($1, $2, CURRENT_TIMESTAMP)
-        ON CONFLICT (section_key)
-        DO UPDATE SET content_data = $2, updated_at = CURRENT_TIMESTAMP
-        RETURNING content_data;
-      `;
-      const res = await pool.query(query, [key, JSON.stringify(contentData)]);
-      return res.rows[0]?.content_data || contentData;
-    } else {
-      const data = loadLocalData();
-      if (!data.site_content) data.site_content = {};
-      data.site_content[key] = contentData;
-      saveLocalData(data);
-      return contentData;
+      try {
+        const query = `
+          INSERT INTO site_content (section_key, content_data, updated_at)
+          VALUES ($1, $2, CURRENT_TIMESTAMP)
+          ON CONFLICT (section_key)
+          DO UPDATE SET content_data = $2, updated_at = CURRENT_TIMESTAMP
+          RETURNING content_data;
+        `;
+        const res = await pool.query(query, [key, JSON.stringify(contentData)]);
+        return res.rows[0]?.content_data || contentData;
+      } catch (err) {
+        console.warn(`PostgreSQL setContent(${key}) error, writing local content:`, err.message);
+      }
     }
+    const data = loadLocalData();
+    if (!data.site_content) data.site_content = {};
+    data.site_content[key] = contentData;
+    saveLocalData(data);
+    return contentData;
   },
 
   async getAllContent() {
     if (usePostgres) {
-      const res = await pool.query('SELECT section_key, content_data FROM site_content');
-      const map = {};
-      for (const row of res.rows) {
-        map[row.section_key] = row.content_data;
+      try {
+        const res = await pool.query('SELECT section_key, content_data FROM site_content');
+        const map = {};
+        for (const row of res.rows) {
+          map[row.section_key] = row.content_data;
+        }
+        return map;
+      } catch (err) {
+        console.warn('PostgreSQL getAllContent error, reading local content:', err.message);
       }
-      return map;
-    } else {
-      const data = loadLocalData();
-      return data.site_content || {};
     }
+    const data = loadLocalData();
+    return data.site_content || {};
   }
 };
