@@ -4,6 +4,8 @@ import { PageHero } from '../components/common/PageHero';
 import { GlassCard } from '../components/common/GlassCard';
 import { SectionHeader } from '../components/common/SectionHeader';
 import { Badge } from '../components/common/Badge';
+import { useSiteContent } from '../hooks/useSiteContent';
+import { DEFAULT_ABOUT_CONTENT } from '../data/defaultSiteContent';
 
 // Fleet car images strictly excluding tempo travellers and buses
 const ABOUT_CAR_SLIDES = [
@@ -305,19 +307,66 @@ const AboutFleetSlider = () => {
 };
 
 export const About = ({ onReserveClick }) => {
+  const { content } = useSiteContent();
+  const about = content?.about || DEFAULT_ABOUT_CONTENT;
+  const hero = about.hero || DEFAULT_ABOUT_CONTENT.hero;
+  const founder = about.founder || DEFAULT_ABOUT_CONTENT.founder;
+  const stats = Array.isArray(about.stats) && about.stats.length > 0 ? about.stats : DEFAULT_ABOUT_CONTENT.stats;
+
   return (
     <div style={{ overflowX: 'hidden' }}>
       
       {/* 1. HERO SECTION */}
       <PageHero
-        badge="25+ Years of Dedicated Service"
+        badge={hero.badge || "25+ Years of Dedicated Service"}
         badgeIcon={Crown}
-        title="Pioneering Executive Mobility & Chauffeur"
-        titleHighlight="Standards in Bengaluru"
-        description="Founded over two decades ago to bridge the gap between ordinary taxi rentals and international C-suite corporate transportation across Karnataka and South India."
+        title={hero.title || "Pioneering Executive Mobility & Chauffeur"}
+        titleHighlight={hero.titleHighlight || "Standards in Bengaluru"}
+        description={hero.description || "Founded over two decades ago to bridge the gap between ordinary taxi rentals and international C-suite corporate transportation across Karnataka and South India."}
         breadcrumbs={['About Us']}
-        image="/images/hero_luxury_sedan.jpg"
+        image={hero.image || "/images/hero_luxury_sedan.jpg"}
       />
+
+      {/* 2. DYNAMIC TRUST STATS COUNTER BAR */}
+      <section style={{ 
+        background: '#0B111E', 
+        borderTop: '1px solid rgba(197, 160, 89, 0.35)', 
+        borderBottom: '1px solid rgba(197, 160, 89, 0.35)', 
+        padding: '38px 0' 
+      }}>
+        <div className="container">
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', 
+            gap: '24px', 
+            textAlign: 'center' 
+          }}>
+            {stats.map((stat, idx) => (
+              <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={{ 
+                  fontSize: 'clamp(2rem, 2.8vw, 2.6rem)', 
+                  fontWeight: '900', 
+                  color: 'var(--accent-gold-primary)', 
+                  letterSpacing: '-0.02em', 
+                  lineHeight: 1.1 
+                }}>
+                  {stat.label}
+                </span>
+                <span style={{ 
+                  fontSize: '0.86rem', 
+                  color: '#CBD5E1', 
+                  marginTop: '8px', 
+                  fontWeight: '500', 
+                  maxWidth: '220px',
+                  lineHeight: '1.4'
+                }}>
+                  {stat.desc}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* 3. THE MAN BEHIND THE WHEEL - S.M. PATIL (BALANCED 50/50 EDITORIAL LAYOUT) */}
       <section className="section-padding" style={{ position: 'relative', background: '#FFFFFF' }}>
@@ -341,8 +390,8 @@ export const About = ({ onReserveClick }) => {
 
               <div className="founder-photo-frame">
                 <img
-                  src="/images/sm_patil_founder.jpg"
-                  alt="S.M. Patil - The Man Behind The Wheel"
+                  src={founder.founderImage || "/images/sm_patil_founder.jpg"}
+                  alt={`${founder.founderName || "S.M. Patil"} - The Man Behind The Wheel`}
                   className="founder-photo-img"
                 />
 
@@ -365,10 +414,10 @@ export const About = ({ onReserveClick }) => {
                 }}>
                   <div>
                     <div style={{ color: '#FFFFFF', fontSize: '1.1rem', fontWeight: '800' }}>
-                      S.M. Patil
+                      {founder.founderName || 'S.M. Patil'}
                     </div>
                     <div style={{ color: 'var(--accent-gold-primary)', fontSize: '0.8rem', fontWeight: '600' }}>
-                      Founder & Managing Director
+                      {founder.founderRole || 'Founder & Managing Director'}
                     </div>
                   </div>
                   <div style={{
@@ -381,7 +430,7 @@ export const About = ({ onReserveClick }) => {
                     fontWeight: '700',
                     whiteSpace: 'nowrap'
                   }}>
-                    25+ Yrs Legacy
+                    {founder.founderLegacy || '25+ Yrs Legacy'}
                   </div>
                 </div>
               </div>
@@ -391,7 +440,7 @@ export const About = ({ onReserveClick }) => {
             <div className="founder-content-column">
               <div>
                 <Badge variant="gold" icon={Crown} style={{ marginBottom: '16px' }}>
-                  Founder & Visionary
+                  {founder.badge || 'Founder & Visionary'}
                 </Badge>
 
                 <h2 style={{
@@ -403,7 +452,7 @@ export const About = ({ onReserveClick }) => {
                   marginBottom: '10px',
                   textTransform: 'uppercase'
                 }}>
-                  THE MAN BEHIND <span style={{ color: 'var(--accent-gold-primary)' }}>THE WHEEL</span>
+                  {founder.titlePrefix || 'THE MAN BEHIND'} <span style={{ color: 'var(--accent-gold-primary)' }}>{founder.titleHighlight || 'THE WHEEL'}</span>
                 </h2>
 
                 <div style={{
@@ -415,40 +464,48 @@ export const About = ({ onReserveClick }) => {
                 }} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', color: '#4A4A4A', fontSize: '1rem', lineHeight: '1.75' }}>
-                  <p style={{ margin: 0 }}>
-                    Every great transportation business starts the same way, with one person willing to show up, on time, no matter what. For <strong>Siddhu Car Rentals</strong>, that person was <strong>S.M. Patil</strong>.
-                  </p>
-
-                  <p style={{ margin: 0 }}>
-                    Over two decades ago, S.M. Patil started this journey with nothing but a single car and an unshakeable belief: &ldquo;If you take care of people the way you'd want to be taken care of, the rest follows&rdquo;. There was no fleet, no office, no brand name yet, just one man, one car, and a simple promise that every ride would be on time, every single time.
-                  </p>
-
-                  <p style={{ margin: 0 }}>
-                    That promise became the foundation of everything Siddhu Car Rentals is today. Over the years, one car grew into a full fleet — from dependable sedans to premium Mercedes-Benz, BMW, and Audi vehicles. But the values behind the wheel never changed. Punctuality wasn't a policy. It was personal.
-                  </p>
-
-                  <div style={{
-                    margin: '6px 0',
-                    padding: '18px 22px',
-                    background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.12) 0%, rgba(250, 247, 242, 0.95) 100%)',
-                    borderLeft: '4px solid var(--accent-gold-primary)',
-                    borderRadius: '0 14px 14px 0',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
-                  }}>
-                    <p style={{
-                      fontSize: '1.05rem',
-                      fontStyle: 'italic',
-                      fontWeight: '600',
-                      color: '#1E293B',
-                      lineHeight: '1.65',
-                      margin: 0
-                    }}>
-                      &ldquo;People don't remember the car. They remember how you made them feel. That's what I learned in twenty five years behind this business and it's what I still tell every driver who works with us&rdquo;.
+                  {founder.storyP1 && (
+                    <p style={{ margin: 0 }}>
+                      {founder.storyP1}
                     </p>
-                  </div>
+                  )}
+
+                  {founder.storyP2 && (
+                    <p style={{ margin: 0 }}>
+                      {founder.storyP2}
+                    </p>
+                  )}
+
+                  {founder.storyP3 && (
+                    <p style={{ margin: 0 }}>
+                      {founder.storyP3}
+                    </p>
+                  )}
+
+                  {founder.quote && (
+                    <div style={{
+                      margin: '6px 0',
+                      padding: '18px 22px',
+                      background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.12) 0%, rgba(250, 247, 242, 0.95) 100%)',
+                      borderLeft: '4px solid var(--accent-gold-primary)',
+                      borderRadius: '0 14px 14px 0',
+                      boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
+                    }}>
+                      <p style={{
+                        fontSize: '1.05rem',
+                        fontStyle: 'italic',
+                        fontWeight: '600',
+                        color: '#1E293B',
+                        lineHeight: '1.65',
+                        margin: 0
+                      }}>
+                        &ldquo;{founder.quote}&rdquo;
+                      </p>
+                    </div>
+                  )}
 
                   <p style={{ margin: 0 }}>
-                    What sets Siddhu Car Rentals apart, even now, is something you won't find written into any company handbook: S.M. Patil still personally knows most of his regular clients by name. Not because a system tells him to, but because that's simply who he is. To him, a client isn't a booking number. They're someone he's built trust with, ride after ride, year after year.
+                    What sets Siddhu Car Rentals apart, even now, is something you won't find written into any company handbook: {founder.founderName || 'S.M. Patil'} still personally knows most of his regular clients by name. Not because a system tells him to, but because that's simply who he is. To him, a client isn't a booking number. They're someone he's built trust with, ride after ride, year after year.
                   </p>
 
                   <p style={{ margin: 0 }}>

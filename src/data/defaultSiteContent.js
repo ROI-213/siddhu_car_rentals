@@ -530,6 +530,36 @@ export const DEFAULT_OUTSTATION_CONTENT = {
   }
 };
 
+export const DEFAULT_ABOUT_CONTENT = {
+  hero: {
+    badge: "25+ Years of Dedicated Service",
+    title: "Pioneering Executive Mobility & Chauffeur",
+    titleHighlight: "Standards in Bengaluru",
+    description: "Founded over two decades ago to bridge the gap between ordinary taxi rentals and international C-suite corporate transportation across Karnataka and South India.",
+    image: "/images/hero_luxury_sedan.jpg"
+  },
+  founder: {
+    badge: "Founder & Visionary",
+    titlePrefix: "THE MAN BEHIND",
+    titleHighlight: "THE WHEEL",
+    founderName: "S.M. Patil",
+    founderRole: "Founder & Managing Director",
+    founderLegacy: "25+ Yrs Legacy",
+    founderImage: "/images/sm_patil_founder.jpg",
+    quote: "People don't remember the car. They remember how you made them feel. That's what I learned in twenty five years behind this business and it's what I still tell every driver who works with us.",
+    storyP1: "Every great transportation business starts the same way, with one person willing to show up, on time, no matter what. For Siddhu Car Rentals, that person was S.M. Patil.",
+    storyP2: "Over two decades ago, S.M. Patil started this journey with nothing but a single car and an unshakeable belief: 'If you take care of people the way you'd want to be taken care of, the rest follows'. There was no fleet, no office, no brand name yet, just one man, one car, and a simple promise that every ride would be on time, every single time.",
+    storyP3: "That promise became the foundation of everything Siddhu Car Rentals is today. Over the years, one car grew into a full fleet — from dependable sedans to premium Mercedes-Benz, BMW, and Audi vehicles. But the values behind the wheel never changed. Punctuality wasn't a policy. It was personal."
+  },
+  stats: [
+    { label: "25+ Years", desc: "Executive Transportation Legacy in Karnataka" },
+    { label: "100%", desc: "Commercial Yellow Board Permitted Fleet" },
+    { label: "50,000+", desc: "Completed Airport & Outstation Trips" },
+    { label: "4.9★", desc: "Consistently Top-Rated Chauffeur Hospitality" }
+  ]
+};
+
 DEFAULT_SITE_CONTENT.corporate = DEFAULT_CORPORATE_CONTENT;
 DEFAULT_SITE_CONTENT.outstation = DEFAULT_OUTSTATION_CONTENT;
+DEFAULT_SITE_CONTENT.about = DEFAULT_ABOUT_CONTENT;
 

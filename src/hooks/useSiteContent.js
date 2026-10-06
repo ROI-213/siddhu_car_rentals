@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { tariffApi } from '../services/tariffApi';
-import { DEFAULT_SITE_CONTENT } from '../data/defaultSiteContent';
+import { DEFAULT_SITE_CONTENT, DEFAULT_ABOUT_CONTENT } from '../data/defaultSiteContent';
 
 export const useSiteContent = () => {
   const [content, setContent] = useState(() => {
@@ -24,7 +24,16 @@ export const useSiteContent = () => {
             ? cached.corporate.tiers
             : DEFAULT_SITE_CONTENT.corporate.tiers
         },
-        outstation: { ...DEFAULT_SITE_CONTENT.outstation, ...(cached.outstation || {}) }
+        outstation: { ...DEFAULT_SITE_CONTENT.outstation, ...(cached.outstation || {}) },
+        about: {
+          ...DEFAULT_SITE_CONTENT.about,
+          ...(cached.about || {}),
+          hero: { ...DEFAULT_SITE_CONTENT.about?.hero, ...(cached?.about?.hero || {}) },
+          founder: { ...DEFAULT_SITE_CONTENT.about?.founder, ...(cached?.about?.founder || {}) },
+          stats: Array.isArray(cached?.about?.stats) && cached.about.stats.length > 0
+            ? cached.about.stats
+            : DEFAULT_SITE_CONTENT.about?.stats
+        }
       };
     } catch {
       return DEFAULT_SITE_CONTENT;
@@ -66,7 +75,19 @@ export const useSiteContent = () => {
               ? cached.corporate.tiers
               : DEFAULT_SITE_CONTENT.corporate.tiers
         },
-        outstation: { ...DEFAULT_SITE_CONTENT.outstation, ...(cached.outstation || {}), ...(all?.outstation || {}) }
+        outstation: { ...DEFAULT_SITE_CONTENT.outstation, ...(cached.outstation || {}), ...(all?.outstation || {}) },
+        about: {
+          ...DEFAULT_SITE_CONTENT.about,
+          ...(cached.about || {}),
+          ...(all?.about || {}),
+          hero: { ...DEFAULT_SITE_CONTENT.about?.hero, ...(cached?.about?.hero || {}), ...(all?.about?.hero || {}) },
+          founder: { ...DEFAULT_SITE_CONTENT.about?.founder, ...(cached?.about?.founder || {}), ...(all?.about?.founder || {}) },
+          stats: (Array.isArray(all?.about?.stats) && all.about.stats.length > 0)
+            ? all.about.stats
+            : (Array.isArray(cached?.about?.stats) && cached.about.stats.length > 0)
+              ? cached.about.stats
+              : DEFAULT_SITE_CONTENT.about?.stats
+        }
       };
 
       setContent(merged);
@@ -109,6 +130,18 @@ export const useSiteContent = () => {
                 destinations: Array.isArray(data.destinations) ? data.destinations : prev.outstation?.destinations,
                 options: Array.isArray(data.options) ? data.options : prev.outstation?.options,
                 terms: data.terms || prev.outstation?.terms
+              }
+            };
+          }
+          if (key === 'about') {
+            return {
+              ...prev,
+              about: {
+                ...DEFAULT_SITE_CONTENT.about,
+                ...data,
+                hero: { ...DEFAULT_SITE_CONTENT.about?.hero, ...(data.hero || {}) },
+                founder: { ...DEFAULT_SITE_CONTENT.about?.founder, ...(data.founder || {}) },
+                stats: Array.isArray(data.stats) ? data.stats : (prev.about?.stats || DEFAULT_ABOUT_CONTENT?.stats || [])
               }
             };
           }
