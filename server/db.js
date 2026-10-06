@@ -505,7 +505,9 @@ export const db = {
     if (usePostgres) {
       try {
         const res = await pool.query('SELECT content_data FROM site_content WHERE section_key = $1', [key]);
-        return res.rows[0]?.content_data || null;
+        if (res.rows.length > 0 && res.rows[0]?.content_data !== undefined && res.rows[0]?.content_data !== null) {
+          return res.rows[0].content_data;
+        }
       } catch (err) {
         console.warn(`PostgreSQL getContent(${key}) error, reading local content:`, err.message);
       }

@@ -42,7 +42,13 @@ export const useFleetData = () => {
   useEffect(() => {
     fetchFleet();
 
-    const handleFleetUpdate = () => fetchFleet();
+    const handleFleetUpdate = (e) => {
+      if (e && e.detail && Array.isArray(e.detail) && e.detail.length > 0) {
+        setFleet(e.detail);
+      } else {
+        fetchFleet();
+      }
+    };
     window.addEventListener('scr_fleet_updated', handleFleetUpdate);
     window.addEventListener('storage', handleFleetUpdate);
     return () => {

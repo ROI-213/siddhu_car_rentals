@@ -360,6 +360,25 @@ export const tariffApi = {
       window.dispatchEvent(new CustomEvent('scr_site_content_updated', { detail: { key: 'fleet', data: fleetList } }));
     }
 
+    // 2. Try direct /api/fleet endpoint
+    try {
+      const res = await fetch(`${API_BASE}/fleet`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fleetList)
+      });
+      if (res.ok) {
+        const json = await res.json().catch(() => null);
+        if (json && json.data) {
+          localStorage.setItem('scr_fleet_cache', JSON.stringify(json.data));
+          return json.data;
+        }
+      }
+    } catch (e) {
+      console.warn('Direct /api/fleet save error, attempting content fallback:', e);
+    }
+
+    // 3. Fallback to saveContent('fleet')
     try {
       const saved = await this.saveContent('fleet', fleetList);
       if (Array.isArray(saved) && saved.length > 0) {

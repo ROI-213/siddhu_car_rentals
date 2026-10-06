@@ -45,6 +45,15 @@ export const AdminFleetManager = ({ showToast }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
 
+  // Safe notification helper
+  const notify = (msg, type = 'success') => {
+    if (typeof showToast === 'function') {
+      showToast(msg, type);
+    } else {
+      console.log(`[Fleet Admin ${type}]`, msg);
+    }
+  };
+
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('add'); // 'add' | 'edit'
@@ -54,6 +63,20 @@ export const AdminFleetManager = ({ showToast }) => {
 
   useEffect(() => {
     loadFleet();
+
+    const handleFleetSync = (e) => {
+      if (e && e.detail && Array.isArray(e.detail) && e.detail.length > 0) {
+        setFleet(e.detail);
+      } else {
+        const cached = JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
+        if (Array.isArray(cached) && cached.length > 0) {
+          setFleet(cached);
+        }
+      }
+    };
+
+    window.addEventListener('scr_fleet_updated', handleFleetSync);
+    return () => window.removeEventListener('scr_fleet_updated', handleFleetSync);
   }, []);
 
   function getInitialVehicleForm() {
@@ -103,7 +126,7 @@ export const AdminFleetManager = ({ showToast }) => {
         setFleet(defaultFleet);
       }
     } catch (err) {
-      showToast('Loaded local fallback fleet: ' + err.message, 'error');
+      notify('Loaded local fallback fleet: ' + err.message, 'error');
       setFleet(defaultFleet);
     } finally {
       setLoading(false);
@@ -115,10 +138,12 @@ export const AdminFleetManager = ({ showToast }) => {
     setSaving(true);
     try {
       await tariffApi.saveFleet(listToSave);
-      showToast(`✓ Fleet saved to PostgreSQL (${listToSave.length} vehicles live)`);
-      window.dispatchEvent(new Event('scr_fleet_updated'));
+      notify(`✓ Fleet saved to PostgreSQL (${listToSave.length} vehicles live)`);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('scr_fleet_updated', { detail: listToSave }));
+      }
     } catch (err) {
-      showToast('Error saving fleet: ' + err.message, 'error');
+      notify('Error saving fleet: ' + err.message, 'error');
     } finally {
       setSaving(false);
     }
@@ -130,7 +155,7 @@ export const AdminFleetManager = ({ showToast }) => {
     }
     setFleet(defaultFleet);
     await handleSaveFleetToDb(defaultFleet);
-    showToast('✓ Fleet reset to factory defaults.');
+    notify('✓ Fleet reset to factory defaults.');
   };
 
   // Open Add Modal
@@ -221,68 +246,83 @@ export const AdminFleetManager = ({ showToast }) => {
     setFleet(updated);
     setDeleteTarget(null);
     await handleSaveFleetToDb(updated);
-    showToast(`✓ Vehicle "${deleteTarget.name}" deleted.`);
+    notify(`✓ Vehicle "${deleteTarget.name}" deleted.`);
   };
 
   // Save Modal Form
   const handleModalSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.name.trim()) {
+    if (e && e.preventDefault) e.preventDefault();
+    const vehicleName = (formData.name || '').trim();
+    if (!vehicleName) {
       alert('Please enter a vehicle name.');
       return;
     }
 
-    const cleanedData = {
-      ...formData,
-      eight_hours_eighty_km: formData.eight_hours_eighty_km !== '' && formData.eight_hours_eighty_km !== null && !isNaN(formData.eight_hours_eighty_km)
-        ? Number(formData.eight_hours_eighty_km)
-        : null,
-      four_hours_forty_km: formData.four_hours_forty_km !== '' && formData.four_hours_forty_km !== null && !isNaN(formData.four_hours_forty_km)
-        ? Number(formData.four_hours_forty_km)
-        : null,
-      extra_hour: formData.extra_hour !== '' && formData.extra_hour !== null && !isNaN(formData.extra_hour)
-        ? Number(formData.extra_hour)
-        : null,
-      extra_km: formData.extra_km !== '' && formData.extra_km !== null && !isNaN(formData.extra_km)
-        ? Number(formData.extra_km)
-        : null,
-      airport_transfer: formData.airport_transfer !== '' && formData.airport_transfer !== null && !isNaN(formData.airport_transfer)
-        ? Number(formData.airport_transfer)
-        : null,
-      rate_per_km: formData.rate_per_km !== '' && formData.rate_per_km !== null && !isNaN(formData.rate_per_km)
-        ? Number(formData.rate_per_km)
-        : null,
-      driver_allowance: formData.driver_allowance !== '' && formData.driver_allowance !== null && !isNaN(formData.driver_allowance)
-        ? Number(formData.driver_allowance)
-        : null,
-      gallery: Array.isArray(formData.gallery) && formData.gallery.length > 0
-        ? formData.gallery.filter(Boolean)
-        : (formData.image ? [formData.image] : [])
-    };
-
-    let updatedFleet;
-    if (modalMode === 'add') {
-      const newVehicle = {
-        ...cleanedData,
-        id: cleanedData.id || ('car-' + Date.now()),
-        categoryLabel: FLEET_CATEGORIES.find(c => c.id === cleanedData.categoryKey)?.label || 'Executive'
+    try {
+      const fallbackImg = formData.image || '/images/sclass_front.png';
+      const cleanedData = {
+        ...formData,
+        name: vehicleName,
+        image: fallbackImg,
+        eight_hours_eighty_km: formData.eight_hours_eighty_km !== '' && formData.eight_hours_eighty_km !== null && !isNaN(formData.eight_hours_eighty_km)
+          ? Number(formData.eight_hours_eighty_km)
+          : null,
+        four_hours_forty_km: formData.four_hours_forty_km !== '' && formData.four_hours_forty_km !== null && !isNaN(formData.four_hours_forty_km)
+          ? Number(formData.four_hours_forty_km)
+          : null,
+        extra_hour: formData.extra_hour !== '' && formData.extra_hour !== null && !isNaN(formData.extra_hour)
+          ? Number(formData.extra_hour)
+          : null,
+        extra_km: formData.extra_km !== '' && formData.extra_km !== null && !isNaN(formData.extra_km)
+          ? Number(formData.extra_km)
+          : null,
+        airport_transfer: formData.airport_transfer !== '' && formData.airport_transfer !== null && !isNaN(formData.airport_transfer)
+          ? Number(formData.airport_transfer)
+          : null,
+        rate_per_km: formData.rate_per_km !== '' && formData.rate_per_km !== null && !isNaN(formData.rate_per_km)
+          ? Number(formData.rate_per_km)
+          : null,
+        driver_allowance: formData.driver_allowance !== '' && formData.driver_allowance !== null && !isNaN(formData.driver_allowance)
+          ? Number(formData.driver_allowance)
+          : null,
+        amenities: Array.isArray(formData.amenities) ? formData.amenities : [],
+        gallery: Array.isArray(formData.gallery) && formData.gallery.length > 0
+          ? formData.gallery.filter(Boolean)
+          : [fallbackImg]
       };
-      updatedFleet = [newVehicle, ...fleet];
-    } else {
-      updatedFleet = fleet.map(v => {
-        if (v.id === cleanedData.id) {
-          return {
-            ...cleanedData,
-            categoryLabel: FLEET_CATEGORIES.find(c => c.id === cleanedData.categoryKey)?.label || v.categoryLabel
-          };
-        }
-        return v;
-      });
-    }
 
-    setFleet(updatedFleet);
-    setIsModalOpen(false);
-    await handleSaveFleetToDb(updatedFleet);
+      let updatedFleet;
+      if (modalMode === 'add') {
+        const slug = vehicleName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const genId = 'car-' + (slug || 'custom') + '-' + Date.now().toString().slice(-4);
+        const newVehicle = {
+          ...cleanedData,
+          id: cleanedData.id && cleanedData.id.trim() ? cleanedData.id.trim() : genId,
+          categoryLabel: FLEET_CATEGORIES.find(c => c.id === cleanedData.categoryKey)?.label || 'Executive',
+          isActive: cleanedData.isActive !== false
+        };
+        updatedFleet = [newVehicle, ...fleet];
+        notify(`✓ Added "${newVehicle.name}" to fleet.`);
+      } else {
+        updatedFleet = fleet.map(v => {
+          if (v.id === cleanedData.id) {
+            return {
+              ...cleanedData,
+              categoryLabel: FLEET_CATEGORIES.find(c => c.id === cleanedData.categoryKey)?.label || v.categoryLabel
+            };
+          }
+          return v;
+        });
+        notify(`✓ Updated "${cleanedData.name}".`);
+      }
+
+      setFleet(updatedFleet);
+      setIsModalOpen(false);
+      await handleSaveFleetToDb(updatedFleet);
+    } catch (err) {
+      console.error('handleModalSubmit error:', err);
+      alert('Error saving vehicle: ' + err.message);
+    }
   };
 
   // Filter vehicles
@@ -758,7 +798,6 @@ export const AdminFleetManager = ({ showToast }) => {
                   </label>
                   <input
                     type="text"
-                    required
                     value={formData.name || ''}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g. Mercedes-Benz S-Class S350d"
@@ -927,7 +966,6 @@ export const AdminFleetManager = ({ showToast }) => {
                   onChange={(url) => setFormData({ ...formData, image: url })}
                   placeholder="/images/sclass_front.png or https://..."
                   helpText="Upload a JPG, PNG, or WebP photo from your computer/phone, or select from quick presets below."
-                  required
                 />
 
                 {/* Quick Preset Selector */}
@@ -1129,12 +1167,11 @@ export const AdminFleetManager = ({ showToast }) => {
                   {/* 8h / 80km Full Day */}
                   <div style={{ background: '#FFFFFF', padding: '10px 12px', borderRadius: '8px', border: '1px solid #E0F2FE' }}>
                     <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: '800', color: '#0369A1', marginBottom: '4px' }}>
-                      Local 8h / 80km Full Day (₹) *
+                      Local 8h / 80km Full Day (₹)
                     </label>
                     <input
                       type="number"
-                      required
-                      value={formData.eight_hours_eighty_km !== undefined ? formData.eight_hours_eighty_km : ''}
+                      value={formData.eight_hours_eighty_km !== undefined && formData.eight_hours_eighty_km !== null ? formData.eight_hours_eighty_km : ''}
                       onChange={(e) => setFormData({ ...formData, eight_hours_eighty_km: e.target.value })}
                       placeholder="e.g. 2900"
                       style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: '700', color: '#0F172A' }}
