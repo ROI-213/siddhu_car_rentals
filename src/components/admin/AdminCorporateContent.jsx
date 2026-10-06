@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { tariffApi } from '../../services/tariffApi';
 import { DEFAULT_CORPORATE_CONTENT } from '../../data/defaultSiteContent';
+import { ImageUploadField } from './ImageUploadField';
 
 export const AdminCorporateContent = ({ showToast }) => {
   const [loading, setLoading] = useState(true);
@@ -880,6 +881,16 @@ export const AdminCorporateContent = ({ showToast }) => {
                   onChange={(e) => setEditingTier(prev => ({ ...prev, featuresStr: e.target.value }))}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
                   placeholder="e.g. Nappa Leather, Privacy Glass, Laptop Charging"
+                />
+              </div>
+
+              <div>
+                <ImageUploadField
+                  label="Tier Vehicle Photo (Optional)"
+                  value={editingTier.image || ''}
+                  onChange={(url) => setEditingTier(prev => ({ ...prev, image: url }))}
+                  placeholder="/images/sclass_front.png or click Upload Image"
+                  helpText="Upload a photo for this corporate fleet tier."
                 />
               </div>
 

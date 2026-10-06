@@ -24,6 +24,7 @@ import {
 import { tariffApi } from '../../services/tariffApi';
 import { fleetData as defaultFleet, FLEET_CATEGORIES } from '../../data/fleetData';
 import { pricingService } from '../../services/pricingService';
+import { ImageUploadField, compressImageToDataUrl } from './ImageUploadField';
 
 const COMMON_VEHICLE_IMAGES = [
   { label: 'Mercedes S-Class', path: '/images/sclass_front.png' },
@@ -919,58 +920,41 @@ export const AdminFleetManager = ({ showToast }) => {
                   </span>
                 </div>
 
-                {/* Main Showroom Image */}
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '700', color: 'var(--color-slate-700)', marginBottom: '4px' }}>
-                    Main Showroom Image URL / Path *
-                  </label>
-                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                    <input
-                      type="text"
-                      required
-                      value={formData.image || ''}
-                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                      placeholder="/images/sclass_front.png or https://..."
-                      style={{ flex: 1, padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.86rem', background: '#FFFFFF' }}
-                    />
-                    {formData.image && (
-                      <div style={{ position: 'relative', width: '64px', height: '46px', borderRadius: '8px', overflow: 'hidden', border: '2px solid #0284C7', flexShrink: 0 }}>
-                        <img
-                          src={formData.image}
-                          alt="Main Preview"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          onError={(e) => { e.target.style.display = 'none'; }}
-                        />
-                      </div>
-                    )}
-                  </div>
+                {/* Main Showroom Image Upload */}
+                <ImageUploadField
+                  label="Main Showroom Vehicle Image"
+                  value={formData.image || ''}
+                  onChange={(url) => setFormData({ ...formData, image: url })}
+                  placeholder="/images/sclass_front.png or https://..."
+                  helpText="Upload a JPG, PNG, or WebP photo from your computer/phone, or select from quick presets below."
+                  required
+                />
 
-                  {/* Quick Preset Selector */}
-                  <div style={{ marginTop: '8px' }}>
-                    <div style={{ fontSize: '0.72rem', fontWeight: '700', color: 'var(--color-slate-500)', marginBottom: '4px' }}>
-                      Quick image presets (Click to select):
-                    </div>
-                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                      {COMMON_VEHICLE_IMAGES.map((preset, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, image: preset.path })}
-                          style={{
-                            padding: '3px 8px',
-                            borderRadius: '6px',
-                            background: formData.image === preset.path ? '#0284C7' : '#FFFFFF',
-                            color: formData.image === preset.path ? '#FFFFFF' : 'var(--color-slate-700)',
-                            border: '1px solid #CBD5E1',
-                            fontSize: '0.72rem',
-                            fontWeight: '600',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          {preset.label}
-                        </button>
-                      ))}
-                    </div>
+                {/* Quick Preset Selector */}
+                <div style={{ marginTop: '-4px', marginBottom: '16px' }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: '700', color: 'var(--color-slate-500)', marginBottom: '4px' }}>
+                    Quick image presets (Click to select):
+                  </div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {COMMON_VEHICLE_IMAGES.map((preset, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, image: preset.path })}
+                        style={{
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          background: formData.image === preset.path ? '#0284C7' : '#FFFFFF',
+                          color: formData.image === preset.path ? '#FFFFFF' : 'var(--color-slate-700)',
+                          border: '1px solid #CBD5E1',
+                          fontSize: '0.72rem',
+                          fontWeight: '600',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
@@ -980,10 +964,8 @@ export const AdminFleetManager = ({ showToast }) => {
                     <label style={{ fontSize: '0.78rem', fontWeight: '700', color: 'var(--color-slate-700)' }}>
                       Vehicle Detail Gallery Photos ({Array.isArray(formData.gallery) ? formData.gallery.length : 0})
                     </label>
-                    <button
-                      type="button"
-                      onClick={handleAddGalleryItem}
-                      style={{
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <label style={{
                         padding: '4px 10px',
                         borderRadius: '6px',
                         background: '#0284C7',
@@ -995,11 +977,46 @@ export const AdminFleetManager = ({ showToast }) => {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '4px'
-                      }}
-                    >
-                      <Plus size={13} />
-                      <span>Add Gallery Photo</span>
-                    </button>
+                      }}>
+                        <Plus size={13} />
+                        <span>Upload Photo</span>
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/jpg"
+                          style={{ display: 'none' }}
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              try {
+                                const dataUrl = await compressImageToDataUrl(file);
+                                setFormData(prev => ({
+                                  ...prev,
+                                  gallery: [...(Array.isArray(prev.gallery) ? prev.gallery : []), dataUrl]
+                                }));
+                              } catch (err) {
+                                alert(err.message);
+                              }
+                            }
+                          }}
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleAddGalleryItem}
+                        style={{
+                          padding: '4px 10px',
+                          borderRadius: '6px',
+                          background: '#F1F5F9',
+                          color: '#334155',
+                          border: '1px solid #CBD5E1',
+                          fontSize: '0.74rem',
+                          fontWeight: '700',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Add URL Slot
+                      </button>
+                    </div>
                   </div>
 
                   {Array.isArray(formData.gallery) && formData.gallery.length > 0 ? (
@@ -1016,6 +1033,38 @@ export const AdminFleetManager = ({ showToast }) => {
                             placeholder={`Gallery Photo URL #${gIdx + 1} (e.g. /images/sclass_interior.png)`}
                             style={{ flex: 1, padding: '6px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', fontSize: '0.82rem' }}
                           />
+                          <label style={{
+                            padding: '6px 10px',
+                            borderRadius: '6px',
+                            background: '#EFF6FF',
+                            color: '#0284C7',
+                            border: '1px solid #BFDBFE',
+                            fontSize: '0.74rem',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            flexShrink: 0
+                          }} title="Upload image from computer/phone">
+                            <span>Upload</span>
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp,image/jpg"
+                              style={{ display: 'none' }}
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  try {
+                                    const dataUrl = await compressImageToDataUrl(file);
+                                    handleGalleryItemChange(gIdx, dataUrl);
+                                  } catch (err) {
+                                    alert(err.message);
+                                  }
+                                }
+                              }}
+                            />
+                          </label>
                           {imgUrl && (
                             <img
                               src={imgUrl}

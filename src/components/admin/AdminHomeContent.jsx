@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { tariffApi } from '../../services/tariffApi';
 import { DEFAULT_SITE_CONTENT } from '../../data/defaultSiteContent';
+import { ImageUploadField, compressImageToDataUrl } from './ImageUploadField';
 
 export const AdminHomeContent = ({ activeSubTab, onSubTabChange, showToast }) => {
   const [content, setContent] = useState(DEFAULT_SITE_CONTENT);
@@ -313,26 +314,13 @@ export const AdminHomeContent = ({ activeSubTab, onSubTabChange, showToast }) =>
             </div>
 
             <div style={{ gridColumn: '1 / -1' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: 'var(--color-slate-700)', marginBottom: '6px' }}>
-                Hero Background Image URL / Path
-              </label>
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                <input
-                  type="text"
-                  value={heroForm.backgroundImage || ''}
-                  onChange={(e) => setHeroForm({ ...heroForm, backgroundImage: e.target.value })}
-                  placeholder="/images/siddhu_adventure_hero.jpg"
-                  style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
-                />
-                {heroForm.backgroundImage && (
-                  <img
-                    src={heroForm.backgroundImage}
-                    alt="Preview"
-                    style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #CBD5E1' }}
-                    onError={(e) => e.target.style.display = 'none'}
-                  />
-                )}
-              </div>
+              <ImageUploadField
+                label="Hero Background Image"
+                value={heroForm.backgroundImage || ''}
+                onChange={(url) => setHeroForm({ ...heroForm, backgroundImage: url })}
+                placeholder="/images/siddhu_adventure_hero.jpg or https://..."
+                helpText="Upload a high-resolution hero background image from your device, or paste an image path."
+              />
             </div>
           </div>
         </div>
@@ -1099,13 +1087,12 @@ export const AdminHomeContent = ({ activeSubTab, onSubTabChange, showToast }) =>
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '0.78rem', fontWeight: '700', display: 'block', marginBottom: '4px' }}>Image Path / URL</label>
-                    <input
-                      type="text"
+                    <ImageUploadField
+                      label="Destination Cover Image"
                       value={editingDestination.img || ''}
-                      onChange={(e) => setEditingDestination({ ...editingDestination, img: e.target.value })}
-                      placeholder="/images/destinations/ooty.jpg"
-                      style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                      onChange={(url) => setEditingDestination({ ...editingDestination, img: url })}
+                      placeholder="/images/destinations/ooty.jpg or https://..."
+                      helpText="Upload a scenic destination image from your device or paste a URL."
                     />
                   </div>
 
@@ -1250,7 +1237,30 @@ export const AdminHomeContent = ({ activeSubTab, onSubTabChange, showToast }) =>
                   </div>
 
                   <div>
-                    <label style={{ fontSize: '0.72rem', color: 'var(--color-slate-500)', fontWeight: '600' }}>Image Path</label>
+                    <label style={{ fontSize: '0.72rem', color: 'var(--color-slate-500)', fontWeight: '600', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <span>Cover Image</span>
+                      <label style={{ color: '#0284C7', cursor: 'pointer', fontWeight: '700', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+                        <span>📁 Upload Image</span>
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/jpg"
+                          style={{ display: 'none' }}
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              try {
+                                const dataUrl = await compressImageToDataUrl(file);
+                                const updated = [...servicesForm];
+                                updated[idx] = { ...updated[idx], image: dataUrl };
+                                setServicesForm(updated);
+                              } catch (err) {
+                                alert(err.message);
+                              }
+                            }
+                          }}
+                        />
+                      </label>
+                    </label>
                     <input
                       type="text"
                       value={service.image || ''}
@@ -1259,6 +1269,7 @@ export const AdminHomeContent = ({ activeSubTab, onSubTabChange, showToast }) =>
                         updated[idx] = { ...updated[idx], image: e.target.value };
                         setServicesForm(updated);
                       }}
+                      placeholder="/images/service.jpg or click Upload Image above"
                       style={{ width: '100%', fontSize: '0.82rem', border: '1px solid #CBD5E1', borderRadius: '6px', padding: '6px 10px' }}
                     />
                   </div>

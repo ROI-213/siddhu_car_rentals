@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { tariffApi } from '../../services/tariffApi';
 import { testimonialsData as DEFAULT_TESTIMONIALS_DATA } from '../../data/testimonialsData';
+import { ImageUploadField } from './ImageUploadField';
 
 export const DEFAULT_CONTACT_DATA = {
   hero: {
@@ -365,6 +366,15 @@ export const AdminReviewsContact = ({ showToast }) => {
                   style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
                 />
               </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <ImageUploadField
+                  label="Reviews Page Hero Background Image"
+                  value={reviewsData.hero.image || ''}
+                  onChange={(url) => setReviewsData(prev => ({ ...prev, hero: { ...prev.hero, image: url } }))}
+                  placeholder="/images/hero_luxury_sedan.jpg or https://..."
+                  helpText="Upload a luxury sedan / chauffeur photo for the Reviews page hero background."
+                />
+              </div>
             </div>
           </div>
 
@@ -564,6 +574,15 @@ export const AdminReviewsContact = ({ showToast }) => {
                   value={contactData.hero?.description || ''}
                   onChange={e => setContactData(prev => ({ ...prev, hero: { ...prev.hero, description: e.target.value } }))}
                   style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+                />
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <ImageUploadField
+                  label="Contact Page Hero Background Image"
+                  value={contactData.hero?.image || ''}
+                  onChange={(url) => setContactData(prev => ({ ...prev, hero: { ...prev.hero, image: url } }))}
+                  placeholder="/images/siddhu_white_car_bengaluru_road.jpg or https://..."
+                  helpText="Upload a luxury fleet / road background image for the Contact Us page."
                 />
               </div>
             </div>
@@ -819,6 +838,16 @@ export const AdminReviewsContact = ({ showToast }) => {
                   onChange={e => setEditingReview(prev => ({ ...prev, review: e.target.value }))}
                   placeholder="Paste client testimonial text here..."
                   style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.9rem' }}
+                />
+              </div>
+
+              <div>
+                <ImageUploadField
+                  label="Client Avatar / Photo (Optional)"
+                  value={editingReview.avatar || ''}
+                  onChange={(url) => setEditingReview(prev => ({ ...prev, avatar: url }))}
+                  placeholder="/images/client.jpg or click Upload Image"
+                  helpText="Upload a client photo or avatar from your computer or phone."
                 />
               </div>
 

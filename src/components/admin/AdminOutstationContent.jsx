@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { tariffApi } from '../../services/tariffApi';
 import { DEFAULT_OUTSTATION_CONTENT } from '../../data/defaultSiteContent';
+import { ImageUploadField } from './ImageUploadField';
 
 export const AdminOutstationContent = ({ showToast }) => {
   const [loading, setLoading] = useState(true);
@@ -552,18 +553,16 @@ export const AdminOutstationContent = ({ showToast }) => {
                     placeholder="From ₹15/km"
                   />
                 </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                    Image URL
-                  </label>
-                  <input
-                    type="text"
-                    value={editingDest.image}
-                    onChange={(e) => setEditingDest(prev => ({ ...prev, image: e.target.value }))}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                    placeholder="/images/destinations/mysuru.jpg"
-                  />
-                </div>
+              </div>
+
+              <div>
+                <ImageUploadField
+                  label="Destination Scenic Image"
+                  value={editingDest.image || ''}
+                  onChange={(url) => setEditingDest(prev => ({ ...prev, image: url }))}
+                  placeholder="/images/destinations/mysuru.jpg or https://..."
+                  helpText="Upload a high-quality destination photo from your computer or phone."
+                />
               </div>
 
               <div>
