@@ -21,7 +21,8 @@ import {
   UsersRound,
   CalendarDays,
   Receipt,
-  UserCheck
+  UserCheck,
+  X
 } from 'lucide-react';
 import { tariffApi } from '../../services/tariffApi';
 import { DEFAULT_CORPORATE_CONTENT } from '../../data/defaultSiteContent';
@@ -774,132 +775,194 @@ export const AdminCorporateContent = ({ showToast }) => {
         <div style={{
           position: 'fixed',
           top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.6)',
+          background: 'rgba(15, 23, 42, 0.7)',
+          backdropFilter: 'blur(5px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 9999,
-          padding: '20px'
+          padding: '16px'
         }}>
           <div style={{
             background: '#FFFFFF',
-            borderRadius: '16px',
-            maxWidth: '560px',
+            borderRadius: '20px',
+            maxWidth: '580px',
             width: '100%',
-            padding: '28px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
             maxHeight: '90vh',
-            overflowY: 'auto'
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            overflow: 'hidden'
           }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', marginBottom: '16px' }}>
-              {editingRateRow.category ? `Edit ${editingRateRow.category}` : 'Add Corporate Vehicle Category'}
-            </h3>
-
-            <form onSubmit={handleSaveRateRow} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {/* Modal Header */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '18px 24px',
+              borderBottom: '1px solid #E2E8F0',
+              background: '#FFFFFF',
+              flexShrink: 0
+            }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                  Category Title *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Premium Corporate MPV"
-                  value={editingRateRow.category}
-                  onChange={(e) => setEditingRateRow(prev => ({ ...prev, category: e.target.value }))}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: '700' }}
-                />
+                <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', margin: 0 }}>
+                  {editingRateRow.category ? `Edit Rate Row: ${editingRateRow.category}` : 'Add Corporate Vehicle Category'}
+                </h3>
+                <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
+                  Sets commercial enterprise tariffs for the corporate rate card.
+                </span>
               </div>
+              <button
+                type="button"
+                onClick={() => setIsRateModalOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: '4px', borderRadius: '6px' }}
+                title="Close"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                  Vehicle Models Included *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Toyota Innova Crysta 2.4 VX (Captain Seats)"
-                  value={editingRateRow.models}
-                  onChange={(e) => setEditingRateRow(prev => ({ ...prev, models: e.target.value }))}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            {/* Modal Scrollable Form Body */}
+            <form onSubmit={handleSaveRateRow} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+              <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '14px', overflowY: 'auto', flex: 1 }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                    Local 8h / 80km
+                    Category Title *
                   </label>
                   <input
                     type="text"
-                    value={editingRateRow.local8h80k}
-                    onChange={(e) => setEditingRateRow(prev => ({ ...prev, local8h80k: e.target.value }))}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                    required
+                    placeholder="e.g. Premium Corporate MPV"
+                    value={editingRateRow.category}
+                    onChange={(e) => setEditingRateRow(prev => ({ ...prev, category: e.target.value }))}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: '700' }}
                   />
                 </div>
 
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                    Airport Transfer Flat
+                    Vehicle Models Included *
                   </label>
                   <input
                     type="text"
-                    value={editingRateRow.airportTransfer}
-                    onChange={(e) => setEditingRateRow(prev => ({ ...prev, airportTransfer: e.target.value }))}
+                    required
+                    placeholder="e.g. Toyota Innova Crysta 2.4 VX (Captain Seats)"
+                    value={editingRateRow.models}
+                    onChange={(e) => setEditingRateRow(prev => ({ ...prev, models: e.target.value }))}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
                   />
                 </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                    Extra Km Rate
-                  </label>
-                  <input
-                    type="text"
-                    value={editingRateRow.extraKm}
-                    onChange={(e) => setEditingRateRow(prev => ({ ...prev, extraKm: e.target.value }))}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                  />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                      Local 8h / 80km
+                    </label>
+                    <input
+                      type="text"
+                      value={editingRateRow.local8h80k}
+                      onChange={(e) => setEditingRateRow(prev => ({ ...prev, local8h80k: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                      Airport Transfer Flat
+                    </label>
+                    <input
+                      type="text"
+                      value={editingRateRow.airportTransfer}
+                      onChange={(e) => setEditingRateRow(prev => ({ ...prev, airportTransfer: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                      Extra Km Rate
+                    </label>
+                    <input
+                      type="text"
+                      value={editingRateRow.extraKm}
+                      onChange={(e) => setEditingRateRow(prev => ({ ...prev, extraKm: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                      Extra Hour Rate
+                    </label>
+                    <input
+                      type="text"
+                      value={editingRateRow.extraHr}
+                      onChange={(e) => setEditingRateRow(prev => ({ ...prev, extraHr: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                    Extra Hour Rate
+                    Monthly Retainer Benchmark
                   </label>
                   <input
                     type="text"
-                    value={editingRateRow.extraHr}
-                    onChange={(e) => setEditingRateRow(prev => ({ ...prev, extraHr: e.target.value }))}
+                    value={editingRateRow.monthlyRetainer}
+                    onChange={(e) => setEditingRateRow(prev => ({ ...prev, monthlyRetainer: e.target.value }))}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
                   />
                 </div>
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                  Monthly Retainer Benchmark
-                </label>
-                <input
-                  type="text"
-                  value={editingRateRow.monthlyRetainer}
-                  onChange={(e) => setEditingRateRow(prev => ({ ...prev, monthlyRetainer: e.target.value }))}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '12px' }}>
+              {/* Sticky Action Footer */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '16px 24px',
+                borderTop: '1px solid #E2E8F0',
+                background: '#F8FAFC',
+                flexShrink: 0
+              }}>
                 <button
                   type="button"
                   onClick={() => setIsRateModalOpen(false)}
-                  style={{ padding: '9px 16px', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#64748B', fontWeight: '700', cursor: 'pointer' }}
+                  style={{
+                    padding: '9px 18px',
+                    borderRadius: '8px',
+                    border: '1px solid #CBD5E1',
+                    background: '#FFFFFF',
+                    color: '#64748B',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    fontSize: '0.86rem'
+                  }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  style={{ padding: '9px 20px', borderRadius: '8px', border: 'none', background: '#C5A059', color: '#0F172A', fontWeight: '800', cursor: saving ? 'wait' : 'pointer' }}
+                  style={{
+                    padding: '9px 22px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#C5A059',
+                    color: '#0F172A',
+                    fontWeight: '800',
+                    cursor: saving ? 'wait' : 'pointer',
+                    fontSize: '0.88rem',
+                    boxShadow: '0 4px 12px rgba(197, 160, 89, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
                 >
-                  {saving ? 'Saving...' : 'Save & Publish Rate Row'}
+                  <Save size={15} />
+                  <span>{saving ? 'Saving...' : 'Save & Publish Rate Row'}</span>
                 </button>
               </div>
             </form>
@@ -912,129 +975,193 @@ export const AdminCorporateContent = ({ showToast }) => {
         <div style={{
           position: 'fixed',
           top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.6)',
+          background: 'rgba(15, 23, 42, 0.7)',
+          backdropFilter: 'blur(5px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 9999,
-          padding: '20px'
+          padding: '16px'
         }}>
           <div style={{
             background: '#FFFFFF',
-            borderRadius: '16px',
-            maxWidth: '540px',
+            borderRadius: '20px',
+            maxWidth: '580px',
             width: '100%',
-            padding: '28px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+            maxHeight: '90vh',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            overflow: 'hidden'
           }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', marginBottom: '16px' }}>
-              {editingTier.tier ? `Edit Tier: ${editingTier.tier}` : 'Add New Corporate Vehicle Tier'}
-            </h3>
-
-            <form onSubmit={handleSaveTier} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {/* Modal Header */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '18px 24px',
+              borderBottom: '1px solid #E2E8F0',
+              background: '#FFFFFF',
+              flexShrink: 0
+            }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                  Tier Title / Category Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Tier 1: Chairman & Executive Fleet"
-                  value={editingTier.tier || ''}
-                  onChange={(e) => setEditingTier(prev => ({ ...prev, tier: e.target.value }))}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: '700' }}
-                />
+                <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', margin: 0 }}>
+                  {editingTier.tier ? `Edit Tier: ${editingTier.tier}` : 'Add New Corporate Vehicle Tier'}
+                </h3>
+                <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
+                  Enterprise procurement specifications displayed on the public corporate page.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsTierModalOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: '4px', borderRadius: '6px' }}
+                title="Close"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Scrollable Form Body */}
+            <form onSubmit={handleSaveTier} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+              <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '14px', overflowY: 'auto', flex: 1 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                    Tier Title / Category Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Tier 1: Chairman & Executive Fleet"
+                    value={editingTier.tier || ''}
+                    onChange={(e) => setEditingTier(prev => ({ ...prev, tier: e.target.value }))}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: '700' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                    Badge Text
+                  </label>
+                  <input
+                    type="text"
+                    value={editingTier.badge || ''}
+                    onChange={(e) => setEditingTier(prev => ({ ...prev, badge: e.target.value }))}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                    placeholder="e.g. Executive Fleet or Ultra Luxury"
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                    Models
+                  </label>
+                  <input
+                    type="text"
+                    value={editingTier.models || ''}
+                    onChange={(e) => setEditingTier(prev => ({ ...prev, models: e.target.value }))}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                    placeholder="e.g. Mercedes-Benz S-Class, BMW 7 Series"
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                    Passenger & Luggage Capacity
+                  </label>
+                  <input
+                    type="text"
+                    value={editingTier.capacity || ''}
+                    onChange={(e) => setEditingTier(prev => ({ ...prev, capacity: e.target.value }))}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                    placeholder="e.g. 3 Passengers • 2 Suitcases"
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                    Recommended Use (Best For)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={editingTier.bestFor || ''}
+                    onChange={(e) => setEditingTier(prev => ({ ...prev, bestFor: e.target.value }))}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                    placeholder="e.g. Board of directors, visiting global executives, CXO airport delegations."
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                    Features & Amenities (Comma-separated)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingTier.featuresStr || ''}
+                    onChange={(e) => setEditingTier(prev => ({ ...prev, featuresStr: e.target.value }))}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                    placeholder="e.g. Nappa Leather, Privacy Glass, Laptop Charging"
+                  />
+                </div>
+
+                <div>
+                  <ImageUploadField
+                    label="Tier Vehicle Photo (Optional)"
+                    value={editingTier.image || ''}
+                    onChange={(url) => setEditingTier(prev => ({ ...prev, image: url }))}
+                    placeholder="/images/sclass_front.png or click Upload Image"
+                    helpText="Upload a photo for this corporate fleet tier."
+                  />
+                </div>
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                  Badge Text
-                </label>
-                <input
-                  type="text"
-                  value={editingTier.badge || ''}
-                  onChange={(e) => setEditingTier(prev => ({ ...prev, badge: e.target.value }))}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                  placeholder="e.g. Executive Fleet or Ultra Luxury"
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                  Models
-                </label>
-                <input
-                  type="text"
-                  value={editingTier.models || ''}
-                  onChange={(e) => setEditingTier(prev => ({ ...prev, models: e.target.value }))}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                  placeholder="e.g. Mercedes-Benz S-Class, BMW 7 Series"
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                  Passenger & Luggage Capacity
-                </label>
-                <input
-                  type="text"
-                  value={editingTier.capacity || ''}
-                  onChange={(e) => setEditingTier(prev => ({ ...prev, capacity: e.target.value }))}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                  placeholder="e.g. 3 Passengers • 2 Suitcases"
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                  Recommended Use (Best For)
-                </label>
-                <textarea
-                  rows={2}
-                  value={editingTier.bestFor || ''}
-                  onChange={(e) => setEditingTier(prev => ({ ...prev, bestFor: e.target.value }))}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                  placeholder="e.g. Board of directors, visiting global executives, CXO airport delegations."
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                  Features & Amenities (Comma-separated)
-                </label>
-                <input
-                  type="text"
-                  value={editingTier.featuresStr || ''}
-                  onChange={(e) => setEditingTier(prev => ({ ...prev, featuresStr: e.target.value }))}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                  placeholder="e.g. Nappa Leather, Privacy Glass, Laptop Charging"
-                />
-              </div>
-
-              <div>
-                <ImageUploadField
-                  label="Tier Vehicle Photo (Optional)"
-                  value={editingTier.image || ''}
-                  onChange={(url) => setEditingTier(prev => ({ ...prev, image: url }))}
-                  placeholder="/images/sclass_front.png or click Upload Image"
-                  helpText="Upload a photo for this corporate fleet tier."
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+              {/* Sticky Action Footer */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '16px 24px',
+                borderTop: '1px solid #E2E8F0',
+                background: '#F8FAFC',
+                flexShrink: 0
+              }}>
                 <button
                   type="button"
                   onClick={() => setIsTierModalOpen(false)}
-                  style={{ padding: '9px 16px', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#64748B', fontWeight: '700', cursor: 'pointer' }}
+                  style={{
+                    padding: '9px 18px',
+                    borderRadius: '8px',
+                    border: '1px solid #CBD5E1',
+                    background: '#FFFFFF',
+                    color: '#64748B',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    fontSize: '0.86rem'
+                  }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  style={{ padding: '9px 20px', borderRadius: '8px', border: 'none', background: '#C5A059', color: '#0F172A', fontWeight: '800', cursor: saving ? 'wait' : 'pointer' }}
+                  style={{
+                    padding: '9px 22px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#0284C7',
+                    color: '#FFFFFF',
+                    fontWeight: '800',
+                    cursor: saving ? 'wait' : 'pointer',
+                    fontSize: '0.88rem',
+                    boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
                 >
-                  {saving ? 'Saving...' : 'Save & Publish Tier'}
+                  <Save size={15} />
+                  <span>{saving ? 'Saving...' : 'Save & Publish Tier'}</span>
                 </button>
               </div>
             </form>

@@ -732,7 +732,7 @@ export const AdminHomeContent = ({ activeSubTab, onSubTabChange, showToast }) =>
               zIndex: 3000,
               padding: '20px'
             }}>
-              <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', maxWidth: '500px', width: '100%', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+              <div style={{ background: '#FFFFFF', borderRadius: '18px', padding: '24px', maxWidth: '520px', width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
                 <h3 style={{ margin: '0 0 16px 0', fontSize: '1.1rem', fontWeight: '800' }}>
                   {testimonialsForm.list?.some(t => t.id === editingTestimonial.id) ? 'Edit Review' : 'Add New Review'}
                 </h3>
@@ -1047,7 +1047,7 @@ export const AdminHomeContent = ({ activeSubTab, onSubTabChange, showToast }) =>
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               zIndex: 3000, padding: '20px'
             }}>
-              <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', maxWidth: '480px', width: '100%' }}>
+              <div style={{ background: '#FFFFFF', borderRadius: '18px', padding: '24px', maxWidth: '500px', width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)' }}>
                 <h3 style={{ margin: '0 0 16px 0', fontSize: '1.1rem', fontWeight: '800' }}>
                   {destinationsForm.ribbonItems?.some(d => d.name === editingDestination.name) ? 'Edit Destination' : 'Add New Destination'}
                 </h3>

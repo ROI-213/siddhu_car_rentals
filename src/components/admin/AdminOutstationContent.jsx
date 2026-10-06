@@ -19,7 +19,8 @@ import {
   ToggleLeft,
   ToggleRight,
   Eye,
-  EyeOff
+  EyeOff,
+  X
 } from 'lucide-react';
 import { tariffApi, formatCurrency } from '../../services/tariffApi';
 import { DEFAULT_OUTSTATION_CONTENT } from '../../data/defaultSiteContent';
@@ -875,118 +876,177 @@ export const AdminOutstationContent = ({ showToast }) => {
         <div style={{
           position: 'fixed',
           top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.6)',
+          background: 'rgba(15, 23, 42, 0.7)',
+          backdropFilter: 'blur(5px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 9999,
-          padding: '20px'
+          padding: '16px'
         }}>
           <div style={{
             background: '#FFFFFF',
-            borderRadius: '16px',
-            maxWidth: '540px',
+            borderRadius: '20px',
+            maxWidth: '560px',
             width: '100%',
-            padding: '28px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+            maxHeight: '90vh',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            overflow: 'hidden'
           }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', marginBottom: '16px' }}>
-              {editingDest.name ? `Edit ${editingDest.name}` : 'Add Outstation Destination'}
-            </h3>
+            {/* Modal Header */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '18px 24px',
+              borderBottom: '1px solid #E2E8F0',
+              background: '#FFFFFF',
+              flexShrink: 0
+            }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', margin: 0 }}>
+                {editingDest.name ? `Edit Destination: ${editingDest.name}` : 'Add Outstation Destination'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsDestModalOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: '4px', borderRadius: '6px' }}
+                title="Close"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
-            <form onSubmit={handleSaveDest} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                  Destination Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Mysuru (Mysore)"
-                  value={editingDest.name}
-                  onChange={(e) => setEditingDest(prev => ({ ...prev, name: e.target.value }))}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: '700' }}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            {/* Modal Scrollable Body */}
+            <form onSubmit={handleSaveDest} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+              <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '14px', overflowY: 'auto', flex: 1 }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                    Distance
+                    Destination Name *
                   </label>
                   <input
                     type="text"
-                    value={editingDest.distance}
-                    onChange={(e) => setEditingDest(prev => ({ ...prev, distance: e.target.value }))}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                    placeholder="140 Kms"
+                    required
+                    placeholder="e.g. Mysuru (Mysore)"
+                    value={editingDest.name}
+                    onChange={(e) => setEditingDest(prev => ({ ...prev, name: e.target.value }))}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: '700' }}
                   />
                 </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                      Distance
+                    </label>
+                    <input
+                      type="text"
+                      value={editingDest.distance}
+                      onChange={(e) => setEditingDest(prev => ({ ...prev, distance: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                      placeholder="140 Kms"
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                      Travel Duration
+                    </label>
+                    <input
+                      type="text"
+                      value={editingDest.time}
+                      onChange={(e) => setEditingDest(prev => ({ ...prev, time: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                      placeholder="3.0 Hours"
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                      Starting Rate
+                    </label>
+                    <input
+                      type="text"
+                      value={editingDest.rate}
+                      onChange={(e) => setEditingDest(prev => ({ ...prev, rate: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                      placeholder="From ₹15/km"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <ImageUploadField
+                    label="Destination Scenic Image"
+                    value={editingDest.image || ''}
+                    onChange={(url) => setEditingDest(prev => ({ ...prev, image: url }))}
+                    placeholder="/images/destinations/mysuru.jpg or https://..."
+                    helpText="Upload a high-quality destination photo from your computer or phone."
+                  />
+                </div>
+
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                    Travel Duration
+                    Highlight Description
                   </label>
                   <input
                     type="text"
-                    value={editingDest.time}
-                    onChange={(e) => setEditingDest(prev => ({ ...prev, time: e.target.value }))}
+                    value={editingDest.highlight}
+                    onChange={(e) => setEditingDest(prev => ({ ...prev, highlight: e.target.value }))}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                    placeholder="3.0 Hours"
+                    placeholder="Royal Palaces & Chamundi Hills"
                   />
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                    Starting Rate
-                  </label>
-                  <input
-                    type="text"
-                    value={editingDest.rate}
-                    onChange={(e) => setEditingDest(prev => ({ ...prev, rate: e.target.value }))}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                    placeholder="From ₹15/km"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <ImageUploadField
-                  label="Destination Scenic Image"
-                  value={editingDest.image || ''}
-                  onChange={(url) => setEditingDest(prev => ({ ...prev, image: url }))}
-                  placeholder="/images/destinations/mysuru.jpg or https://..."
-                  helpText="Upload a high-quality destination photo from your computer or phone."
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                  Highlight Description
-                </label>
-                <input
-                  type="text"
-                  value={editingDest.highlight}
-                  onChange={(e) => setEditingDest(prev => ({ ...prev, highlight: e.target.value }))}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                  placeholder="Royal Palaces & Chamundi Hills"
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+              {/* Sticky Action Footer */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '16px 24px',
+                borderTop: '1px solid #E2E8F0',
+                background: '#F8FAFC',
+                flexShrink: 0
+              }}>
                 <button
                   type="button"
                   onClick={() => setIsDestModalOpen(false)}
-                  style={{ padding: '9px 16px', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#64748B', fontWeight: '700', cursor: 'pointer' }}
+                  style={{
+                    padding: '9px 18px',
+                    borderRadius: '8px',
+                    border: '1px solid #CBD5E1',
+                    background: '#FFFFFF',
+                    color: '#64748B',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    fontSize: '0.86rem'
+                  }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{ padding: '9px 20px', borderRadius: '8px', border: 'none', background: '#C5A059', color: '#0F172A', fontWeight: '800', cursor: 'pointer' }}
+                  style={{
+                    padding: '9px 22px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#0284C7',
+                    color: '#FFFFFF',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    fontSize: '0.88rem',
+                    boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
                 >
-                  Apply
+                  <Save size={15} />
+                  <span>Apply Destination</span>
                 </button>
               </div>
             </form>
@@ -999,144 +1059,206 @@ export const AdminOutstationContent = ({ showToast }) => {
         <div style={{
           position: 'fixed',
           top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.6)',
+          background: 'rgba(15, 23, 42, 0.7)',
+          backdropFilter: 'blur(5px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 9999,
-          padding: '20px'
+          padding: '16px'
         }}>
           <div style={{
             background: '#FFFFFF',
-            borderRadius: '16px',
-            maxWidth: '520px',
+            borderRadius: '20px',
+            maxWidth: '560px',
             width: '100%',
-            padding: '28px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+            maxHeight: '90vh',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            overflow: 'hidden'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '18px' }}>
-              <Car size={20} color="#C5A059" />
-              <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', margin: 0 }}>
-                {editingTariff.id ? `Edit ${editingTariff.vehicle_variant}` : 'Add Outstation Vehicle Tariff'}
-              </h3>
+            {/* Modal Header */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '18px 24px',
+              borderBottom: '1px solid #E2E8F0',
+              background: '#FFFFFF',
+              flexShrink: 0
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Car size={20} color="#0284C7" />
+                <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: '#0F172A', margin: 0 }}>
+                  {editingTariff.id ? `Edit ${editingTariff.vehicle_variant}` : 'Add Outstation Vehicle Tariff'}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsTariffModalOpen(false);
+                  setEditingTariff(null);
+                }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: '4px', borderRadius: '6px' }}
+                title="Close"
+              >
+                <X size={20} />
+              </button>
             </div>
 
-            <form onSubmit={handleSaveTariff} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                  Vehicle Model & Class *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Innova Crysta / Innova Hycross"
-                  value={editingTariff.vehicle_variant || ''}
-                  onChange={(e) => setEditingTariff(prev => ({ ...prev, vehicle_variant: e.target.value }))}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: '700' }}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            {/* Modal Scrollable Body */}
+            <form onSubmit={handleSaveTariff} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+              <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: '14px', overflowY: 'auto', flex: 1 }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                    Min. Kms Per Day
+                    Vehicle Model & Class *
                   </label>
                   <input
-                    type="number"
-                    min="100"
-                    step="50"
-                    value={editingTariff.minimum_km_per_day || 300}
-                    onChange={(e) => setEditingTariff(prev => ({ ...prev, minimum_km_per_day: e.target.value }))}
+                    type="text"
+                    required
+                    placeholder="e.g. Innova Crysta / Innova Hycross"
+                    value={editingTariff.vehicle_variant || ''}
+                    onChange={(e) => setEditingTariff(prev => ({ ...prev, vehicle_variant: e.target.value }))}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: '700' }}
                   />
-                  <span style={{ fontSize: '0.7rem', color: '#64748B' }}>Usually 300 (or 400 for large buses)</span>
                 </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                    Per Km Rate (₹) *
-                  </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                      Min. Kms Per Day
+                    </label>
+                    <input
+                      type="number"
+                      min="100"
+                      step="50"
+                      value={editingTariff.minimum_km_per_day || 300}
+                      onChange={(e) => setEditingTariff(prev => ({ ...prev, minimum_km_per_day: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: '700' }}
+                    />
+                    <span style={{ fontSize: '0.7rem', color: '#64748B' }}>Usually 300 (or 400 for large buses)</span>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                      Per Km Rate (₹) *
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      required
+                      value={editingTariff.rate_per_km || ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setEditingTariff(prev => ({ 
+                          ...prev, 
+                          rate_per_km: val,
+                          outstation_extra_km: prev.outstation_extra_km === prev.rate_per_km || !prev.outstation_extra_km ? val : prev.outstation_extra_km 
+                        }));
+                      }}
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: '700', color: '#059669' }}
+                    />
+                    <span style={{ fontSize: '0.7rem', color: '#64748B' }}>e.g. 23 (for ₹23 / km)</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                      Extra Km Rate (₹)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={editingTariff.outstation_extra_km || editingTariff.rate_per_km || ''}
+                      onChange={(e) => setEditingTariff(prev => ({ ...prev, outstation_extra_km: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
+                      Driver Night Allowance (₹ / day)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="50"
+                      value={editingTariff.driver_allowance || ''}
+                      onChange={(e) => setEditingTariff(prev => ({ ...prev, driver_allowance: e.target.value }))}
+                      style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
+                    />
+                    <span style={{ fontSize: '0.7rem', color: '#64748B' }}>e.g. ₹400 or ₹500</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0' }}>
                   <input
-                    type="number"
-                    min="1"
-                    step="1"
-                    required
-                    value={editingTariff.rate_per_km || ''}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setEditingTariff(prev => ({ 
-                        ...prev, 
-                        rate_per_km: val,
-                        outstation_extra_km: prev.outstation_extra_km === prev.rate_per_km || !prev.outstation_extra_km ? val : prev.outstation_extra_km 
-                      }));
-                    }}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: '700', color: '#059669' }}
+                    type="checkbox"
+                    id="tariff_is_active"
+                    checked={editingTariff.is_active !== false}
+                    onChange={(e) => setEditingTariff(prev => ({ ...prev, is_active: e.target.checked }))}
+                    style={{ width: '18px', height: '18px', accentColor: '#0284C7', cursor: 'pointer' }}
                   />
-                  <span style={{ fontSize: '0.7rem', color: '#64748B' }}>e.g. 23 (for ₹23 / km)</span>
+                  <label htmlFor="tariff_is_active" style={{ fontSize: '0.84rem', fontWeight: '700', color: '#1E293B', cursor: 'pointer' }}>
+                    Active on Public Website (/outstation & /tariff)
+                  </label>
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                    Extra Km Rate (₹)
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    step="1"
-                    value={editingTariff.outstation_extra_km || editingTariff.rate_per_km || ''}
-                    onChange={(e) => setEditingTariff(prev => ({ ...prev, outstation_extra_km: e.target.value }))}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '4px' }}>
-                    Driver Night Allowance (₹ / day)
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="50"
-                    value={editingTariff.driver_allowance || ''}
-                    onChange={(e) => setEditingTariff(prev => ({ ...prev, driver_allowance: e.target.value }))}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
-                  />
-                  <span style={{ fontSize: '0.7rem', color: '#64748B' }}>e.g. ₹400 or ₹500</span>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 0' }}>
-                <input
-                  type="checkbox"
-                  id="tariff_is_active"
-                  checked={editingTariff.is_active !== false}
-                  onChange={(e) => setEditingTariff(prev => ({ ...prev, is_active: e.target.checked }))}
-                  style={{ width: '18px', height: '18px', accentColor: '#C5A059', cursor: 'pointer' }}
-                />
-                <label htmlFor="tariff_is_active" style={{ fontSize: '0.84rem', fontWeight: '700', color: '#1E293B', cursor: 'pointer' }}>
-                  Active on Public Website (/outstation & /tariff)
-                </label>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+              {/* Sticky Action Footer */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '16px 24px',
+                borderTop: '1px solid #E2E8F0',
+                background: '#F8FAFC',
+                flexShrink: 0
+              }}>
                 <button
                   type="button"
                   onClick={() => {
                     setIsTariffModalOpen(false);
                     setEditingTariff(null);
                   }}
-                  style={{ padding: '9px 16px', borderRadius: '8px', border: '1px solid #CBD5E1', background: '#FFFFFF', color: '#64748B', fontWeight: '700', cursor: 'pointer' }}
+                  style={{
+                    padding: '9px 18px',
+                    borderRadius: '8px',
+                    border: '1px solid #CBD5E1',
+                    background: '#FFFFFF',
+                    color: '#64748B',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    fontSize: '0.86rem'
+                  }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={tariffSaving}
-                  style={{ padding: '9px 22px', borderRadius: '8px', border: 'none', background: '#C5A059', color: '#0F172A', fontWeight: '800', cursor: tariffSaving ? 'wait' : 'pointer' }}
+                  style={{
+                    padding: '9px 22px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#0284C7',
+                    color: '#FFFFFF',
+                    fontWeight: '800',
+                    cursor: tariffSaving ? 'wait' : 'pointer',
+                    fontSize: '0.88rem',
+                    boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
                 >
-                  {tariffSaving ? 'Saving...' : 'Save Vehicle Tariff'}
+                  <Save size={15} />
+                  <span>{tariffSaving ? 'Saving...' : 'Save Vehicle Tariff'}</span>
                 </button>
               </div>
             </form>
