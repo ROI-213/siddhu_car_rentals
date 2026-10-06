@@ -18,7 +18,7 @@ import { ImageUploadField } from './ImageUploadField';
 export const AdminLocalContent = ({ showToast }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState('hero'); // 'hero', 'packages', 'scenarios'
+  const [activeTab, setActiveTab] = useState('packages'); // 'packages', 'hero', 'scenarios'
   const [localData, setLocalData] = useState(DEFAULT_LOCAL_CONTENT);
 
   // Modal editing states
@@ -70,12 +70,12 @@ export const AdminLocalContent = ({ showToast }) => {
   };
 
   const handleResetToDefault = async () => {
-    if (!window.confirm('Reset Local City Transfer page to factory default content? Any custom text or rates will be overwritten.')) {
+    if (!window.confirm('Reset Local City Transfer page to factory default rate card content? Any custom text or rates will be reset to official frontend values (₹1,900 / ₹3,200 / ₹4,300).')) {
       return;
     }
     setLocalData(DEFAULT_LOCAL_CONTENT);
     await handleSaveToPostgres(DEFAULT_LOCAL_CONTENT);
-    if (showToast) showToast('✓ Local Transfer content reset to official defaults.');
+    if (showToast) showToast('✓ Local Transfer content reset to official frontend defaults.');
   };
 
   // Package modal handlers
@@ -169,7 +169,7 @@ export const AdminLocalContent = ({ showToast }) => {
             </h2>
           </div>
           <p style={{ fontSize: '0.84rem', color: 'var(--color-slate-500)', margin: 0 }}>
-            Manage the hero banner, hourly rental package cards (4h, 8h, 12h), rates, and city mobility scenarios for the /local page.
+            Manage the hero banner, hourly rental package cards (4h: ₹1,900, 8h: ₹3,200, 12h: ₹4,300), extra rates, and city mobility scenarios for the /local page.
           </p>
         </div>
 
@@ -193,7 +193,7 @@ export const AdminLocalContent = ({ showToast }) => {
             }}
           >
             <RotateCcw size={14} />
-            <span>Reset to Defaults</span>
+            <span>Reset to Official Defaults</span>
           </button>
 
           <button
@@ -224,8 +224,8 @@ export const AdminLocalContent = ({ showToast }) => {
       {/* Sub Tabs */}
       <div style={{ display: 'flex', gap: '8px', background: '#FFFFFF', padding: '8px', borderRadius: '14px', border: '1px solid rgba(226, 232, 240, 0.9)', flexWrap: 'wrap' }}>
         {[
-          { id: 'hero', label: '👑 Hero & Banner', icon: Clock },
           { id: 'packages', label: '⏱️ Hourly Packages (4h/8h/12h)', icon: Award },
+          { id: 'hero', label: '👑 Hero & Banner', icon: Clock },
           { id: 'scenarios', label: '🏢 City Mobility Scenarios', icon: Building2 }
         ].map(tab => (
           <button
@@ -252,100 +252,7 @@ export const AdminLocalContent = ({ showToast }) => {
         ))}
       </div>
 
-      {/* ── TAB 1: HERO & BANNER ────────────────────────────────────────── */}
-      {activeTab === 'hero' && (
-        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(226, 232, 240, 0.9)', display: 'flex', flexDirection: 'column', gap: '18px' }}>
-          <div>
-            <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0F172A', margin: '0 0 4px 0' }}>
-              Local City Transfer Hero Banner
-            </h3>
-            <span style={{ fontSize: '0.8rem', color: '#64748B' }}>
-              Top banner displayed when visitors click "Local" on the navigation bar.
-            </span>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '6px' }}>
-                Badge Tagline
-              </label>
-              <input
-                type="text"
-                value={localData.hero?.badge || ''}
-                onChange={(e) => setLocalData(prev => ({
-                  ...prev,
-                  hero: { ...prev.hero, badge: e.target.value }
-                }))}
-                placeholder="Hourly Car Rental with Driver"
-                style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '6px' }}>
-                Title Prefix
-              </label>
-              <input
-                type="text"
-                value={localData.hero?.title || ''}
-                onChange={(e) => setLocalData(prev => ({
-                  ...prev,
-                  hero: { ...prev.hero, title: e.target.value }
-                }))}
-                placeholder="Local City Transfers & Hourly"
-                style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: '700' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '6px' }}>
-                Title Highlight (Gold Accent)
-              </label>
-              <input
-                type="text"
-                value={localData.hero?.titleHighlight || ''}
-                onChange={(e) => setLocalData(prev => ({
-                  ...prev,
-                  hero: { ...prev.hero, titleHighlight: e.target.value }
-                }))}
-                placeholder="Rental Packages"
-                style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: '700', color: '#C5A059' }}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '6px' }}>
-              Supporting Description
-            </label>
-            <textarea
-              rows={3}
-              value={localData.hero?.description || ''}
-              onChange={(e) => setLocalData(prev => ({
-                ...prev,
-                hero: { ...prev.hero, description: e.target.value }
-              }))}
-              placeholder="Chauffeur-driven cars for business meetings, IT park visits, shopping, airport transfers, and events across Bengaluru. Fixed packages, no surge pricing."
-              style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', lineHeight: '1.5' }}
-            />
-          </div>
-
-          <div>
-            <ImageUploadField
-              label="Hero Background Banner Photo"
-              value={localData.hero?.image || ''}
-              onChange={(url) => setLocalData(prev => ({
-                ...prev,
-                hero: { ...prev.hero, image: url }
-              }))}
-              placeholder="/images/services_local_vellfire.jpg or click Upload Image"
-              helpText="Upload a high-resolution hero photo for the Local Transfer banner."
-            />
-          </div>
-        </div>
-      )}
-
-      {/* ── TAB 2: HOURLY PACKAGES ───────────────────────────────────────── */}
+      {/* ── TAB 1: HOURLY PACKAGES ───────────────────────────────────────── */}
       {activeTab === 'packages' && (
         <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(226, 232, 240, 0.9)', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
@@ -354,7 +261,7 @@ export const AdminLocalContent = ({ showToast }) => {
                 Hourly Rental Package Cards
               </h3>
               <span style={{ fontSize: '0.8rem', color: '#64748B' }}>
-                Configurable hourly packages (Half day, Full day, Extended day) with base fares and extra km/hour charges.
+                Configurable hourly packages (Half day, Full day, Extended day) matching frontend rates (₹1,900 / ₹3,200 / ₹4,300).
               </span>
             </div>
 
@@ -363,13 +270,13 @@ export const AdminLocalContent = ({ showToast }) => {
               onClick={() => {
                 setEditingPackage({
                   id: 'pkg-' + Date.now(),
-                  badge: 'Special Package',
+                  badge: 'Custom Package',
                   name: '6 Hours / 60 Kms',
                   desc: 'Flexible package for city appointments and shopping.',
                   vehicleName: 'Innova Crysta VIP Rate',
-                  basePrice: '₹2,800',
-                  extraHourRate: '₹200/hr',
-                  extraKmRate: '₹20/km'
+                  basePrice: '₹2,600',
+                  extraHourRate: '₹275/hr',
+                  extraKmRate: '₹23/km'
                 });
                 setIsPackageModalOpen(true);
               }}
@@ -491,7 +398,7 @@ export const AdminLocalContent = ({ showToast }) => {
                     <div style={{ fontSize: '0.7rem', color: '#64748B', textTransform: 'uppercase', fontWeight: '700' }}>
                       {pkg.vehicleName || 'Innova Crysta VIP Rate'}
                     </div>
-                    <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#0F172A', margin: '2px 0' }}>
+                    <div style={{ fontSize: '1.75rem', fontWeight: '900', color: '#0F172A', margin: '2px 0' }}>
                       {pkg.basePrice}
                     </div>
                     <div style={{ fontSize: '0.76rem', color: '#C5A059', fontWeight: '700' }}>
@@ -501,6 +408,99 @@ export const AdminLocalContent = ({ showToast }) => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── TAB 2: HERO & BANNER ────────────────────────────────────────── */}
+      {activeTab === 'hero' && (
+        <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '24px', border: '1px solid rgba(226, 232, 240, 0.9)', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          <div>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0F172A', margin: '0 0 4px 0' }}>
+              Local City Transfer Hero Banner
+            </h3>
+            <span style={{ fontSize: '0.8rem', color: '#64748B' }}>
+              Top banner displayed when visitors click "Local" on the navigation bar.
+            </span>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '6px' }}>
+                Badge Tagline
+              </label>
+              <input
+                type="text"
+                value={localData.hero?.badge || ''}
+                onChange={(e) => setLocalData(prev => ({
+                  ...prev,
+                  hero: { ...prev.hero, badge: e.target.value }
+                }))}
+                placeholder="Hourly Car Rental with Driver"
+                style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '6px' }}>
+                Title Prefix
+              </label>
+              <input
+                type="text"
+                value={localData.hero?.title || ''}
+                onChange={(e) => setLocalData(prev => ({
+                  ...prev,
+                  hero: { ...prev.hero, title: e.target.value }
+                }))}
+                placeholder="Local City Transfers & Hourly"
+                style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: '700' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '6px' }}>
+                Title Highlight (Gold Accent)
+              </label>
+              <input
+                type="text"
+                value={localData.hero?.titleHighlight || ''}
+                onChange={(e) => setLocalData(prev => ({
+                  ...prev,
+                  hero: { ...prev.hero, titleHighlight: e.target.value }
+                }))}
+                placeholder="Rental Packages"
+                style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', fontWeight: '700', color: '#C5A059' }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '6px' }}>
+              Supporting Description
+            </label>
+            <textarea
+              rows={3}
+              value={localData.hero?.description || ''}
+              onChange={(e) => setLocalData(prev => ({
+                ...prev,
+                hero: { ...prev.hero, description: e.target.value }
+              }))}
+              placeholder="Chauffeur-driven cars for business meetings, IT park visits, shopping, airport transfers, and events across Bengaluru. Fixed packages, no surge pricing."
+              style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.88rem', lineHeight: '1.5' }}
+            />
+          </div>
+
+          <div>
+            <ImageUploadField
+              label="Hero Background Banner Photo"
+              value={localData.hero?.image || ''}
+              onChange={(url) => setLocalData(prev => ({
+                ...prev,
+                hero: { ...prev.hero, image: url }
+              }))}
+              placeholder="/images/services_local_vellfire.jpg or click Upload Image"
+              helpText="Upload a high-resolution hero photo for the Local Transfer banner."
+            />
           </div>
         </div>
       )}
@@ -691,13 +691,13 @@ export const AdminLocalContent = ({ showToast }) => {
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: '800', color: '#334155', marginBottom: '6px' }}>
-                    Base Package Price
+                    Base Package Price (e.g. ₹1,900 / ₹3,200)
                   </label>
                   <input
                     type="text"
                     value={editingPackage.basePrice || ''}
                     onChange={(e) => setEditingPackage(prev => ({ ...prev, basePrice: e.target.value }))}
-                    placeholder="₹3,400"
+                    placeholder="₹3,200"
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontWeight: '700' }}
                   />
                 </div>
@@ -712,7 +712,7 @@ export const AdminLocalContent = ({ showToast }) => {
                     type="text"
                     value={editingPackage.extraHourRate || ''}
                     onChange={(e) => setEditingPackage(prev => ({ ...prev, extraHourRate: e.target.value }))}
-                    placeholder="₹200/hr"
+                    placeholder="₹275/hr"
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
                   />
                 </div>
@@ -724,7 +724,7 @@ export const AdminLocalContent = ({ showToast }) => {
                     type="text"
                     value={editingPackage.extraKmRate || ''}
                     onChange={(e) => setEditingPackage(prev => ({ ...prev, extraKmRate: e.target.value }))}
-                    placeholder="₹20/km"
+                    placeholder="₹23/km"
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #CBD5E1' }}
                   />
                 </div>

@@ -580,9 +580,9 @@ export const DEFAULT_LOCAL_CONTENT = {
       name: "4 Hours / 40 Kms",
       desc: "Ideal for quick airport runs, business lunches, or executive city appointments.",
       vehicleName: "Innova Crysta VIP Rate",
-      basePrice: "₹2,200",
-      extraHourRate: "₹200/hr",
-      extraKmRate: "₹20/km"
+      basePrice: "₹1,900",
+      extraHourRate: "₹275/hr",
+      extraKmRate: "₹23/km"
     },
     {
       id: "8h",
@@ -590,9 +590,9 @@ export const DEFAULT_LOCAL_CONTENT = {
       name: "8 Hours / 80 Kms",
       desc: "Complete full-day mobility for corporate meetings, IT park visits, and shopping.",
       vehicleName: "Innova Crysta VIP Rate",
-      basePrice: "₹3,400",
-      extraHourRate: "₹200/hr",
-      extraKmRate: "₹20/km"
+      basePrice: "₹3,200",
+      extraHourRate: "₹275/hr",
+      extraKmRate: "₹23/km"
     },
     {
       id: "12h",
@@ -600,9 +600,9 @@ export const DEFAULT_LOCAL_CONTENT = {
       name: "12 Hours / 120 Kms",
       desc: "Extended coverage for long corporate schedules, weddings, or city-wide travel.",
       vehicleName: "Innova Crysta VIP Rate",
-      basePrice: "₹4,600",
-      extraHourRate: "₹200/hr",
-      extraKmRate: "₹20/km"
+      basePrice: "₹4,300",
+      extraHourRate: "₹275/hr",
+      extraKmRate: "₹23/km"
     }
   ],
   scenariosHeader: {
