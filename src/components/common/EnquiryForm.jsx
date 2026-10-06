@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin, Calendar, Clock, Car, Phone, User, CheckCircle2, ChevronRight, ShieldCheck } from 'lucide-react';
 import { GlassCard } from './GlassCard';
 import { Input } from './Input';
 import { LocationAutocompleteInput } from './LocationAutocompleteInput';
 import { WhatsAppIcon } from './WhatsAppEnquiryMenu';
 import { SITE_CONFIG } from '../../config/site';
-import { DEFAULT_OUTSTATION_TARIFFS } from '../../services/tariffApi';
+import { tariffApi, DEFAULT_OUTSTATION_TARIFFS } from '../../services/tariffApi';
 
 const getVehicleCategory = (variant) => {
   const v = (variant || '').toLowerCase();
@@ -29,6 +29,7 @@ export const EnquiryForm = ({
   const [selectedOutstationId, setSelectedOutstationId] = useState(23); // Innova Crysta default
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [submitted, setSubmitted] = useState(false);
+  const [outstationVehicles, setOutstationVehicles] = useState(() => tariffApi.getLocalTariffs({ usage_type: 'outstation' }));
   const [formData, setFormData] = useState({
     pickup: '',
     destination: '',
@@ -40,9 +41,32 @@ export const EnquiryForm = ({
     phone: ''
   });
 
-  const activeOutstationVehicle = DEFAULT_OUTSTATION_TARIFFS.find(v => v.id === selectedOutstationId) || DEFAULT_OUTSTATION_TARIFFS[2];
+  useEffect(() => {
+    const loadOutstation = async () => {
+      try {
+        const data = await tariffApi.getTariffs({ usage_type: 'outstation', all: false });
+        if (Array.isArray(data) && data.length > 0) {
+          setOutstationVehicles(data);
+        }
+      } catch (err) {
+        console.warn('EnquiryForm outstation fetch error:', err);
+      }
+    };
+    loadOutstation();
 
-  const filteredOutstationVehicles = DEFAULT_OUTSTATION_TARIFFS.filter(v => {
+    const handleUpdate = () => loadOutstation();
+    window.addEventListener('scr_tariffs_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('scr_tariffs_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
+
+  const vehicleList = (outstationVehicles && outstationVehicles.length > 0) ? outstationVehicles : DEFAULT_OUTSTATION_TARIFFS;
+  const activeOutstationVehicle = vehicleList.find(v => v.id === selectedOutstationId || String(v.id) === String(selectedOutstationId)) || vehicleList[0] || DEFAULT_OUTSTATION_TARIFFS[2];
+
+  const filteredOutstationVehicles = vehicleList.filter(v => {
     if (selectedCategory === 'all') return true;
     return getVehicleCategory(v.vehicle_variant) === selectedCategory;
   });

@@ -17,7 +17,20 @@ export const tariffApi = {
       const isJson = res.headers.get('content-type')?.includes('application/json');
       if (!isJson) throw new Error('Non-JSON response from server');
       const data = await res.json();
-      return (data && Array.isArray(data.data) && data.data.length > 0) ? data.data : tariffApi.getLocalTariffs({ usage_type, search, all });
+      if (data && Array.isArray(data.data) && data.data.length > 0) {
+        // Sync with local cache
+        try {
+          const cached = JSON.parse(localStorage.getItem('scr_tariffs_cache_v5') || '[]');
+          const fetchedIds = new Set(data.data.map(d => String(d.id)));
+          const preserved = Array.isArray(cached) ? cached.filter(c => !fetchedIds.has(String(c.id))) : [];
+          const updated = [...data.data, ...preserved].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+          localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(updated));
+        } catch (e) {
+          console.warn('Cache sync error:', e);
+        }
+        return data.data;
+      }
+      return tariffApi.getLocalTariffs({ usage_type, search, all });
     } catch (err) {
       console.warn('API fetch failed, reading from local fallback storage:', err);
       return tariffApi.getLocalTariffs({ usage_type, search, all });
@@ -34,7 +47,7 @@ export const tariffApi = {
     } catch (err) {
       console.warn('API fetch failed, reading single tariff from local fallback:', err);
       const list = tariffApi.getLocalTariffs({ all: true });
-      return list.find(t => t.id === parseInt(id, 10)) || null;
+      return list.find(t => String(t.id) === String(id) || t.id === parseInt(id, 10)) || null;
     }
   },
 
@@ -42,7 +55,7 @@ export const tariffApi = {
   async createTariff(tariffData) {
     const localRecord = tariffApi.createLocalTariff(tariffData);
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('scr_tariffs_updated'));
+      window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'create', data: localRecord } }));
     }
 
     try {
@@ -55,10 +68,14 @@ export const tariffApi = {
       if (!res.ok || !data.success) {
         throw new Error(data.errors ? data.errors.join(', ') : data.error || 'Failed to create tariff');
       }
-      if (data.data && data.data.id) {
-        tariffApi.updateLocalTariff(localRecord.id, data.data);
+      const finalData = data.data || localRecord;
+      if (finalData && finalData.id) {
+        tariffApi.updateLocalTariff(localRecord.id, finalData);
       }
-      return data.data || localRecord;
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'create', data: finalData } }));
+      }
+      return finalData;
     } catch (err) {
       console.warn('API create failed, preserved in local fallback storage:', err);
       return localRecord;
@@ -69,7 +86,7 @@ export const tariffApi = {
   async updateTariff(id, tariffData) {
     const localRecord = tariffApi.updateLocalTariff(id, tariffData);
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('scr_tariffs_updated'));
+      window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'update', id, data: tariffData } }));
     }
 
     try {
@@ -82,10 +99,14 @@ export const tariffApi = {
       if (!res.ok || !data.success) {
         throw new Error(data.errors ? data.errors.join(', ') : data.error || 'Failed to update tariff');
       }
-      if (data.data) {
-        tariffApi.updateLocalTariff(id, data.data);
+      const finalData = data.data || localRecord;
+      if (finalData) {
+        tariffApi.updateLocalTariff(id, finalData);
       }
-      return data.data || localRecord;
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'update', id, data: finalData } }));
+      }
+      return finalData;
     } catch (err) {
       console.warn('API update failed, preserved in local fallback storage:', err);
       return localRecord;
@@ -96,7 +117,7 @@ export const tariffApi = {
   async deleteTariff(id) {
     tariffApi.deleteLocalTariff(id);
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('scr_tariffs_updated'));
+      window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'delete', id } }));
     }
 
     try {
@@ -106,6 +127,9 @@ export const tariffApi = {
       const data = await res.json();
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Failed to delete tariff');
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'delete', id } }));
       }
       return true;
     } catch (err) {
@@ -374,17 +398,38 @@ export const tariffApi = {
 
   updateLocalTariff(id, item) {
     const list = tariffApi.getLocalTariffs({ all: true });
-    const idx = list.findIndex(x => x.id === parseInt(id, 10));
-    if (idx === -1) throw new Error('Tariff record not found');
+    const idStr = String(id);
+    const idNum = parseInt(id, 10);
+    const idx = list.findIndex(x => String(x.id) === idStr || (!isNaN(idNum) && x.id === idNum));
+    if (idx === -1) {
+      const newRecord = { ...item, id: isNaN(idNum) ? id : idNum };
+      list.push(newRecord);
+      try {
+        localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
+      } catch (e) {
+        console.warn('Cache write error:', e);
+      }
+      return newRecord;
+    }
     list[idx] = { ...list[idx], ...item };
-    localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
+    try {
+      localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
+    } catch (e) {
+      console.warn('Cache write error:', e);
+    }
     return list[idx];
   },
 
   deleteLocalTariff(id) {
     let list = tariffApi.getLocalTariffs({ all: true });
-    list = list.filter(x => x.id !== parseInt(id, 10));
-    localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
+    const idStr = String(id);
+    const idNum = parseInt(id, 10);
+    list = list.filter(x => String(x.id) !== idStr && (isNaN(idNum) || x.id !== idNum));
+    try {
+      localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
+    } catch (e) {
+      console.warn('Cache write error:', e);
+    }
     return true;
   }
 };

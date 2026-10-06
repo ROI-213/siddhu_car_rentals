@@ -359,6 +359,7 @@ export const db = {
   },
 
   async updateTariff(id, tariffData) {
+    const numId = parseInt(id, 10);
     if (usePostgres) {
       const fields = [];
       const values = [];
@@ -372,15 +373,29 @@ export const db = {
       }
 
       fields.push(`updated_at = CURRENT_TIMESTAMP`);
-      values.push(id);
+      values.push(isNaN(numId) ? id : numId);
 
       const query = `UPDATE tariffs SET ${fields.join(', ')} WHERE id = $${idx} RETURNING *;`;
-      const result = await pool.query(query, values);
+      let result = await pool.query(query, values);
+      if (result.rows.length === 0 && tariffData.vehicle_variant) {
+        // Fallback: match by vehicle_variant and usage_type if ID differed
+        const fallbackQuery = `UPDATE tariffs SET ${fields.join(', ')} WHERE LOWER(vehicle_variant) = LOWER($${idx}) AND LOWER(usage_type) = LOWER($${idx + 1}) RETURNING *;`;
+        const fallbackValues = [...values.slice(0, -1), tariffData.vehicle_variant, tariffData.usage_type || 'outstation'];
+        result = await pool.query(fallbackQuery, fallbackValues);
+      }
       return result.rows[0] || null;
     } else {
       const data = loadLocalData();
-      const index = data.tariffs.findIndex(t => t.id === parseInt(id, 10));
-      if (index === -1) return null;
+      let index = data.tariffs.findIndex(t => t.id === numId || String(t.id) === String(id));
+      if (index === -1 && tariffData.vehicle_variant) {
+        index = data.tariffs.findIndex(t => t.vehicle_variant.toLowerCase() === tariffData.vehicle_variant.toLowerCase() && t.usage_type.toLowerCase() === (tariffData.usage_type || '').toLowerCase());
+      }
+      if (index === -1) {
+        const newRecord = { ...tariffData, id: isNaN(numId) ? data.tariffs.length + 1 : numId, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+        data.tariffs.push(newRecord);
+        saveLocalData(data);
+        return newRecord;
+      }
       data.tariffs[index] = {
         ...data.tariffs[index],
         ...tariffData,

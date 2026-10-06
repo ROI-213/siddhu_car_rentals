@@ -32,9 +32,9 @@ import { TariffEnquiryModal } from '../components/modals/TariffEnquiryModal';
 
 export const Tariff = ({ onSelectVehicleForBooking }) => {
   const [activeCategory, setActiveCategory] = useState('disposal'); // 'disposal' | 'outstation'
-  const [tariffs, setTariffs] = useState([]);
+  const [tariffs, setTariffs] = useState(() => tariffApi.getLocalTariffs({ usage_type: 'disposal' }));
   const [terms, setTerms] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [capacityFilter, setCapacityFilter] = useState('all');
   const [viewMode, setViewMode] = useState('table'); // 'table' | 'cards'
@@ -54,16 +54,20 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
   }, [activeCategory]);
 
   const fetchTariffsAndTerms = async () => {
-    setLoading(true);
     try {
       const [tariffsData, termsData] = await Promise.all([
         tariffApi.getTariffs({ usage_type: activeCategory, all: false }),
         tariffApi.getTerms()
       ]);
-      setTariffs(tariffsData);
+      if (Array.isArray(tariffsData) && tariffsData.length > 0) {
+        setTariffs(tariffsData);
+      } else {
+        setTariffs(tariffApi.getLocalTariffs({ usage_type: activeCategory }));
+      }
       setTerms(termsData);
     } catch (err) {
       console.error('Error fetching tariff data:', err);
+      setTariffs(tariffApi.getLocalTariffs({ usage_type: activeCategory }));
     } finally {
       setLoading(false);
     }
@@ -176,7 +180,10 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
               boxShadow: '0 4px 16px rgba(0,0,0,0.04)' 
             }}>
               <button
-                onClick={() => setActiveCategory('disposal')}
+                onClick={() => {
+                  setActiveCategory('disposal');
+                  setTariffs(tariffApi.getLocalTariffs({ usage_type: 'disposal' }));
+                }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -196,7 +203,10 @@ export const Tariff = ({ onSelectVehicleForBooking }) => {
                 <span>Local City Packages</span>
               </button>
               <button
-                onClick={() => setActiveCategory('outstation')}
+                onClick={() => {
+                  setActiveCategory('outstation');
+                  setTariffs(tariffApi.getLocalTariffs({ usage_type: 'outstation' }));
+                }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',

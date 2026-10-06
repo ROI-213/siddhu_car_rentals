@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Crown, MapPin, Calendar, Clock, PhoneCall, MessageSquare, ChevronRight, ShieldCheck, Award, Car, CheckCircle2, Navigation } from 'lucide-react';
 import { PageHero } from '../components/common/PageHero';
 import { GlassCard } from '../components/common/GlassCard';
@@ -10,7 +10,7 @@ import { EnquiryForm } from '../components/common/EnquiryForm';
 import { WhatsAppButton } from '../components/common/WhatsAppButton';
 import { WhatsAppBookingModal } from '../components/modals/WhatsAppBookingModal';
 import { TariffEnquiryModal } from '../components/modals/TariffEnquiryModal';
-import { DEFAULT_OUTSTATION_TARIFFS } from '../services/tariffApi';
+import { tariffApi, formatCurrency, DEFAULT_OUTSTATION_TARIFFS } from '../services/tariffApi';
 import { useSiteContent } from '../hooks/useSiteContent';
 import { DEFAULT_OUTSTATION_CONTENT } from '../data/defaultSiteContent';
 
@@ -22,9 +22,33 @@ export const Outstation = ({ onEnquireClick }) => {
   const options = Array.isArray(outstation.options) ? outstation.options : DEFAULT_OUTSTATION_CONTENT.options;
   const terms = outstation.terms || DEFAULT_OUTSTATION_CONTENT.terms;
 
+  const [tariffs, setTariffs] = useState(() => tariffApi.getLocalTariffs({ usage_type: 'outstation' }));
   const [selectedRouteModal, setSelectedRouteModal] = useState(null);
   const [selectedTariffForModal, setSelectedTariffForModal] = useState(null);
   const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
+
+  useEffect(() => {
+    const loadOutstationTariffs = async () => {
+      try {
+        const data = await tariffApi.getTariffs({ usage_type: 'outstation', all: false });
+        if (Array.isArray(data) && data.length > 0) {
+          setTariffs(data);
+        }
+      } catch (err) {
+        console.warn('Could not fetch dynamic outstation tariffs:', err);
+      }
+    };
+
+    loadOutstationTariffs();
+
+    const handleUpdate = () => loadOutstationTariffs();
+    window.addEventListener('scr_tariffs_updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('scr_tariffs_updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
 
   const handleOpenTariffEnquiry = (tariffItem) => {
     setSelectedTariffForModal(tariffItem);
@@ -311,9 +335,9 @@ export const Outstation = ({ onEnquireClick }) => {
               <div style={{ textAlign: 'right' }}>Action</div>
             </div>
 
-            {DEFAULT_OUTSTATION_TARIFFS.map((t, idx) => (
+            {(tariffs && tariffs.length > 0 ? tariffs : DEFAULT_OUTSTATION_TARIFFS).map((t, idx) => (
               <div
-                key={t.id}
+                key={t.id || idx}
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1.4fr 1fr 1fr 1.1fr 0.9fr',
@@ -325,12 +349,14 @@ export const Outstation = ({ onEnquireClick }) => {
                 }}
               >
                 <div style={{ fontWeight: '700', color: 'var(--color-charcoal-900)' }}>{t.vehicle_variant}</div>
-                <div style={{ color: 'var(--color-charcoal-600)' }}>{t.minimum_km_per_day} km/day</div>
+                <div style={{ color: 'var(--color-charcoal-600)' }}>
+                  {t.minimum_km_per_day ? `${t.minimum_km_per_day} km/day` : '300 km/day'}
+                </div>
                 <div style={{ color: 'var(--accent-gold-primary)', fontWeight: '700' }}>
-                  ₹{t.rate_per_km} / km
+                  {formatCurrency(t.rate_per_km, ' / km')}
                 </div>
                 <div style={{ color: 'var(--color-charcoal-700)' }}>
-                  ₹{t.driver_allowance} / day
+                  {formatCurrency(t.driver_allowance, ' / day')}
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <button
