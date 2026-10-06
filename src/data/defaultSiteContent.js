@@ -559,7 +559,83 @@ export const DEFAULT_ABOUT_CONTENT = {
   ]
 };
 
+export const DEFAULT_LOCAL_CONTENT = {
+  hero: {
+    badge: "Hourly Car Rental with Driver",
+    title: "Local City Transfers & Hourly",
+    titleHighlight: "Rental Packages",
+    description: "Chauffeur-driven cars for business meetings, IT park visits, shopping, airport transfers, and events across Bengaluru. Fixed packages, no surge pricing.",
+    image: "/images/services_local_vellfire.jpg"
+  },
+  packagesHeader: {
+    badge: "Transparent Hourly Rates",
+    title: "Popular Local Hourly Rental",
+    titleHighlight: "Packages",
+    description: "Choose the package duration that fits your schedule. Extra kilometers and extra hours are billed transparently."
+  },
+  packages: [
+    {
+      id: "4h",
+      badge: "Half Day",
+      name: "4 Hours / 40 Kms",
+      desc: "Ideal for quick airport runs, business lunches, or executive city appointments.",
+      vehicleName: "Innova Crysta VIP Rate",
+      basePrice: "₹2,200",
+      extraHourRate: "₹200/hr",
+      extraKmRate: "₹20/km"
+    },
+    {
+      id: "8h",
+      badge: "Most Popular (Full Day)",
+      name: "8 Hours / 80 Kms",
+      desc: "Complete full-day mobility for corporate meetings, IT park visits, and shopping.",
+      vehicleName: "Innova Crysta VIP Rate",
+      basePrice: "₹3,400",
+      extraHourRate: "₹200/hr",
+      extraKmRate: "₹20/km"
+    },
+    {
+      id: "12h",
+      badge: "Extended Full Day",
+      name: "12 Hours / 120 Kms",
+      desc: "Extended coverage for long corporate schedules, weddings, or city-wide travel.",
+      vehicleName: "Innova Crysta VIP Rate",
+      basePrice: "₹4,600",
+      extraHourRate: "₹200/hr",
+      extraKmRate: "₹20/km"
+    }
+  ],
+  scenariosHeader: {
+    badge: "Versatile City Mobility",
+    title: "Local Transfer Services in",
+    titleHighlight: "Bengaluru",
+    description: "Providing luxury chauffeur travel across major corporate hubs, tech parks, and luxury hotels."
+  },
+  scenarios: [
+    {
+      id: "tech-park",
+      icon: "🏢",
+      title: "Tech Park & Corporate Travel",
+      desc: "Punctual chauffeurs for Manyata Tech Park, Bagmane Tech Park, Prestige Tech Park, and Electronic City meetings."
+    },
+    {
+      id: "point-to-point",
+      icon: "🧭",
+      title: "Point-to-Point City Drops",
+      desc: "Direct single-trip or return drops between luxury hotels (The Leela, Taj West End, Ritz-Carlton) and office towers."
+    },
+    {
+      id: "shopping-dining",
+      icon: "🛍️",
+      title: "Luxury Shopping & Dining",
+      desc: "Relaxed chauffeur waiting outside UB City Collection, Phoenix Marketcity, or Indiranagar fine-dining restaurants."
+    }
+  ]
+};
+
 DEFAULT_SITE_CONTENT.corporate = DEFAULT_CORPORATE_CONTENT;
 DEFAULT_SITE_CONTENT.outstation = DEFAULT_OUTSTATION_CONTENT;
 DEFAULT_SITE_CONTENT.about = DEFAULT_ABOUT_CONTENT;
+DEFAULT_SITE_CONTENT.local = DEFAULT_LOCAL_CONTENT;
+
 

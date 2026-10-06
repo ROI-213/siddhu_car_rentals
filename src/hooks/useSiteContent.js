@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { tariffApi } from '../services/tariffApi';
-import { DEFAULT_SITE_CONTENT, DEFAULT_ABOUT_CONTENT } from '../data/defaultSiteContent';
+import { DEFAULT_SITE_CONTENT, DEFAULT_ABOUT_CONTENT, DEFAULT_LOCAL_CONTENT } from '../data/defaultSiteContent';
 
 export const useSiteContent = () => {
   const [content, setContent] = useState(() => {
@@ -33,6 +33,16 @@ export const useSiteContent = () => {
           stats: Array.isArray(cached?.about?.stats) && cached.about.stats.length > 0
             ? cached.about.stats
             : DEFAULT_SITE_CONTENT.about?.stats
+        },
+        local: {
+          ...DEFAULT_SITE_CONTENT.local,
+          ...(cached.local || {}),
+          packages: Array.isArray(cached?.local?.packages) && cached.local.packages.length > 0
+            ? cached.local.packages
+            : DEFAULT_SITE_CONTENT.local?.packages,
+          scenarios: Array.isArray(cached?.local?.scenarios) && cached.local.scenarios.length > 0
+            ? cached.local.scenarios
+            : DEFAULT_SITE_CONTENT.local?.scenarios
         }
       };
     } catch {
@@ -87,6 +97,24 @@ export const useSiteContent = () => {
             : (Array.isArray(cached?.about?.stats) && cached.about.stats.length > 0)
               ? cached.about.stats
               : DEFAULT_SITE_CONTENT.about?.stats
+        },
+        local: {
+          ...DEFAULT_SITE_CONTENT.local,
+          ...(cached.local || {}),
+          ...(all?.local || {}),
+          hero: { ...DEFAULT_SITE_CONTENT.local?.hero, ...(cached?.local?.hero || {}), ...(all?.local?.hero || {}) },
+          packagesHeader: { ...DEFAULT_SITE_CONTENT.local?.packagesHeader, ...(cached?.local?.packagesHeader || {}), ...(all?.local?.packagesHeader || {}) },
+          packages: (Array.isArray(all?.local?.packages) && all.local.packages.length > 0)
+            ? all.local.packages
+            : (Array.isArray(cached?.local?.packages) && cached.local.packages.length > 0)
+              ? cached.local.packages
+              : DEFAULT_SITE_CONTENT.local?.packages,
+          scenariosHeader: { ...DEFAULT_SITE_CONTENT.local?.scenariosHeader, ...(cached?.local?.scenariosHeader || {}), ...(all?.local?.scenariosHeader || {}) },
+          scenarios: (Array.isArray(all?.local?.scenarios) && all.local.scenarios.length > 0)
+            ? all.local.scenarios
+            : (Array.isArray(cached?.local?.scenarios) && cached.local.scenarios.length > 0)
+              ? cached.local.scenarios
+              : DEFAULT_SITE_CONTENT.local?.scenarios
         }
       };
 
@@ -142,6 +170,20 @@ export const useSiteContent = () => {
                 hero: { ...DEFAULT_SITE_CONTENT.about?.hero, ...(data.hero || {}) },
                 founder: { ...DEFAULT_SITE_CONTENT.about?.founder, ...(data.founder || {}) },
                 stats: Array.isArray(data.stats) ? data.stats : (prev.about?.stats || DEFAULT_ABOUT_CONTENT?.stats || [])
+              }
+            };
+          }
+          if (key === 'local') {
+            return {
+              ...prev,
+              local: {
+                ...DEFAULT_SITE_CONTENT.local,
+                ...data,
+                hero: { ...DEFAULT_SITE_CONTENT.local?.hero, ...(data.hero || {}) },
+                packagesHeader: { ...DEFAULT_SITE_CONTENT.local?.packagesHeader, ...(data.packagesHeader || {}) },
+                packages: Array.isArray(data.packages) ? data.packages : (prev.local?.packages || DEFAULT_LOCAL_CONTENT?.packages || []),
+                scenariosHeader: { ...DEFAULT_SITE_CONTENT.local?.scenariosHeader, ...(data.scenariosHeader || {}) },
+                scenarios: Array.isArray(data.scenarios) ? data.scenarios : (prev.local?.scenarios || DEFAULT_LOCAL_CONTENT?.scenarios || [])
               }
             };
           }

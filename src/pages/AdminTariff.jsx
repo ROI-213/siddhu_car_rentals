@@ -32,6 +32,7 @@ import { AdminFleetManager } from '../components/admin/AdminFleetManager';
 import { AdminCorporateContent } from '../components/admin/AdminCorporateContent';
 import { AdminOutstationContent } from '../components/admin/AdminOutstationContent';
 import { AdminAboutContent } from '../components/admin/AdminAboutContent';
+import { AdminLocalContent } from '../components/admin/AdminLocalContent';
 import { AdminReviewsContact } from '../components/admin/AdminReviewsContact';
 
 export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
@@ -644,6 +645,29 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
 
           <button
             type="button"
+            onClick={() => setMainAdminSection('local')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '12px 24px',
+              borderRadius: '12px',
+              border: 'none',
+              background: mainAdminSection === 'local' ? '#12151C' : '#FFFFFF',
+              color: mainAdminSection === 'local' ? '#C5A059' : 'var(--color-slate-700)',
+              fontWeight: '800',
+              fontSize: '0.95rem',
+              cursor: 'pointer',
+              boxShadow: mainAdminSection === 'local' ? '0 4px 14px rgba(0,0,0,0.12)' : '0 2px 6px rgba(0,0,0,0.02)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <span style={{ fontSize: '1.1rem' }}>📍</span>
+            <span>Local Page CMS</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setMainAdminSection('reviews_contact')}
             style={{
               display: 'flex',
@@ -680,6 +704,8 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
           <AdminCorporateContent showToast={showToast} />
         ) : mainAdminSection === 'outstation' ? (
           <AdminOutstationContent showToast={showToast} />
+        ) : mainAdminSection === 'local' ? (
+          <AdminLocalContent showToast={showToast} />
         ) : mainAdminSection === 'reviews_contact' ? (
           <AdminReviewsContact showToast={showToast} />
         ) : (

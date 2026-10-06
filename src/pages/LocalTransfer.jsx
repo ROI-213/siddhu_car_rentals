@@ -2,14 +2,21 @@ import React, { useState } from 'react';
 import { Crown, Clock, MapPin, Car, ShieldCheck, PhoneCall, MessageSquare, ChevronRight, CheckCircle2, Award, Calendar, Navigation, Building2, ShoppingBag } from 'lucide-react';
 import { PageHero } from '../components/common/PageHero';
 import { GlassCard } from '../components/common/GlassCard';
-import { pricingService } from '../services/pricingService';
 import { SectionHeader } from '../components/common/SectionHeader';
 import { Badge } from '../components/common/Badge';
 import { PremiumButton } from '../components/common/PremiumButton';
 import { EnquiryForm } from '../components/common/EnquiryForm';
+import { useSiteContent } from '../hooks/useSiteContent';
+import { DEFAULT_LOCAL_CONTENT } from '../data/defaultSiteContent';
 
 export const LocalTransfer = () => {
-  const [selectedPackage, setSelectedPackage] = useState('8h');
+  const { content } = useSiteContent();
+  const local = content?.local || DEFAULT_LOCAL_CONTENT;
+  const hero = local.hero || DEFAULT_LOCAL_CONTENT.hero;
+  const packagesHeader = local.packagesHeader || DEFAULT_LOCAL_CONTENT.packagesHeader;
+  const packages = Array.isArray(local.packages) && local.packages.length > 0 ? local.packages : DEFAULT_LOCAL_CONTENT.packages;
+  const scenariosHeader = local.scenariosHeader || DEFAULT_LOCAL_CONTENT.scenariosHeader;
+  const scenarios = Array.isArray(local.scenarios) && local.scenarios.length > 0 ? local.scenarios : DEFAULT_LOCAL_CONTENT.scenarios;
 
   const scrollToEnquiry = () => {
     const el = document.getElementById('local-enquiry');
@@ -21,20 +28,20 @@ export const LocalTransfer = () => {
       
       {/* 1. HERO SECTION */}
       <PageHero
-        badge="Hourly Car Rental with Driver"
+        badge={hero.badge || "Hourly Car Rental with Driver"}
         badgeIcon={Clock}
-        title="Local City Transfers & Hourly"
-        titleHighlight="Rental Packages"
-        description="Chauffeur-driven cars for business meetings, IT park visits, shopping, airport transfers, and events across Bengaluru. Fixed packages, no surge pricing."
+        title={hero.title || "Local City Transfers & Hourly"}
+        titleHighlight={hero.titleHighlight || "Rental Packages"}
+        description={hero.description || "Chauffeur-driven cars for business meetings, IT park visits, shopping, airport transfers, and events across Bengaluru. Fixed packages, no surge pricing."}
         breadcrumbs={['Services', 'Local Transfer']}
-        image="/images/services_local_vellfire.jpg"
+        image={hero.image || "/images/services_local_vellfire.jpg"}
       >
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '24px' }}>
           <PremiumButton variant="gold" size="lg" pill icon={ChevronRight} iconPosition="right" onClick={scrollToEnquiry}>
             Book Local Package
           </PremiumButton>
           <a
-            href="tel:+9176250 59665"
+            href="tel:+917625059665"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -59,106 +66,54 @@ export const LocalTransfer = () => {
       <section className="section-padding" style={{ background: 'var(--bg-foundation-alt)' }}>
         <div className="container">
           <SectionHeader
-            badge="Transparent Hourly Rates"
+            badge={packagesHeader.badge || "Transparent Hourly Rates"}
             badgeIcon={Award}
-            title="Popular Local Hourly Rental"
-            titleHighlight="Packages"
-            description="Choose the package duration that fits your schedule. Extra kilometers and extra hours are billed transparently."
+            title={packagesHeader.title || "Popular Local Hourly Rental"}
+            titleHighlight={packagesHeader.titleHighlight || "Packages"}
+            description={packagesHeader.description || "Choose the package duration that fits your schedule. Extra kilometers and extra hours are billed transparently."}
             align="center"
           />
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '28px' }}>
-            
-            {/* Package 1: 4 Hours / 40 KM */}
-            <GlassCard variant="interactive" style={{ padding: '32px', textAlign: 'center' }}>
-              <Badge variant="glass" style={{ marginBottom: '16px' }}>Half Day</Badge>
-              <h3 className="text-h2" style={{ marginBottom: '4px' }}>4 Hours / 40 Kms</h3>
-              <p className="text-small" style={{ marginBottom: '20px' }}>Ideal for quick airport runs, business lunches, or executive city appointments.</p>
-              
-              <div style={{ padding: '16px', background: 'rgba(197,160,89,0.08)', borderRadius: '12px', marginBottom: '24px' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--color-charcoal-500)', textTransform: 'uppercase' }}>Innova Crysta VIP Rate</div>
-                
-                {(() => {
-                  const t = pricingService.getLocalTariff('innova-crysta');
-                  return (
-                    <>
-                      <div style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--color-charcoal-900)' }}>
-                        {t?.four_hours_forty_km ? pricingService.formatPrice(t.four_hours_forty_km) : 'On Request'}
+            {packages.map((pkg, idx) => {
+              const isGlowing = pkg.badge?.toLowerCase().includes('popular') || idx === 1;
+              return (
+                <GlassCard 
+                  key={pkg.id || idx} 
+                  variant={isGlowing ? "glowing" : "interactive"} 
+                  style={{ padding: '32px', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+                >
+                  <div>
+                    <Badge variant={isGlowing ? "gold" : "glass"} style={{ marginBottom: '16px' }}>
+                      {pkg.badge || 'Package'}
+                    </Badge>
+                    <h3 className="text-h2" style={{ marginBottom: '4px' }}>
+                      {pkg.name}
+                    </h3>
+                    <p className="text-small" style={{ marginBottom: '20px', minHeight: '44px' }}>
+                      {pkg.desc}
+                    </p>
+                    
+                    <div style={{ padding: '16px', background: isGlowing ? 'rgba(197,160,89,0.12)' : 'rgba(197,160,89,0.08)', borderRadius: '12px', marginBottom: '24px' }}>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--color-charcoal-500)', textTransform: 'uppercase' }}>
+                        {pkg.vehicleName || 'Innova Crysta VIP Rate'}
                       </div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--accent-gold-primary)', fontWeight: '600', marginTop: '2px' }}>
-                        Extra: {t?.extra_hour ? pricingService.formatPrice(t.extra_hour) : ''}/hr • {t?.extra_km ? pricingService.formatPrice(t.extra_km) : ''}/km
+                      
+                      <div style={{ fontSize: '1.85rem', fontWeight: '800', color: 'var(--color-charcoal-900)', margin: '4px 0' }}>
+                        {pkg.basePrice}
                       </div>
-                    </>
-                  );
-                })()}
-
-              </div>
-
-              <PremiumButton variant="gold" size="md" fullWidth pill onClick={scrollToEnquiry}>
-                Book 4h Package
-              </PremiumButton>
-            </GlassCard>
-
-            {/* Package 2: 8 Hours / 80 KM (POPULAR) */}
-            <GlassCard variant="glowing" style={{ padding: '32px', textAlign: 'center' }}>
-              <Badge variant="gold" style={{ marginBottom: '16px' }}>Most Popular (Full Day)</Badge>
-              <h3 className="text-h2" style={{ marginBottom: '4px' }}>8 Hours / 80 Kms</h3>
-              <p className="text-small" style={{ marginBottom: '20px' }}>Complete full-day mobility for corporate meetings, IT park visits, and shopping.</p>
-              
-              <div style={{ padding: '16px', background: 'rgba(197,160,89,0.12)', borderRadius: '12px', marginBottom: '24px' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--color-charcoal-500)', textTransform: 'uppercase' }}>Innova Crysta VIP Rate</div>
-                
-                {(() => {
-                  const t = pricingService.getLocalTariff('innova-crysta');
-                  return (
-                    <>
-                      <div style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--color-charcoal-900)' }}>
-                        {t?.eight_hours_eighty_km ? pricingService.formatPrice(t.eight_hours_eighty_km) : 'On Request'}
+                      <div style={{ fontSize: '0.78rem', color: 'var(--accent-gold-primary)', fontWeight: '600' }}>
+                        Extra: {pkg.extraHourRate} • {pkg.extraKmRate}
                       </div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--accent-gold-primary)', fontWeight: '600', marginTop: '2px' }}>
-                        Extra: {t?.extra_hour ? pricingService.formatPrice(t.extra_hour) : ''}/hr • {t?.extra_km ? pricingService.formatPrice(t.extra_km) : ''}/km
-                      </div>
-                    </>
-                  );
-                })()}
+                    </div>
+                  </div>
 
-              </div>
-
-              <PremiumButton variant="gold" size="md" fullWidth pill onClick={scrollToEnquiry}>
-                Book 8h Package
-              </PremiumButton>
-            </GlassCard>
-
-            {/* Package 3: 12 Hours / 120 KM */}
-            <GlassCard variant="interactive" style={{ padding: '32px', textAlign: 'center' }}>
-              <Badge variant="glass" style={{ marginBottom: '16px' }}>Extended Full Day</Badge>
-              <h3 className="text-h2" style={{ marginBottom: '4px' }}>12 Hours / 120 Kms</h3>
-              <p className="text-small" style={{ marginBottom: '20px' }}>Extended coverage for long corporate schedules, weddings, or city-wide travel.</p>
-              
-              <div style={{ padding: '16px', background: 'rgba(197,160,89,0.08)', borderRadius: '12px', marginBottom: '24px' }}>
-                <div style={{ fontSize: '0.75rem', color: 'var(--color-charcoal-500)', textTransform: 'uppercase' }}>Innova Crysta VIP Rate</div>
-                
-                {(() => {
-                  const t = pricingService.getLocalTariff('innova-crysta');
-                  return (
-                    <>
-                      <div style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--color-charcoal-900)' }}>
-                        {t?.eight_hours_eighty_km && t?.extra_hour ? pricingService.formatPrice(t.eight_hours_eighty_km + (t.extra_hour * 4)) : 'On Request'}
-                      </div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--accent-gold-primary)', fontWeight: '600', marginTop: '2px' }}>
-                        Extra: {t?.extra_hour ? pricingService.formatPrice(t.extra_hour) : ''}/hr • {t?.extra_km ? pricingService.formatPrice(t.extra_km) : ''}/km
-                      </div>
-                    </>
-                  );
-                })()}
-
-              </div>
-
-              <PremiumButton variant="gold" size="md" fullWidth pill onClick={scrollToEnquiry}>
-                Book 12h Package
-              </PremiumButton>
-            </GlassCard>
-
+                  <PremiumButton variant="gold" size="md" fullWidth pill onClick={scrollToEnquiry}>
+                    Book {pkg.name.split('/')[0].trim() || 'Package'}
+                  </PremiumButton>
+                </GlassCard>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -167,44 +122,38 @@ export const LocalTransfer = () => {
       <section className="section-padding">
         <div className="container">
           <SectionHeader
-            badge="Versatile City Mobility"
+            badge={scenariosHeader.badge || "Versatile City Mobility"}
             badgeIcon={Building2}
-            title="Local Transfer Services in"
-            titleHighlight="Bengaluru"
-            description="Providing luxury chauffeur travel across major corporate hubs, tech parks, and luxury hotels."
+            title={scenariosHeader.title || "Local Transfer Services in"}
+            titleHighlight={scenariosHeader.titleHighlight || "Bengaluru"}
+            description={scenariosHeader.description || "Providing luxury chauffeur travel across major corporate hubs, tech parks, and luxury hotels."}
             align="center"
           />
 
           <div className="grid-showcase">
-            <GlassCard variant="interactive">
-              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(197,160,89,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-                <Building2 size={24} color="var(--accent-gold-primary)" />
-              </div>
-              <h3 className="text-h3" style={{ marginBottom: '8px' }}>Tech Park & Corporate Travel</h3>
-              <p className="text-small">
-                Punctual chauffeurs for Manyata Tech Park, Bagmane Tech Park, Prestige Tech Park, and Electronic City meetings.
-              </p>
-            </GlassCard>
-
-            <GlassCard variant="interactive">
-              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(197,160,89,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-                <Navigation size={24} color="var(--accent-gold-primary)" />
-              </div>
-              <h3 className="text-h3" style={{ marginBottom: '8px' }}>Point-to-Point City Drops</h3>
-              <p className="text-small">
-                Direct single-trip or return drops between luxury hotels (The Leela, Taj West End, Ritz-Carlton) and office towers.
-              </p>
-            </GlassCard>
-
-            <GlassCard variant="interactive">
-              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(197,160,89,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-                <ShoppingBag size={24} color="var(--accent-gold-primary)" />
-              </div>
-              <h3 className="text-h3" style={{ marginBottom: '8px' }}>Luxury Shopping & Dining</h3>
-              <p className="text-small">
-                Relaxed chauffeur waiting outside UB City Collection, Phoenix Marketcity, or Indiranagar fine-dining restaurants.
-              </p>
-            </GlassCard>
+            {scenarios.map((scn, idx) => (
+              <GlassCard key={scn.id || idx} variant="interactive">
+                <div style={{ 
+                  width: '48px', 
+                  height: '48px', 
+                  borderRadius: '12px', 
+                  background: 'rgba(197,160,89,0.12)', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  marginBottom: '16px',
+                  fontSize: '1.4rem'
+                }}>
+                  {scn.icon || '🏢'}
+                </div>
+                <h3 className="text-h3" style={{ marginBottom: '8px' }}>
+                  {scn.title}
+                </h3>
+                <p className="text-small">
+                  {scn.desc}
+                </p>
+              </GlassCard>
+            ))}
           </div>
         </div>
       </section>
@@ -223,3 +172,4 @@ export const LocalTransfer = () => {
     </div>
   );
 };
+
