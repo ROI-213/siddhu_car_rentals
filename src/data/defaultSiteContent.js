@@ -521,6 +521,12 @@ export const DEFAULT_OUTSTATION_CONTENT = {
     minKmStandard: "300 Kms / Day",
     minKmBuses: "400 Kms / Day",
     billingNotes: "Daily minimum 300 Kms applies (400 Kms for 45/49 seater luxury buses). Garage to garage billing with zero hidden charges. Tolls, state taxes, and parking fees billed at actuals."
+  },
+  tariffHeader: {
+    badge: "Per-Km Tariff Guide",
+    title: "Outstation Fleet Per-Km Tariff",
+    titleHighlight: "Breakdown",
+    description: "Daily minimum 300 Kms applies (400 Kms for 45/49 seater luxury buses). Garage to garage billing with zero hidden charges."
   }
 };
 

@@ -318,11 +318,11 @@ export const Outstation = ({ onEnquireClick }) => {
       <section className="section-padding" style={{ background: 'var(--bg-foundation-alt)' }}>
         <div className="container">
           <SectionHeader
-            badge="Per-Km Tariff Guide"
+            badge={outstation?.tariffHeader?.badge || "Per-Km Tariff Guide"}
             badgeIcon={Award}
-            title="Outstation Fleet Per-Km Tariff"
-            titleHighlight="Breakdown"
-            description={terms.billingNotes || "Daily minimum 300 Kms applies (400 Kms for 45/49 seater luxury buses). Garage to garage billing with zero hidden charges."}
+            title={outstation?.tariffHeader?.title || "Outstation Fleet Per-Km Tariff"}
+            titleHighlight={outstation?.tariffHeader?.titleHighlight || "Breakdown"}
+            description={outstation?.tariffHeader?.description || terms.billingNotes || "Daily minimum 300 Kms applies (400 Kms for 45/49 seater luxury buses). Garage to garage billing with zero hidden charges."}
             align="center"
           />
 
