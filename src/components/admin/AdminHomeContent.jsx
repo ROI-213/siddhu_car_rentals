@@ -936,17 +936,17 @@ export const AdminHomeContent = ({ activeSubTab, onSubTabChange, showToast }) =>
                         style={{ width: '100%', fontSize: '0.8rem', border: '1px solid #CBD5E1', borderRadius: '6px', padding: '4px 8px' }}
                       />
                     </div>
-                    <div>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--color-slate-500)', fontWeight: '600' }}>Image Path:</span>
-                      <input
-                        type="text"
+                    <div style={{ marginTop: '6px' }}>
+                      <ImageUploadField
+                        label="Card Cover Image"
                         value={item.img || ''}
-                        onChange={(e) => {
+                        onChange={(dataUrl) => {
                           const updated = [...destinationsForm.heroItems];
-                          updated[idx] = { ...updated[idx], img: e.target.value };
+                          updated[idx] = { ...updated[idx], img: dataUrl };
                           setDestinationsForm({ ...destinationsForm, heroItems: updated });
                         }}
-                        style={{ width: '100%', fontSize: '0.8rem', border: '1px solid #CBD5E1', borderRadius: '6px', padding: '4px 8px' }}
+                        placeholder="/images/destinations/mysore_palace.jpg or upload..."
+                        helpText="Click or drop a photo to upload directly from your device."
                       />
                     </div>
                   </div>
