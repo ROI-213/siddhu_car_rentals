@@ -54,7 +54,7 @@ export const Input = ({
     options !== null;
 
   return (
-    <div style={{ position: 'relative', width: '100%', marginTop: label ? '10px' : '0', ...style }}>
+    <div style={{ position: 'relative', width: '100%', minWidth: 0, boxSizing: 'border-box', marginTop: label ? '10px' : '0', ...style }}>
       {/* Icon slot */}
       {Icon && (
         <div style={{
@@ -169,6 +169,8 @@ export const Input = ({
           className={`glass-input ${className}`}
           style={{
             width: '100%',
+            minWidth: 0,
+            boxSizing: 'border-box',
             padding: Icon ? '14px 16px 14px 42px' : '14px 16px',
             fontSize: '0.92rem',
             fontFamily: 'var(--font-ui)',

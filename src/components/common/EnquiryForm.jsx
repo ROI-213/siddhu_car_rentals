@@ -276,8 +276,8 @@ export const EnquiryForm = ({
             )}
           </div>
 
-          {/* Date Row */}
-          <div style={{ display: 'grid', gridTemplateColumns: (isFixedOutstation || tripType === 'outstation') && outstationJourneyType !== 'oneway' ? '1fr 1fr' : '1fr', gap: '16px' }}>
+          {/* Date Row: Responsively wraps on mobile so Return Date never overflows */}
+          <div style={{ display: 'grid', gridTemplateColumns: (isFixedOutstation || tripType === 'outstation') && outstationJourneyType !== 'oneway' ? 'repeat(auto-fit, minmax(220px, 1fr))' : '1fr', gap: '16px' }}>
             <Input
               label={(isFixedOutstation || tripType === 'outstation') ? "Departure Date" : "Travel Date"}
               type="date"
