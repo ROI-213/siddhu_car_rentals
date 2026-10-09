@@ -159,15 +159,21 @@ export const ImageUploadField = ({
           background: '#F8FAFC',
           marginBottom: '8px'
         }}>
-          <div style={{
-            height: '180px',
-            width: '100%',
-            background: '#0F172A',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden'
-          }}>
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            title="Click to upload a new image from your device"
+            style={{
+              height: '180px',
+              width: '100%',
+              background: '#0F172A',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              cursor: 'pointer',
+              position: 'relative'
+            }}
+          >
             <img
               src={value}
               alt="Uploaded preview"
@@ -180,6 +186,29 @@ export const ImageUploadField = ({
                 e.target.style.display = 'none';
               }}
             />
+
+            {/* Prominent Overlay Badge */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                background: 'rgba(2, 132, 199, 0.92)',
+                color: '#FFFFFF',
+                padding: '5px 12px',
+                borderRadius: '999px',
+                fontSize: '0.74rem',
+                fontWeight: '700',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                pointerEvents: 'none'
+              }}
+            >
+              <UploadCloud size={14} />
+              <span>Click Photo to Upload</span>
+            </div>
           </div>
 
           {/* Action Overlay Bar */}
@@ -193,58 +222,59 @@ export const ImageUploadField = ({
             flexWrap: 'wrap',
             gap: '8px'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: '1 1 auto' }}>
               <span style={{
                 fontSize: '0.72rem',
                 fontWeight: '700',
                 padding: '2px 8px',
                 borderRadius: '12px',
-                background: isBase64 ? '#ECFDF5' : '#EFF6FF',
-                color: isBase64 ? '#059669' : '#1D4ED8',
+                background: isBase64 ? '#ECFDF5' : '#F1F5F9',
+                color: isBase64 ? '#059669' : '#475569',
                 whiteSpace: 'nowrap'
               }}>
-                {isBase64 ? '✓ Local Upload (Optimized)' : '🔗 Image URL'}
+                {isBase64 ? '✓ Local File (Ready)' : 'Current Image'}
               </span>
               <span style={{
-                fontSize: '0.75rem',
+                fontSize: '0.74rem',
                 color: '#64748B',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
-                maxWidth: '240px'
+                maxWidth: '180px'
               }}>
-                {isBase64 ? 'Ready to save' : value}
+                {isBase64 ? 'File compressed' : (value.split('/').pop() || value)}
               </span>
             </div>
 
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={processing}
                 style={{
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  border: '1px solid #CBD5E1',
-                  background: '#FFFFFF',
-                  color: '#334155',
-                  fontSize: '0.78rem',
-                  fontWeight: '600',
+                  padding: '7px 14px',
+                  borderRadius: '7px',
+                  border: '1px solid #0284C7',
+                  background: '#0284C7',
+                  color: '#FFFFFF',
+                  fontSize: '0.80rem',
+                  fontWeight: '700',
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '4px'
+                  gap: '6px',
+                  boxShadow: '0 2px 6px rgba(2, 132, 199, 0.25)'
                 }}
               >
-                <RefreshCw size={13} className={processing ? 'animate-spin' : ''} />
-                <span>Replace</span>
+                <UploadCloud size={15} />
+                <span>{processing ? 'Processing...' : 'Upload Image'}</span>
               </button>
               <button
                 type="button"
                 onClick={handleRemove}
                 style={{
-                  padding: '6px 12px',
-                  borderRadius: '6px',
+                  padding: '7px 10px',
+                  borderRadius: '7px',
                   border: '1px solid #FCA5A5',
                   background: '#FEF2F2',
                   color: '#DC2626',
@@ -255,8 +285,9 @@ export const ImageUploadField = ({
                   alignItems: 'center',
                   gap: '4px'
                 }}
+                title="Remove current image"
               >
-                <X size={13} />
+                <X size={14} />
                 <span>Remove</span>
               </button>
             </div>
