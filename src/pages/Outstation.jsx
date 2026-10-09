@@ -311,6 +311,22 @@ export const Outstation = ({ onEnquireClick }) => {
               padding: 20px 18px;
             }
           }
+          .outstation-tariff-desktop {
+            display: block;
+          }
+          .outstation-tariff-mobile {
+            display: none;
+          }
+          @media (max-width: 768px) {
+            .outstation-tariff-desktop {
+              display: none !important;
+            }
+            .outstation-tariff-mobile {
+              display: flex !important;
+              flex-direction: column;
+              gap: 12px;
+            }
+          }
         `}</style>
       </section>
 
@@ -326,7 +342,8 @@ export const Outstation = ({ onEnquireClick }) => {
             align="center"
           />
 
-          <GlassCard variant="standard" style={{ maxWidth: '960px', margin: '0 auto', padding: '0', overflow: 'hidden' }}>
+          {/* Desktop Table View */}
+          <GlassCard variant="standard" className="outstation-tariff-desktop" style={{ maxWidth: '960px', margin: '0 auto', padding: '0', overflow: 'hidden' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr 1.1fr 0.9fr', background: '#12151C', color: '#C5A059', padding: '14px 20px', fontWeight: '700', fontSize: '0.82rem', textTransform: 'uppercase', alignItems: 'center' }}>
               <div>Vehicle Model & Class</div>
               <div>Min. Kms / Day</div>
@@ -394,6 +411,93 @@ export const Outstation = ({ onEnquireClick }) => {
               </div>
             ))}
           </GlassCard>
+
+          {/* Mobile Clean Card View */}
+          <div className="outstation-tariff-mobile">
+            {(tariffs && tariffs.length > 0 ? tariffs : DEFAULT_OUTSTATION_TARIFFS).map((t, idx) => (
+              <div
+                key={t.id || idx}
+                style={{
+                  background: '#FFFFFF',
+                  borderRadius: '16px',
+                  padding: '16px',
+                  border: '1px solid rgba(197, 160, 89, 0.25)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontWeight: '700', fontSize: '0.98rem', color: 'var(--color-charcoal-900)', lineHeight: '1.25' }}>
+                      {t.vehicle_variant}
+                    </div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--color-charcoal-500)', textTransform: 'uppercase', letterSpacing: '0.04em', marginTop: '3px' }}>
+                      Chauffeur Driven
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleOpenTariffEnquiry(t)}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '9999px',
+                      background: 'linear-gradient(135deg, #12151C 0%, #1E232E 100%)',
+                      color: '#C5A059',
+                      border: '1px solid #C5A059',
+                      fontSize: '0.8rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      flexShrink: 0
+                    }}
+                  >
+                    <span>Enquire</span>
+                    <ChevronRight size={13} />
+                  </button>
+                </div>
+
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, 1fr)',
+                    background: 'rgba(197, 160, 89, 0.06)',
+                    borderRadius: '10px',
+                    padding: '10px 8px',
+                    gap: '4px',
+                    textAlign: 'center'
+                  }}
+                >
+                  <div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--color-charcoal-500)', textTransform: 'uppercase', fontWeight: '600' }}>
+                      Rate / Km
+                    </div>
+                    <div style={{ fontSize: '0.92rem', fontWeight: '800', color: 'var(--accent-gold-primary)', marginTop: '2px' }}>
+                      {formatCurrency(t.rate_per_km, '/km')}
+                    </div>
+                  </div>
+                  <div style={{ borderLeft: '1px solid rgba(0,0,0,0.08)', borderRight: '1px solid rgba(0,0,0,0.08)' }}>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--color-charcoal-500)', textTransform: 'uppercase', fontWeight: '600' }}>
+                      Min. / Day
+                    </div>
+                    <div style={{ fontSize: '0.82rem', fontWeight: '700', color: 'var(--color-charcoal-800)', marginTop: '2px' }}>
+                      {t.minimum_km_per_day ? `${t.minimum_km_per_day} km` : '300 km'}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--color-charcoal-500)', textTransform: 'uppercase', fontWeight: '600' }}>
+                      Driver Bata
+                    </div>
+                    <div style={{ fontSize: '0.82rem', fontWeight: '700', color: 'var(--color-charcoal-800)', marginTop: '2px' }}>
+                      {formatCurrency(t.driver_allowance, '/day')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
