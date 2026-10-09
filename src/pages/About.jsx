@@ -327,7 +327,7 @@ export const About = ({ onReserveClick }) => {
         image={hero.image || "/images/hero_luxury_sedan.jpg"}
       />
 
-      {/* 2. DYNAMIC TRUST STATS COUNTER BAR */}
+      {/* 2. DYNAMIC TRUST STATS COUNTER BAR (2x2 Card Grid on Mobile) */}
       <section style={{ 
         background: '#0B111E', 
         borderTop: '1px solid rgba(197, 160, 89, 0.35)', 
@@ -335,31 +335,13 @@ export const About = ({ onReserveClick }) => {
         padding: '38px 0' 
       }}>
         <div className="container">
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', 
-            gap: '24px', 
-            textAlign: 'center' 
-          }}>
+          <div className="about-stats-grid">
             {stats.map((stat, idx) => (
-              <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <span style={{ 
-                  fontSize: 'clamp(2rem, 2.8vw, 2.6rem)', 
-                  fontWeight: '900', 
-                  color: 'var(--accent-gold-primary)', 
-                  letterSpacing: '-0.02em', 
-                  lineHeight: 1.1 
-                }}>
+              <div key={idx} className="about-stat-card">
+                <span className="about-stat-value">
                   {stat.label}
                 </span>
-                <span style={{ 
-                  fontSize: '0.86rem', 
-                  color: '#CBD5E1', 
-                  marginTop: '8px', 
-                  fontWeight: '500', 
-                  maxWidth: '220px',
-                  lineHeight: '1.4'
-                }}>
+                <span className="about-stat-label">
                   {stat.desc}
                 </span>
               </div>
