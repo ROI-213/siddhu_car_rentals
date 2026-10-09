@@ -1,83 +1,65 @@
 // Tariff API Service for Siddhu Car Rentals
-// Communicates with the PostgreSQL Express Backend with local storage resilience
+// PostgreSQL Express Backend is the Single Source of Truth
 
 const API_BASE = '/api';
 
-export const tariffApi = {
-  // 1. Fetch Tariffs
-  async getTariffs({ usage_type = null, search = '', all = false } = {}) {
-    const deletedIds = new Set(JSON.parse(localStorage.getItem('scr_deleted_tariffs') || '[]'));
-    const cachedList = JSON.parse(localStorage.getItem('scr_tariffs_cache_v5') || 'null') || [];
-    const customMap = new Map();
-    for (const item of cachedList) {
-      if (item && item.id && (item._is_custom || item._updated_at)) {
-        customMap.set(String(item.id), item);
-      }
-    }
+export function getAdminToken() {
+  if (typeof window === 'undefined') return '';
+  return sessionStorage.getItem('scr_admin_token') || 
+         localStorage.getItem('scr_admin_token') || 
+         '';
+}
 
+export function getAuthHeaders() {
+  const token = getAdminToken();
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+    headers['x-admin-token'] = token;
+  }
+  return headers;
+}
+
+export const tariffApi = {
+  // 1. Fetch Tariffs from PostgreSQL (Single Source of Truth)
+  async getTariffs({ usage_type = null, search = '', all = false } = {}) {
     try {
       const params = new URLSearchParams();
       if (usage_type) params.append('usage_type', usage_type);
       if (search) params.append('search', search);
       if (all) params.append('all', 'true');
 
-      const res = await fetch(`${API_BASE}/tariffs?${params.toString()}`);
+      const res = await fetch(`${API_BASE}/tariffs?${params.toString()}`, {
+        headers: { 'Cache-Control': 'no-cache' }
+      });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const isJson = res.headers.get('content-type')?.includes('application/json');
       if (!isJson) throw new Error('Non-JSON response from server');
       const data = await res.json();
       if (data && Array.isArray(data.data)) {
-        // 1. Filter out deleted tariffs
-        const serverRows = data.data.filter(d => !deletedIds.has(String(d.id)));
+        let result = data.data;
 
-        // 2. Merge server rows with locally edited tariffs
-        const mergedServerRows = serverRows.map(serverItem => {
-          const localItem = customMap.get(String(serverItem.id));
-          if (!localItem) return serverItem;
-
-          // Compare timestamps: if server has newer updated_at from DB, prefer server
-          const serverTime = serverItem.updated_at ? new Date(serverItem.updated_at).getTime() : 0;
-          const localTime = localItem._updated_at ? Number(localItem._updated_at) : 0;
-
-          if (serverTime > localTime) {
-            return serverItem;
-          }
-          // Local user edit is newer or server is reset seed -> preserve user's edit
-          return { ...serverItem, ...localItem };
-        });
-
-        // 3. Keep any custom-created tariffs that were not returned by server
-        const serverIds = new Set(mergedServerRows.map(s => String(s.id)));
-        const customAdded = cachedList.filter(c => 
-          c && c._is_custom && !serverIds.has(String(c.id)) && !deletedIds.has(String(c.id))
-        );
-
-        const finalCombined = [...mergedServerRows, ...customAdded];
-
-        // 4. Update the full cache in localStorage
-        try {
-          if (all) {
-            localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(finalCombined));
-          } else if (usage_type) {
-            const otherUsageTypes = cachedList.filter(c => 
-              c && c.usage_type && c.usage_type.toLowerCase() !== usage_type.toLowerCase() && !deletedIds.has(String(c.id))
-            );
-            const fullList = [...finalCombined, ...otherUsageTypes].sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
-            localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(fullList));
-          }
-        } catch (e) {
-          console.warn('Cache sync error:', e);
-        }
-
-        // Apply filters for return value
-        let result = finalCombined;
+        // Apply filters
         if (!all) result = result.filter(t => t.is_active);
         if (usage_type) result = result.filter(t => t.usage_type && t.usage_type.toLowerCase() === usage_type.toLowerCase());
         if (search) {
           const q = search.toLowerCase();
-          result = result.filter(t => (t.vehicle_variant && t.vehicle_variant.toLowerCase().includes(q)) || (t.service_type && t.service_type.toLowerCase().includes(q)));
+          result = result.filter(t => 
+            (t.vehicle_variant && t.vehicle_variant.toLowerCase().includes(q)) || 
+            (t.service_type && t.service_type.toLowerCase().includes(q))
+          );
         }
-        return result.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+
+        const sorted = result.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+
+        // Update local offline backup
+        try {
+          if (all) {
+            localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(sorted));
+          }
+        } catch (e) {}
+
+        return sorted;
       }
       return tariffApi.getLocalTariffs({ usage_type, search, all });
     } catch (err) {
@@ -89,7 +71,9 @@ export const tariffApi = {
   // 2. Fetch Single Tariff
   async getTariffById(id) {
     try {
-      const res = await fetch(`${API_BASE}/tariffs/${id}`);
+      const res = await fetch(`${API_BASE}/tariffs/${id}`, {
+        headers: { 'Cache-Control': 'no-cache' }
+      });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const data = await res.json();
       return data.data;
@@ -100,134 +84,95 @@ export const tariffApi = {
     }
   },
 
-  // 3. Create Tariff (Admin)
+  // 3. Create Tariff (Admin) - Throws immediately if DB operation fails
   async createTariff(tariffData) {
-    const localRecord = tariffApi.createLocalTariff(tariffData);
+    const res = await fetch(`${API_BASE}/tariffs`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(tariffData)
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data || !data.success) {
+      const errMsg = (data && data.errors && data.errors.join(', ')) || 
+                     (data && data.error) || 
+                     `Failed to create tariff (status ${res.status})`;
+      throw new Error(errMsg);
+    }
+    const finalData = data.data;
+    if (finalData && finalData.id) {
+      tariffApi.updateLocalTariff(finalData.id, finalData);
+    }
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'create', data: localRecord } }));
+      window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'create', data: finalData } }));
     }
-
-    try {
-      const res = await fetch(`${API_BASE}/tariffs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(tariffData)
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.errors ? data.errors.join(', ') : data.error || 'Failed to create tariff');
-      }
-      const finalData = data.data || localRecord;
-      if (finalData && finalData.id) {
-        tariffApi.updateLocalTariff(localRecord.id, finalData);
-      }
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'create', data: finalData } }));
-      }
-      return finalData;
-    } catch (err) {
-      console.warn('API create failed, preserved in local fallback storage:', err);
-      return localRecord;
-    }
+    return finalData;
   },
 
-  // 4. Update Tariff (Admin)
+  // 4. Update Tariff (Admin) - Throws immediately if DB operation fails
   async updateTariff(id, tariffData) {
-    const localRecord = tariffApi.updateLocalTariff(id, tariffData);
+    const res = await fetch(`${API_BASE}/tariffs/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(tariffData)
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data || !data.success) {
+      const errMsg = (data && data.errors && data.errors.join(', ')) || 
+                     (data && data.error) || 
+                     `Failed to update tariff (status ${res.status})`;
+      throw new Error(errMsg);
+    }
+    const finalData = data.data;
+    if (finalData) {
+      tariffApi.updateLocalTariff(id, finalData);
+    }
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'update', id, data: tariffData } }));
+      window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'update', id, data: finalData } }));
     }
-
-    try {
-      const res = await fetch(`${API_BASE}/tariffs/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(tariffData)
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.errors ? data.errors.join(', ') : data.error || 'Failed to update tariff');
-      }
-      const finalData = data.data || localRecord;
-      if (finalData) {
-        tariffApi.updateLocalTariff(id, finalData);
-      }
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'update', id, data: finalData } }));
-      }
-      return finalData;
-    } catch (err) {
-      console.warn('API update failed, preserved in local fallback storage:', err);
-      return localRecord;
-    }
+    return finalData;
   },
 
-  // 5. Delete Tariff (Admin)
+  // 5. Delete Tariff (Admin) - Throws immediately if DB operation fails
   async deleteTariff(id) {
-    tariffApi.deleteLocalTariff(id);
-    try {
-      const deleted = JSON.parse(localStorage.getItem('scr_deleted_tariffs') || '[]');
-      if (!deleted.includes(String(id))) {
-        deleted.push(String(id));
-        localStorage.setItem('scr_deleted_tariffs', JSON.stringify(deleted));
-      }
-    } catch (e) {
-      console.warn('Error recording deleted tariff id:', e);
+    const res = await fetch(`${API_BASE}/tariffs/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data || !data.success) {
+      const errMsg = (data && data.error) || `Failed to delete tariff (status ${res.status})`;
+      throw new Error(errMsg);
     }
-
+    tariffApi.deleteLocalTariff(id);
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'delete', id } }));
     }
-
-    try {
-      const res = await fetch(`${API_BASE}/tariffs/${id}`, {
-        method: 'DELETE'
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to delete tariff');
-      }
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'delete', id } }));
-      }
-      return true;
-    } catch (err) {
-      console.warn('API delete failed, preserved in local fallback storage:', err);
-      return true;
-    }
+    return true;
   },
 
-  // 6. Batch Reorder
+  // 6. Batch Reorder (Admin)
   async reorderTariffs(orderList) {
-    if (Array.isArray(orderList)) {
-      const list = tariffApi.getLocalTariffs({ all: true });
-      orderList.forEach(item => {
-        const t = list.find(x => x.id === item.id);
-        if (t) t.display_order = item.display_order;
-      });
-      localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('scr_tariffs_updated'));
-      }
+    const res = await fetch(`${API_BASE}/tariffs-reorder`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ orderList })
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data || !data.success) {
+      throw new Error((data && data.error) || 'Failed to reorder tariffs in database');
     }
-
-    try {
-      const res = await fetch(`${API_BASE}/tariffs-reorder`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderList })
-      });
-      return res.ok;
-    } catch (err) {
-      console.warn('API reorder failed, preserved in local storage:', err);
-      return true;
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('scr_tariffs_updated'));
     }
+    return true;
   },
 
   // 7. Fetch Terms & Conditions
   async getTerms() {
     try {
-      const res = await fetch(`${API_BASE}/terms`);
+      const res = await fetch(`${API_BASE}/terms`, {
+        headers: { 'Cache-Control': 'no-cache' }
+      });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const isJson = res.headers.get('content-type')?.includes('application/json');
       if (!isJson) throw new Error('Non-JSON response from server');
@@ -238,7 +183,7 @@ export const tariffApi = {
     }
   },
 
-  // 8. Admin Login
+  // 8. Admin Login with Session Token Tracking
   async loginAdmin(username, password) {
     const cleanUser = (username || '').trim().toLowerCase();
     const cleanPass = (password || '').trim();
@@ -251,17 +196,19 @@ export const tariffApi = {
       });
       if (res.ok) {
         const data = await res.json().catch(() => null);
-        if (data && data.success) {
+        if (data && data.success && data.token) {
           sessionStorage.setItem('scr_admin_auth', 'true');
+          sessionStorage.setItem('scr_admin_token', data.token);
           localStorage.setItem('scr_admin_auth', 'true');
+          localStorage.setItem('scr_admin_token', data.token);
           return data;
         }
       }
     } catch (err) {
-      console.warn('API login endpoint check failed, falling back to local verification:', err);
+      console.warn('API login endpoint check failed, checking credentials:', err);
     }
 
-    // Direct credentials check for seamless login on static host or offline
+    // Direct fallback verification for offline / disconnected dev
     const validUsernames = [
       'admin@siddhucartentals.com',
       'admin@siddhucarrentals.com',
@@ -269,9 +216,12 @@ export const tariffApi = {
       'siddhu'
     ];
     if (validUsernames.includes(cleanUser) && (cleanPass === 'siddhu@2026' || cleanPass === 'admin')) {
-      const authData = { success: true, token: 'local_token_' + Date.now(), user: { username: cleanUser, role: 'administrator' } };
+      const token = 'scr_admin_token_' + Date.now();
+      const authData = { success: true, token, user: { username: cleanUser, role: 'administrator' } };
       sessionStorage.setItem('scr_admin_auth', 'true');
+      sessionStorage.setItem('scr_admin_token', token);
       localStorage.setItem('scr_admin_auth', 'true');
+      localStorage.setItem('scr_admin_token', token);
       return authData;
     }
 
@@ -280,227 +230,145 @@ export const tariffApi = {
 
   // 9. Reset to default rate card
   async resetToSeed() {
-    try {
-      const res = await fetch(`${API_BASE}/tariffs/reset`, { method: 'POST' });
-      return res.ok;
-    } catch (err) {
-      localStorage.removeItem('scr_tariffs_cache_v2');
-      return true;
+    const res = await fetch(`${API_BASE}/tariffs/reset`, {
+      method: 'POST',
+      headers: getAuthHeaders()
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data || !data.success) {
+      throw new Error((data && data.error) || 'Failed to reset tariffs in database');
     }
+    localStorage.removeItem('scr_tariffs_cache_v5');
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('scr_tariffs_updated'));
+    }
+    return true;
   },
 
   // 10. Fetch Dynamic Site Content (Hero, Contact, Testimonials, Destinations, etc.)
   async getContent(key = null) {
-    const localCache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-    const localTimestamps = JSON.parse(localStorage.getItem('scr_content_timestamps') || '{}');
-
     try {
       const url = key ? `${API_BASE}/content?key=${encodeURIComponent(key)}` : `${API_BASE}/content`;
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: { 'Cache-Control': 'no-cache' }
+      });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
       const isJson = res.headers.get('content-type')?.includes('application/json');
       if (!isJson) throw new Error('Non-JSON response from server');
       const json = await res.json();
 
-      if (key) {
-        const serverData = json.data;
-        if (serverData !== null && serverData !== undefined) {
-          const localTime = localTimestamps[key] || (localCache[key]?._updated_at ? new Date(localCache[key]._updated_at).getTime() : 0);
-          const serverTime = serverData?._updated_at ? new Date(serverData._updated_at).getTime() : 0;
-
-          // If local has newer edits than server, preserve local!
-          if (localTime > serverTime && localCache[key]) {
-            return localCache[key];
+      if (json && json.data !== undefined) {
+        // Cache copy for offline
+        try {
+          const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
+          if (key) {
+            cache[key] = json.data;
+          } else if (typeof json.data === 'object' && json.data !== null) {
+            Object.assign(cache, json.data);
           }
-
-          localCache[key] = serverData;
-          localStorage.setItem('scr_site_content_cache', JSON.stringify(localCache));
-          return serverData;
-        }
-        return localCache[key] || null;
-      } else {
-        if (json.data && typeof json.data === 'object' && Object.keys(json.data).length > 0) {
-          const merged = { ...localCache };
-          for (const [k, sData] of Object.entries(json.data)) {
-            const localTime = localTimestamps[k] || (localCache[k]?._updated_at ? new Date(localCache[k]._updated_at).getTime() : 0);
-            const serverTime = sData?._updated_at ? new Date(sData._updated_at).getTime() : 0;
-
-            if (serverTime >= localTime || !localCache[k]) {
-              merged[k] = sData;
-            }
-          }
-          localStorage.setItem('scr_site_content_cache', JSON.stringify(merged));
-          return merged;
-        }
-        return localCache;
+          localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
+        } catch (e) {}
+        return json.data;
       }
+      const localCache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
+      return key ? (localCache[key] || null) : localCache;
     } catch (err) {
       console.warn('API getContent fallback to local cache:', err);
-      return key ? localCache[key] || null : localCache;
+      const localCache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
+      return key ? (localCache[key] || null) : localCache;
     }
   },
 
-  // 11. Save Dynamic Site Content (Admin)
+  // 11. Save Dynamic Site Content (Admin) - Throws if database write fails
   async saveContent(key, data) {
-    const now = Date.now();
-    const payload = (typeof data === 'object' && data !== null && !Array.isArray(data))
-      ? { ...data, _updated_at: new Date(now).toISOString() }
-      : data;
+    const res = await fetch(`${API_BASE}/content/${encodeURIComponent(key)}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data)
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok || !json || !json.success) {
+      throw new Error((json && json.error) || `Failed to save content for "${key}" to database`);
+    }
 
-    // 1. Immediately update local fallback cache so UI is instantaneous and resilient
+    const savedData = json.data || data;
     try {
       const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-      cache[key] = payload;
+      cache[key] = savedData;
       localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
-
-      const timestamps = JSON.parse(localStorage.getItem('scr_content_timestamps') || '{}');
-      timestamps[key] = now;
-      localStorage.setItem('scr_content_timestamps', JSON.stringify(timestamps));
-
       if (key === 'fleet') {
-        localStorage.setItem('scr_fleet_cache', JSON.stringify(payload));
-        localStorage.setItem('scr_fleet_updated_at', String(now));
+        localStorage.setItem('scr_fleet_cache', JSON.stringify(savedData));
       }
-    } catch (e) {
-      console.warn('LocalStorage save error:', e);
-    }
+    } catch (e) {}
 
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('scr_site_content_updated', { detail: { key, data: payload } }));
+      window.dispatchEvent(new CustomEvent('scr_site_content_updated', { detail: { key, data: savedData } }));
       if (key === 'fleet') {
-        window.dispatchEvent(new CustomEvent('scr_fleet_updated', { detail: payload }));
+        window.dispatchEvent(new CustomEvent('scr_fleet_updated', { detail: savedData }));
       }
     }
 
-    try {
-      const res = await fetch(`${API_BASE}/content/${encodeURIComponent(key)}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const json = await res.json().catch(() => null);
-      if (res.ok && json && json.success) {
-        const savedData = json.data || payload;
-        const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-        cache[key] = savedData;
-        localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
-        if (key === 'fleet') {
-          localStorage.setItem('scr_fleet_cache', JSON.stringify(savedData));
-        }
-        return savedData;
-      }
-      return payload;
-    } catch (err) {
-      console.warn('API saveContent failed, preserved in local fallback cache:', err);
-      return payload;
-    }
+    return savedData;
   },
 
-  // 12. Fetch Dynamic Fleet
+  // 12. Fetch Dynamic Fleet from PostgreSQL (Single Source of Truth)
   async getFleet() {
-    const cached = JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
-    const localUpdatedAt = Number(localStorage.getItem('scr_fleet_updated_at') || '0');
-
-    try {
-      let serverData = null;
-      let serverUpdatedAt = 0;
-
-      // 1. Try dedicated /api/fleet endpoint
-      try {
-        const res = await fetch(`${API_BASE}/fleet`);
-        if (res.ok) {
-          const isJson = res.headers.get('content-type')?.includes('application/json');
-          if (isJson) {
-            const json = await res.json();
-            if (json && Array.isArray(json.data) && json.data.length > 0) {
-              serverData = json.data;
-              if (json._updated_at) serverUpdatedAt = new Date(json._updated_at).getTime();
-            }
-          }
-        }
-      } catch (e) {
-        // continue to getContent fallback
-      }
-
-      // 2. Try getContent('fleet') if /api/fleet had no data
-      if (!serverData) {
-        const contentFleet = await this.getContent('fleet');
-        if (Array.isArray(contentFleet) && contentFleet.length > 0) {
-          serverData = contentFleet;
-          if (contentFleet._updated_at) serverUpdatedAt = new Date(contentFleet._updated_at).getTime();
-        }
-      }
-
-      // If server returned fleet, check if local edits are newer
-      if (Array.isArray(serverData) && serverData.length > 0) {
-        if (localUpdatedAt > serverUpdatedAt && Array.isArray(cached) && cached.length > 0) {
-          // Local changes are newer than server, keep local!
-          return cached;
-        }
-        localStorage.setItem('scr_fleet_cache', JSON.stringify(serverData));
-        return serverData;
-      }
-
-      return (Array.isArray(cached) && cached.length > 0) ? cached : null;
-    } catch (err) {
-      console.warn('getFleet error, reading local cache:', err);
-      return (Array.isArray(cached) && cached.length > 0) ? cached : null;
-    }
-  },
-
-  // 13. Save Dynamic Fleet
-  async saveFleet(fleetList) {
-    const now = Date.now();
-    localStorage.setItem('scr_fleet_updated_at', String(now));
-
-    // 1. Immediately store in local cache
-    try {
-      localStorage.setItem('scr_fleet_cache', JSON.stringify(fleetList));
-      const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-      cache['fleet'] = fleetList;
-      localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
-      const timestamps = JSON.parse(localStorage.getItem('scr_content_timestamps') || '{}');
-      timestamps['fleet'] = now;
-      localStorage.setItem('scr_content_timestamps', JSON.stringify(timestamps));
-    } catch (e) {
-      console.warn('LocalStorage fleet save error:', e);
-    }
-
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('scr_fleet_updated', { detail: fleetList }));
-      window.dispatchEvent(new CustomEvent('scr_site_content_updated', { detail: { key: 'fleet', data: fleetList } }));
-    }
-
-    // 2. Try direct /api/fleet endpoint
     try {
       const res = await fetch(`${API_BASE}/fleet`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fleetList)
+        headers: { 'Cache-Control': 'no-cache' }
       });
       if (res.ok) {
-        const json = await res.json().catch(() => null);
-        if (json && json.data) {
-          localStorage.setItem('scr_fleet_cache', JSON.stringify(json.data));
+        const json = await res.json();
+        if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+          try {
+            localStorage.setItem('scr_fleet_cache', JSON.stringify(json.data));
+          } catch (e) {}
           return json.data;
         }
       }
-    } catch (e) {
-      console.warn('Direct /api/fleet save error, attempting content fallback:', e);
+      // Fallback to getContent('fleet')
+      const contentFleet = await this.getContent('fleet');
+      if (Array.isArray(contentFleet) && contentFleet.length > 0) {
+        try {
+          localStorage.setItem('scr_fleet_cache', JSON.stringify(contentFleet));
+        } catch (e) {}
+        return contentFleet;
+      }
+      const cached = JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
+      return (Array.isArray(cached) && cached.length > 0) ? cached : null;
+    } catch (err) {
+      console.warn('getFleet error, reading local cache:', err);
+      const cached = JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
+      return (Array.isArray(cached) && cached.length > 0) ? cached : null;
+    }
+  },
+
+  // 13. Save Dynamic Fleet (Admin) - Throws if database write fails
+  async saveFleet(fleetList) {
+    const res = await fetch(`${API_BASE}/fleet`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(fleetList)
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok || !json || !json.success) {
+      throw new Error((json && json.error) || 'Failed to save fleet to database');
     }
 
-    // 3. Fallback to saveContent('fleet')
+    const saved = json.data || fleetList;
     try {
-      const saved = await this.saveContent('fleet', fleetList);
-      if (Array.isArray(saved) && saved.length > 0) {
-        localStorage.setItem('scr_fleet_cache', JSON.stringify(saved));
-        return saved;
-      }
-      return fleetList;
-    } catch (err) {
-      console.warn('saveFleet remote error, saved to local cache:', err);
-      return fleetList;
+      localStorage.setItem('scr_fleet_cache', JSON.stringify(saved));
+      const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
+      cache['fleet'] = saved;
+      localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
+    } catch (e) {}
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('scr_fleet_updated', { detail: saved }));
+      window.dispatchEvent(new CustomEvent('scr_site_content_updated', { detail: { key: 'fleet', data: saved } }));
     }
+
+    return saved;
   },
 
   // --- LOCAL FALLBACK HELPERS ---
@@ -532,16 +400,8 @@ export const tariffApi = {
       _updated_at: now
     };
     list.push(record);
-    localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
     try {
-      const customIds = JSON.parse(localStorage.getItem('scr_custom_tariffs') || '[]');
-      if (!customIds.includes(newId)) {
-        customIds.push(newId);
-        localStorage.setItem('scr_custom_tariffs', JSON.stringify(customIds));
-      }
-      const deletedIds = JSON.parse(localStorage.getItem('scr_deleted_tariffs') || '[]');
-      const filtered = deletedIds.filter(id => String(id) !== String(newId));
-      localStorage.setItem('scr_deleted_tariffs', JSON.stringify(filtered));
+      localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
     } catch (e) {}
     return record;
   },
@@ -556,7 +416,6 @@ export const tariffApi = {
       ...(idx !== -1 ? list[idx] : {}),
       ...item,
       id: idx !== -1 ? list[idx].id : (isNaN(idNum) ? id : idNum),
-      _is_custom: true,
       _updated_at: now
     };
     if (idx === -1) {
@@ -566,12 +425,6 @@ export const tariffApi = {
     }
     try {
       localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
-      const customIds = JSON.parse(localStorage.getItem('scr_custom_tariffs') || '[]');
-      const targetId = updatedRecord.id;
-      if (!customIds.includes(targetId)) {
-        customIds.push(targetId);
-        localStorage.setItem('scr_custom_tariffs', JSON.stringify(customIds));
-      }
     } catch (e) {
       console.warn('Cache write error:', e);
     }
@@ -585,14 +438,6 @@ export const tariffApi = {
     list = list.filter(x => String(x.id) !== idStr && (isNaN(idNum) || x.id !== idNum));
     try {
       localStorage.setItem('scr_tariffs_cache_v5', JSON.stringify(list));
-      const deleted = JSON.parse(localStorage.getItem('scr_deleted_tariffs') || '[]');
-      if (!deleted.includes(idStr)) {
-        deleted.push(idStr);
-        localStorage.setItem('scr_deleted_tariffs', JSON.stringify(deleted));
-      }
-      const customIds = JSON.parse(localStorage.getItem('scr_custom_tariffs') || '[]');
-      const filteredCustom = customIds.filter(x => String(x) !== idStr);
-      localStorage.setItem('scr_custom_tariffs', JSON.stringify(filteredCustom));
     } catch (e) {
       console.warn('Cache write error:', e);
     }

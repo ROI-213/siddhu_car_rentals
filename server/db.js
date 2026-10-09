@@ -113,6 +113,21 @@ function saveLocalData(data) {
   }
 }
 
+// Global synchronization version tracker
+let globalSyncVersion = Date.now();
+
+export function getSyncVersion() {
+  return {
+    version: globalSyncVersion,
+    isPostgres: usePostgres,
+    timestamp: new Date(globalSyncVersion).toISOString()
+  };
+}
+
+export function touchSyncVersion() {
+  globalSyncVersion = Date.now();
+}
+
 // PostgreSQL Connection Setup
 let pool = null;
 let usePostgres = false;
@@ -237,6 +252,40 @@ export async function initDb() {
       console.log('✓ PostgreSQL seed tariffs inserted.');
     }
 
+    // Check if terms_conditions table is empty, if so populate
+    const termsCount = await client.query('SELECT COUNT(*) FROM terms_conditions');
+    if (parseInt(termsCount.rows[0].count, 10) === 0) {
+      for (const tm of DEFAULT_TERMS) {
+        await client.query(`
+          INSERT INTO terms_conditions (clause_key, clause_text, display_order, is_active)
+          VALUES ($1, $2, $3, $4)
+        `, [tm.clause_key, tm.clause_text, tm.display_order, tm.is_active]);
+      }
+      console.log('✓ PostgreSQL seed terms inserted.');
+    }
+
+    // Check if site_content table is empty, if so populate from original data.json
+    const contentCount = await client.query('SELECT COUNT(*) FROM site_content');
+    if (parseInt(contentCount.rows[0].count, 10) === 0) {
+      let seedContent = {};
+      try {
+        if (fs.existsSync(originalDataFilePath)) {
+          const raw = fs.readFileSync(originalDataFilePath, 'utf8');
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.site_content) seedContent = parsed.site_content;
+        }
+      } catch (e) {}
+
+      for (const [sKey, sVal] of Object.entries(seedContent)) {
+        await client.query(`
+          INSERT INTO site_content (section_key, content_data, updated_at)
+          VALUES ($1, $2, CURRENT_TIMESTAMP)
+          ON CONFLICT (section_key) DO NOTHING
+        `, [sKey, JSON.stringify(sVal)]);
+      }
+      console.log('✓ PostgreSQL seed site_content inserted.');
+    }
+
     client.release();
   } catch (err) {
     console.warn('⚠️ PostgreSQL connection failed, switching to persistent local storage mode:', err.message);
@@ -344,9 +393,11 @@ export const db = {
           safeDisplayOrder, is_active
         ];
         const result = await pool.query(query, values);
+        touchSyncVersion();
         return result.rows[0];
       } catch (err) {
-        console.warn('PostgreSQL createTariff error, seamlessly falling back to local storage:', err.message);
+        console.error('PostgreSQL createTariff database error:', err.message);
+        throw new Error(`Database error creating tariff: ${err.message}`);
       }
     }
     const data = loadLocalData();
@@ -375,6 +426,7 @@ export const db = {
     data.tariffs.push(newRecord);
     data.nextId = newId + 1;
     saveLocalData(data);
+    touchSyncVersion();
     return newRecord;
   },
 
@@ -404,9 +456,14 @@ export const db = {
           const fallbackValues = [...values.slice(0, -1), tariffData.vehicle_variant, tariffData.usage_type || 'outstation'];
           result = await pool.query(fallbackQuery, fallbackValues);
         }
-        if (result.rows[0]) return result.rows[0];
+        if (result.rows[0]) {
+          touchSyncVersion();
+          return result.rows[0];
+        }
+        throw new Error(`Tariff record with id ${id} not found in database.`);
       } catch (err) {
-        console.warn('PostgreSQL updateTariff error, seamlessly updating local storage:', err.message);
+        console.error('PostgreSQL updateTariff database error:', err.message);
+        throw new Error(`Database error updating tariff: ${err.message}`);
       }
     }
     const data = loadLocalData();
@@ -418,6 +475,7 @@ export const db = {
       const newRecord = { ...tariffData, id: isNaN(numId) ? data.tariffs.length + 1 : numId, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
       data.tariffs.push(newRecord);
       saveLocalData(data);
+      touchSyncVersion();
       return newRecord;
     }
     data.tariffs[index] = {
@@ -426,6 +484,7 @@ export const db = {
       updated_at: new Date().toISOString()
     };
     saveLocalData(data);
+    touchSyncVersion();
     return data.tariffs[index];
   },
 
@@ -433,38 +492,42 @@ export const db = {
     if (usePostgres) {
       try {
         const result = await pool.query('DELETE FROM tariffs WHERE id = $1 RETURNING *;', [id]);
-        return result.rowCount > 0;
+        if (result.rowCount > 0) {
+          touchSyncVersion();
+          return true;
+        }
+        return false;
       } catch (err) {
-        console.warn('PostgreSQL deleteTariff error, seamlessly deleting from local storage:', err.message);
+        console.error('PostgreSQL deleteTariff database error:', err.message);
+        throw new Error(`Database error deleting tariff: ${err.message}`);
       }
     }
     const data = loadLocalData();
     const initialLen = data.tariffs.length;
     data.tariffs = data.tariffs.filter(t => t.id !== parseInt(id, 10));
     saveLocalData(data);
+    touchSyncVersion();
     return data.tariffs.length < initialLen;
   },
 
   async reorderTariffs(orderList) {
     // orderList is array of { id, display_order }
     if (usePostgres) {
+      const client = await pool.connect();
       try {
-        const client = await pool.connect();
-        try {
-          await client.query('BEGIN');
-          for (const item of orderList) {
-            await client.query('UPDATE tariffs SET display_order = $1 WHERE id = $2', [item.display_order, item.id]);
-          }
-          await client.query('COMMIT');
-          return true;
-        } catch (err) {
-          await client.query('ROLLBACK');
-          throw err;
-        } finally {
-          client.release();
+        await client.query('BEGIN');
+        for (const item of orderList) {
+          await client.query('UPDATE tariffs SET display_order = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2', [item.display_order, item.id]);
         }
+        await client.query('COMMIT');
+        touchSyncVersion();
+        return true;
       } catch (err) {
-        console.warn('PostgreSQL reorderTariffs error, seamlessly updating local storage:', err.message);
+        await client.query('ROLLBACK');
+        console.error('PostgreSQL reorderTariffs error:', err.message);
+        throw new Error(`Database error reordering tariffs: ${err.message}`);
+      } finally {
+        client.release();
       }
     }
     const data = loadLocalData();
@@ -473,6 +536,7 @@ export const db = {
       if (t) t.display_order = item.display_order;
     }
     saveLocalData(data);
+    touchSyncVersion();
     return true;
   },
 
@@ -491,15 +555,31 @@ export const db = {
 
   async resetSeed() {
     if (usePostgres) {
+      const client = await pool.connect();
       try {
-        const seedSqlPath = path.join(rootDir, 'database', 'seed.sql');
-        if (fs.existsSync(seedSqlPath)) {
-          const seedSql = fs.readFileSync(seedSqlPath, 'utf8');
-          await pool.query(seedSql);
-          return true;
+        await client.query('BEGIN');
+        await client.query('DELETE FROM tariffs');
+        for (const t of DEFAULT_DISPOSAL_TARIFFS) {
+          await client.query(`
+            INSERT INTO tariffs (location, usage_type, vehicle_variant, service_type, four_hours_forty_km, eight_hours_eighty_km, extra_hour, extra_km, night_local_bata, airport_transfer, display_order, is_active)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+          `, [t.location, t.usage_type, t.vehicle_variant, t.service_type, t.four_hours_forty_km, t.eight_hours_eighty_km, t.extra_hour, t.extra_km, t.night_local_bata, t.airport_transfer, t.display_order, t.is_active]);
         }
+        for (const t of DEFAULT_OUTSTATION_TARIFFS) {
+          await client.query(`
+            INSERT INTO tariffs (location, usage_type, vehicle_variant, service_type, minimum_km_per_day, rate_per_km, outstation_extra_km, driver_allowance, display_order, is_active)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+          `, [t.location, t.usage_type, t.vehicle_variant, t.service_type, t.minimum_km_per_day, t.rate_per_km, t.outstation_extra_km, t.driver_allowance, t.display_order, t.is_active]);
+        }
+        await client.query('COMMIT');
+        touchSyncVersion();
+        return true;
       } catch (err) {
-        console.warn('PostgreSQL resetSeed error, resetting local storage:', err.message);
+        await client.query('ROLLBACK');
+        console.error('PostgreSQL resetSeed error:', err.message);
+        throw new Error(`Database error resetting tariffs: ${err.message}`);
+      } finally {
+        client.release();
       }
     }
     const defaultData = {
@@ -509,6 +589,7 @@ export const db = {
       site_content: {}
     };
     saveLocalData(defaultData);
+    touchSyncVersion();
     return true;
   },
 
@@ -550,15 +631,18 @@ export const db = {
         if (typeof ret === 'object' && ret !== null && res.rows[0]?.updated_at) {
           ret._updated_at = new Date(res.rows[0].updated_at).toISOString();
         }
+        touchSyncVersion();
         return ret;
       } catch (err) {
-        console.warn(`PostgreSQL setContent(${key}) error, writing local content:`, err.message);
+        console.error(`PostgreSQL setContent(${key}) error:`, err.message);
+        throw new Error(`Database error saving content for ${key}: ${err.message}`);
       }
     }
     const data = loadLocalData();
     if (!data.site_content) data.site_content = {};
     data.site_content[key] = payload;
     saveLocalData(data);
+    touchSyncVersion();
     return payload;
   },
 

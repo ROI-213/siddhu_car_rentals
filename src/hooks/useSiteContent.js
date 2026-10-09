@@ -55,158 +55,51 @@ export const useSiteContent = () => {
   const fetchContent = useCallback(async () => {
     try {
       const all = await tariffApi.getContent();
-      const cached = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-      const localTimestamps = JSON.parse(localStorage.getItem('scr_content_timestamps') || '{}');
-
-      const isServerNewer = (key) => {
-        const localTime = localTimestamps[key] || (cached[key]?._updated_at ? new Date(cached[key]._updated_at).getTime() : 0);
-        const serverTime = all?.[key]?._updated_at ? new Date(all[key]._updated_at).getTime() : 0;
-        return serverTime > localTime;
-      };
-
-      const heroData = isServerNewer('hero') 
-        ? { ...DEFAULT_SITE_CONTENT.hero, ...(cached.hero || {}), ...(all?.hero || {}) }
-        : { ...DEFAULT_SITE_CONTENT.hero, ...(all?.hero || {}), ...(cached.hero || {}) };
-
-      const contactData = isServerNewer('contact')
-        ? { ...DEFAULT_SITE_CONTENT.contact, ...(cached.contact || {}), ...(all?.contact || {}) }
-        : { ...DEFAULT_SITE_CONTENT.contact, ...(all?.contact || {}), ...(cached.contact || {}) };
-
-      const corporateData = isServerNewer('corporate')
-        ? {
+      if (all && typeof all === 'object') {
+        const merged = {
+          hero: { ...DEFAULT_SITE_CONTENT.hero, ...(all.hero || {}) },
+          contact: { ...DEFAULT_SITE_CONTENT.contact, ...(all.contact || {}) },
+          testimonials: {
+            featured: all?.testimonials?.featured || DEFAULT_SITE_CONTENT.testimonials.featured,
+            list: Array.isArray(all?.testimonials?.list) ? all.testimonials.list : DEFAULT_SITE_CONTENT.testimonials.list
+          },
+          destinations: {
+            heroItems: Array.isArray(all?.destinations?.heroItems) ? all.destinations.heroItems : DEFAULT_SITE_CONTENT.destinations.heroItems,
+            ribbonItems: Array.isArray(all?.destinations?.ribbonItems) ? all.destinations.ribbonItems : DEFAULT_SITE_CONTENT.destinations.ribbonItems
+          },
+          services: Array.isArray(all?.services) ? all.services : DEFAULT_SITE_CONTENT.services,
+          story: Array.isArray(all?.story) ? all.story : DEFAULT_SITE_CONTENT.story,
+          corporate: {
             ...DEFAULT_SITE_CONTENT.corporate,
-            ...(cached.corporate || {}),
-            ...(all?.corporate || {}),
-            rateCard: (Array.isArray(all?.corporate?.rateCard) && all.corporate.rateCard.length > 0)
-              ? all.corporate.rateCard
-              : (Array.isArray(cached?.corporate?.rateCard) && cached.corporate.rateCard.length > 0)
-                ? cached.corporate.rateCard
-                : DEFAULT_SITE_CONTENT.corporate.rateCard,
-            tiers: (Array.isArray(all?.corporate?.tiers) && all.corporate.tiers.length > 0)
-              ? all.corporate.tiers
-              : (Array.isArray(cached?.corporate?.tiers) && cached.corporate.tiers.length > 0)
-                ? cached.corporate.tiers
-                : DEFAULT_SITE_CONTENT.corporate.tiers
-          }
-        : {
-            ...DEFAULT_SITE_CONTENT.corporate,
-            ...(all?.corporate || {}),
-            ...(cached.corporate || {}),
-            rateCard: (Array.isArray(cached?.corporate?.rateCard) && cached.corporate.rateCard.length > 0)
-              ? cached.corporate.rateCard
-              : (Array.isArray(all?.corporate?.rateCard) && all.corporate.rateCard.length > 0)
-                ? all.corporate.rateCard
-                : DEFAULT_SITE_CONTENT.corporate.rateCard,
-            tiers: (Array.isArray(cached?.corporate?.tiers) && cached.corporate.tiers.length > 0)
-              ? cached.corporate.tiers
-              : (Array.isArray(all?.corporate?.tiers) && all.corporate.tiers.length > 0)
-                ? all.corporate.tiers
-                : DEFAULT_SITE_CONTENT.corporate.tiers
-          };
-
-      const localData = isServerNewer('local')
-        ? {
-            ...DEFAULT_SITE_CONTENT.local,
-            ...(cached.local || {}),
-            ...(all?.local || {}),
-            hero: { ...DEFAULT_SITE_CONTENT.local?.hero, ...(cached?.local?.hero || {}), ...(all?.local?.hero || {}) },
-            packagesHeader: { ...DEFAULT_SITE_CONTENT.local?.packagesHeader, ...(cached?.local?.packagesHeader || {}), ...(all?.local?.packagesHeader || {}) },
-            packages: (Array.isArray(all?.local?.packages) && all.local.packages.length > 0)
-              ? all.local.packages
-              : (Array.isArray(cached?.local?.packages) && cached.local.packages.length > 0)
-                ? cached.local.packages
-                : DEFAULT_SITE_CONTENT.local?.packages,
-            scenariosHeader: { ...DEFAULT_SITE_CONTENT.local?.scenariosHeader, ...(cached?.local?.scenariosHeader || {}), ...(all?.local?.scenariosHeader || {}) },
-            scenarios: (Array.isArray(all?.local?.scenarios) && all.local.scenarios.length > 0)
-              ? all.local.scenarios
-              : (Array.isArray(cached?.local?.scenarios) && cached.local.scenarios.length > 0)
-                ? cached.local.scenarios
-                : DEFAULT_SITE_CONTENT.local?.scenarios
-          }
-        : {
-            ...DEFAULT_SITE_CONTENT.local,
-            ...(all?.local || {}),
-            ...(cached.local || {}),
-            hero: { ...DEFAULT_SITE_CONTENT.local?.hero, ...(all?.local?.hero || {}), ...(cached?.local?.hero || {}) },
-            packagesHeader: { ...DEFAULT_SITE_CONTENT.local?.packagesHeader, ...(all?.local?.packagesHeader || {}), ...(cached?.local?.packagesHeader || {}) },
-            packages: (Array.isArray(cached?.local?.packages) && cached.local.packages.length > 0)
-              ? cached.local.packages
-              : (Array.isArray(all?.local?.packages) && all.local.packages.length > 0)
-                ? all.local.packages
-                : DEFAULT_SITE_CONTENT.local?.packages,
-            scenariosHeader: { ...DEFAULT_SITE_CONTENT.local?.scenariosHeader, ...(all?.local?.scenariosHeader || {}), ...(cached?.local?.scenariosHeader || {}) },
-            scenarios: (Array.isArray(cached?.local?.scenarios) && cached.local.scenarios.length > 0)
-              ? cached.local.scenarios
-              : (Array.isArray(all?.local?.scenarios) && all.local.scenarios.length > 0)
-                ? all.local.scenarios
-                : DEFAULT_SITE_CONTENT.local?.scenarios
-          };
-
-      const aboutData = isServerNewer('about')
-        ? {
+            ...(all.corporate || {}),
+            rateCard: Array.isArray(all?.corporate?.rateCard) ? all.corporate.rateCard : DEFAULT_SITE_CONTENT.corporate.rateCard,
+            tiers: Array.isArray(all?.corporate?.tiers) ? all.corporate.tiers : DEFAULT_SITE_CONTENT.corporate.tiers
+          },
+          outstation: {
+            ...DEFAULT_SITE_CONTENT.outstation,
+            ...(all.outstation || {})
+          },
+          about: {
             ...DEFAULT_SITE_CONTENT.about,
-            ...(cached.about || {}),
-            ...(all?.about || {}),
-            hero: { ...DEFAULT_SITE_CONTENT.about?.hero, ...(cached?.about?.hero || {}), ...(all?.about?.hero || {}) },
-            founder: { ...DEFAULT_SITE_CONTENT.about?.founder, ...(cached?.about?.founder || {}), ...(all?.about?.founder || {}) },
-            stats: (Array.isArray(all?.about?.stats) && all.about.stats.length > 0)
-              ? all.about.stats
-              : (Array.isArray(cached?.about?.stats) && cached.about.stats.length > 0)
-                ? cached.about.stats
-                : DEFAULT_SITE_CONTENT.about?.stats
+            ...(all.about || {}),
+            hero: { ...DEFAULT_SITE_CONTENT.about?.hero, ...(all.about?.hero || {}) },
+            founder: { ...DEFAULT_SITE_CONTENT.about?.founder, ...(all.about?.founder || {}) },
+            stats: Array.isArray(all?.about?.stats) ? all.about.stats : DEFAULT_SITE_CONTENT.about?.stats
+          },
+          local: {
+            ...DEFAULT_SITE_CONTENT.local,
+            ...(all.local || {}),
+            hero: { ...DEFAULT_SITE_CONTENT.local?.hero, ...(all.local?.hero || {}) },
+            packagesHeader: { ...DEFAULT_SITE_CONTENT.local?.packagesHeader, ...(all.local?.packagesHeader || {}) },
+            packages: Array.isArray(all?.local?.packages) ? all.local.packages : DEFAULT_SITE_CONTENT.local?.packages,
+            scenariosHeader: { ...DEFAULT_SITE_CONTENT.local?.scenariosHeader, ...(all.local?.scenariosHeader || {}) },
+            scenarios: Array.isArray(all?.local?.scenarios) ? all.local.scenarios : DEFAULT_SITE_CONTENT.local?.scenarios
           }
-        : {
-            ...DEFAULT_SITE_CONTENT.about,
-            ...(all?.about || {}),
-            ...(cached.about || {}),
-            hero: { ...DEFAULT_SITE_CONTENT.about?.hero, ...(all?.about?.hero || {}), ...(cached?.about?.hero || {}) },
-            founder: { ...DEFAULT_SITE_CONTENT.about?.founder, ...(all?.about?.founder || {}), ...(cached?.about?.founder || {}) },
-            stats: (Array.isArray(cached?.about?.stats) && cached.about.stats.length > 0)
-              ? cached.about.stats
-              : (Array.isArray(all?.about?.stats) && all.about.stats.length > 0)
-                ? all.about.stats
-                : DEFAULT_SITE_CONTENT.about?.stats
-          };
+        };
 
-      const outstationData = isServerNewer('outstation')
-        ? { ...DEFAULT_SITE_CONTENT.outstation, ...(cached.outstation || {}), ...(all?.outstation || {}) }
-        : { ...DEFAULT_SITE_CONTENT.outstation, ...(all?.outstation || {}), ...(cached.outstation || {}) };
-
-      const merged = {
-        hero: heroData,
-        contact: contactData,
-        testimonials: {
-          featured: isServerNewer('testimonials')
-            ? (all?.testimonials?.featured || cached?.testimonials?.featured || DEFAULT_SITE_CONTENT.testimonials.featured)
-            : (cached?.testimonials?.featured || all?.testimonials?.featured || DEFAULT_SITE_CONTENT.testimonials.featured),
-          list: isServerNewer('testimonials') && Array.isArray(all?.testimonials?.list)
-            ? all.testimonials.list
-            : (Array.isArray(cached?.testimonials?.list) ? cached.testimonials.list : (Array.isArray(all?.testimonials?.list) ? all.testimonials.list : DEFAULT_SITE_CONTENT.testimonials.list))
-        },
-        destinations: {
-          heroItems: isServerNewer('destinations') && Array.isArray(all?.destinations?.heroItems)
-            ? all.destinations.heroItems
-            : (Array.isArray(cached?.destinations?.heroItems) ? cached.destinations.heroItems : (Array.isArray(all?.destinations?.heroItems) ? all.destinations.heroItems : DEFAULT_SITE_CONTENT.destinations.heroItems)),
-          ribbonItems: isServerNewer('destinations') && Array.isArray(all?.destinations?.ribbonItems)
-            ? all.destinations.ribbonItems
-            : (Array.isArray(cached?.destinations?.ribbonItems) ? cached.destinations.ribbonItems : (Array.isArray(all?.destinations?.ribbonItems) ? all.destinations.ribbonItems : DEFAULT_SITE_CONTENT.destinations.ribbonItems))
-        },
-        services: isServerNewer('services') && Array.isArray(all?.services)
-          ? all.services
-          : (Array.isArray(cached?.services) ? cached.services : (Array.isArray(all?.services) ? all.services : DEFAULT_SITE_CONTENT.services)),
-        story: isServerNewer('story') && Array.isArray(all?.story)
-          ? all.story
-          : (Array.isArray(cached?.story) ? cached.story : (Array.isArray(all?.story) ? all.story : DEFAULT_SITE_CONTENT.story)),
-        corporate: corporateData,
-        outstation: outstationData,
-        about: aboutData,
-        local: localData
-      };
-
-      setContent(merged);
-
-      const updatedCache = { ...cached, ...merged };
-      localStorage.setItem('scr_site_content_cache', JSON.stringify(updatedCache));
+        setContent(merged);
+        localStorage.setItem('scr_site_content_cache', JSON.stringify(merged));
+      }
     } catch (err) {
       console.warn('Failed to load dynamic site content, using cached/defaults:', err);
     } finally {

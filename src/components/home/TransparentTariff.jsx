@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Info, Check } from 'lucide-react';
+import { tariffApi } from '../../services/tariffApi';
 import './TransparentTariff.css';
 
-const TARIFF_DATA = [
+const DEFAULT_TARIFF_DATA = [
   { vehicle: "D'zire / Amaze / Indigo / Etios", billing: "Garage to Garage", base: 300, rate1: 15, rate2: 15, bata: 400 },
   { vehicle: "Innova / Ertiga / Kia Carens", billing: "Garage to Garage", base: 300, rate1: 19, rate2: 19, bata: 400 },
   { vehicle: "Innova Crysta", billing: "Garage to Garage", base: 300, rate1: 23, rate2: 23, bata: 500 },
@@ -29,6 +30,33 @@ const TARIFF_DATA = [
 export const TransparentTariff = ({ onBook }) => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [expandedIndex, setExpandedIndex] = useState(null);
+  const [tariffs, setTariffs] = useState(DEFAULT_TARIFF_DATA);
+
+  const fetchLiveTariffs = async () => {
+    try {
+      const data = await tariffApi.getTariffs({ usage_type: 'outstation', all: false });
+      if (Array.isArray(data) && data.length > 0) {
+        const mapped = data.map(item => ({
+          vehicle: item.vehicle_variant,
+          billing: item.service_type || "Garage to Garage",
+          base: item.minimum_km_per_day || 300,
+          rate1: item.rate_per_km || 0,
+          rate2: item.outstation_extra_km || item.rate_per_km || 0,
+          bata: item.driver_allowance || 400
+        }));
+        setTariffs(mapped);
+      }
+    } catch (err) {
+      console.warn('Failed to fetch live tariffs for TransparentTariff:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchLiveTariffs();
+    const handleUpdate = () => fetchLiveTariffs();
+    window.addEventListener('scr_tariffs_updated', handleUpdate);
+    return () => window.removeEventListener('scr_tariffs_updated', handleUpdate);
+  }, []);
 
   const toggleExpand = (index) => {
     setExpandedIndex(expandedIndex === index ? null : index);
@@ -63,7 +91,7 @@ export const TransparentTariff = ({ onBook }) => {
               </tr>
             </thead>
             <tbody>
-              {TARIFF_DATA.map((row, index) => (
+              {tariffs.map((row, index) => (
                 <motion.tr 
                   key={index}
                   onMouseEnter={() => setHoveredIndex(index)}
@@ -88,7 +116,7 @@ export const TransparentTariff = ({ onBook }) => {
         </div>
 
         <div className="tariff-cards-wrapper mobile-only">
-          {TARIFF_DATA.map((row, index) => (
+          {tariffs.map((row, index) => (
             <motion.div 
               key={index}
               className="tariff-card"

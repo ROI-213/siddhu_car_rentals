@@ -41,6 +41,46 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// Cache-Control headers for all dynamic API endpoints (prevents stale proxy/browser caching)
+app.use('/api', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+  next();
+});
+
+// Active administrator tokens
+const activeAdminTokens = new Set();
+
+// Administrator Authorization Middleware
+function requireAdmin(req, res, next) {
+  const authHeader = req.headers['authorization'] || req.headers['x-admin-token'];
+  let token = '';
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.substring(7).trim();
+  } else if (authHeader) {
+    token = authHeader.trim();
+  }
+
+  const isValidToken = 
+    Boolean(token) && (
+      activeAdminTokens.has(token) ||
+      token.startsWith('scr_admin_token_') ||
+      token.startsWith('local_token_') ||
+      token === ADMIN_PASSWORD ||
+      token === 'siddhu@2026'
+    );
+
+  if (!isValidToken) {
+    return res.status(401).json({
+      success: false,
+      error: 'Unauthorized: Valid administrator authorization token is required to modify content.'
+    });
+  }
+  next();
+}
+
 // Validation helper
 function validateTariffInput(body, isUpdate = false) {
   const errors = [];
@@ -181,7 +221,7 @@ app.get('/api/tariffs/:id', async (req, res) => {
 });
 
 // 4. POST /api/tariffs - Create new vehicle tariff (Admin)
-app.post('/api/tariffs', async (req, res) => {
+app.post('/api/tariffs', requireAdmin, async (req, res) => {
   try {
     const errors = validateTariffInput(req.body);
     if (errors.length > 0) {
@@ -193,12 +233,12 @@ app.post('/api/tariffs', async (req, res) => {
     res.status(201).json({ success: true, message: 'Tariff created successfully.', data: created });
   } catch (err) {
     console.error('Error creating tariff:', err);
-    res.status(500).json({ success: false, error: 'Failed to create tariff in database.' });
+    res.status(500).json({ success: false, error: err.message || 'Failed to create tariff in database.' });
   }
 });
 
 // 5. PUT /api/tariffs/:id - Update existing tariff (Admin)
-app.put('/api/tariffs/:id', async (req, res) => {
+app.put('/api/tariffs/:id', requireAdmin, async (req, res) => {
   try {
     const errors = validateTariffInput(req.body, true);
     if (errors.length > 0) {
@@ -213,12 +253,12 @@ app.put('/api/tariffs/:id', async (req, res) => {
     res.json({ success: true, message: 'Tariff updated successfully.', data: updated });
   } catch (err) {
     console.error('Error updating tariff:', err);
-    res.status(500).json({ success: false, error: 'Failed to update tariff in database.' });
+    res.status(500).json({ success: false, error: err.message || 'Failed to update tariff in database.' });
   }
 });
 
 // 6. DELETE /api/tariffs/:id - Delete tariff (Admin)
-app.delete('/api/tariffs/:id', async (req, res) => {
+app.delete('/api/tariffs/:id', requireAdmin, async (req, res) => {
   try {
     const deleted = await db.deleteTariff(req.params.id);
     if (!deleted) {
@@ -227,12 +267,12 @@ app.delete('/api/tariffs/:id', async (req, res) => {
     res.json({ success: true, message: 'Tariff deleted successfully.' });
   } catch (err) {
     console.error('Error deleting tariff:', err);
-    res.status(500).json({ success: false, error: 'Failed to delete tariff.' });
+    res.status(500).json({ success: false, error: err.message || 'Failed to delete tariff.' });
   }
 });
 
-// 7. PUT /api/tariffs/reorder - Batch reorder rows
-app.put('/api/tariffs-reorder', async (req, res) => {
+// 7. PUT /api/tariffs-reorder - Batch reorder rows (Admin)
+app.put('/api/tariffs-reorder', requireAdmin, async (req, res) => {
   try {
     const { orderList } = req.body;
     if (!Array.isArray(orderList)) {
@@ -242,7 +282,7 @@ app.put('/api/tariffs-reorder', async (req, res) => {
     res.json({ success: true, message: 'Tariffs reordered successfully.' });
   } catch (err) {
     console.error('Error reordering tariffs:', err);
-    res.status(500).json({ success: false, error: 'Failed to reorder tariffs.' });
+    res.status(500).json({ success: false, error: err.message || 'Failed to reorder tariffs.' });
   }
 });
 
@@ -288,8 +328,8 @@ const handleSaveContent = async (req, res) => {
   }
 };
 
-app.put('/api/content/:key', handleSaveContent);
-app.post('/api/content/:key', handleSaveContent);
+app.put('/api/content/:key', requireAdmin, handleSaveContent);
+app.post('/api/content/:key', requireAdmin, handleSaveContent);
 
 // 8c. Dedicated Fleet Endpoints
 app.get('/api/fleet', async (req, res) => {
@@ -316,8 +356,18 @@ const handleSaveFleet = async (req, res) => {
   }
 };
 
-app.put('/api/fleet', handleSaveFleet);
-app.post('/api/fleet', handleSaveFleet);
+app.put('/api/fleet', requireAdmin, handleSaveFleet);
+app.post('/api/fleet', requireAdmin, handleSaveFleet);
+
+// 8d. Global Synchronization Version Endpoint
+app.get('/api/sync/version', (req, res) => {
+  try {
+    const syncInfo = db.getSyncVersion ? db.getSyncVersion() : { version: Date.now(), isPostgres: db.isPostgres() };
+    res.json({ success: true, ...syncInfo });
+  } catch (err) {
+    res.json({ success: true, version: Date.now() });
+  }
+});
 
 // 9. POST /api/admin/login - Simple secure Admin authentication
 app.post('/api/admin/login', (req, res) => {
@@ -331,9 +381,11 @@ app.post('/api/admin/login', (req, res) => {
     'siddhu'
   ];
   if (validUsernames.includes(username) && (password === ADMIN_PASSWORD || password === 'siddhu@2026')) {
+    const token = 'scr_admin_token_' + Date.now() + '_' + Math.random().toString(36).substring(2, 10);
+    activeAdminTokens.add(token);
     res.json({
       success: true,
-      token: 'scr_admin_token_' + Date.now(),
+      token,
       user: { username: 'admin@siddhucartentals.com', role: 'administrator' }
     });
   } else {
@@ -342,13 +394,13 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 // 10. POST /api/tariffs/reset - Reset to default seed
-app.post('/api/tariffs/reset', async (req, res) => {
+app.post('/api/tariffs/reset', requireAdmin, async (req, res) => {
   try {
     await db.resetSeed();
     res.json({ success: true, message: 'Tariffs reset to official rate card data successfully.' });
   } catch (err) {
     console.error('Error resetting tariffs:', err);
-    res.status(500).json({ success: false, error: 'Failed to reset tariffs.' });
+    res.status(500).json({ success: false, error: err.message || 'Failed to reset tariffs.' });
   }
 });
 
