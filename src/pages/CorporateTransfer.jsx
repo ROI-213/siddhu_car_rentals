@@ -927,14 +927,14 @@ export const CorporateTransfer = () => {
             align="center"
           />
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
+          <div className="corp-steps-grid">
             {onboardingSteps.map((s, i) => (
-              <GlassCard key={s.step || i} variant="interactive" style={{ textAlign: 'center', padding: '28px 20px' }}>
-                <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'linear-gradient(135deg, #C5A059 0%, #B38E47 100%)', color: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', fontWeight: '900', margin: '0 auto 16px auto', fontFamily: 'var(--font-ui)' }}>
+              <GlassCard key={s.step || i} variant="interactive" className="corp-step-card">
+                <div className="corp-step-num">
                   {s.step}
                 </div>
-                <h4 className="text-h3" style={{ fontSize: '1.02rem', marginBottom: '8px' }}>{s.title}</h4>
-                <p className="text-small" style={{ lineHeight: '1.6' }}>{s.desc}</p>
+                <h4 className="corp-step-title">{s.title}</h4>
+                <p className="corp-step-desc">{s.desc}</p>
               </GlassCard>
             ))}
           </div>

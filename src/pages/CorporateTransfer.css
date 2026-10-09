@@ -150,3 +150,124 @@
     gap: 8px !important;
   }
 }
+
+/* ==========================================================================
+   Corporate Page: 4-Step Onboarding 2x2 Responsive Grid
+   ========================================================================== */
+.corp-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.corp-step-card {
+  text-align: center;
+  padding: 28px 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  height: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(197, 160, 89, 0.25) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.corp-step-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(197, 160, 89, 0.5) !important;
+  box-shadow: 0 12px 24px -6px rgba(197, 160, 89, 0.18);
+}
+
+.corp-step-num {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #C5A059 0%, #B38E47 100%);
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  margin: 0 auto 16px auto;
+  font-family: var(--font-ui);
+  box-shadow: 0 4px 12px rgba(197, 160, 89, 0.25);
+  flex-shrink: 0;
+}
+
+.corp-step-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-charcoal-900);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.corp-step-desc {
+  font-size: 0.85rem;
+  color: var(--color-charcoal-600);
+  line-height: 1.55;
+  margin: 0;
+  flex: 1;
+}
+
+@media (max-width: 900px) {
+  .corp-steps-grid {
+    grid-template-columns: repeat(2, 1fr) !important; /* Exactly 2x2 grid on mobile and tablet */
+    gap: 12px !important;
+  }
+
+  .corp-step-card {
+    padding: 18px 12px !important;
+    border-radius: 14px !important;
+  }
+
+  .corp-step-num {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 0.92rem !important;
+    margin-bottom: 10px !important;
+  }
+
+  .corp-step-title {
+    font-size: 0.88rem !important;
+    margin-bottom: 6px !important;
+    line-height: 1.25 !important;
+  }
+
+  .corp-step-desc {
+    font-size: 0.74rem !important;
+    line-height: 1.4 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .corp-steps-grid {
+    gap: 8px !important;
+  }
+
+  .corp-step-card {
+    padding: 14px 8px !important;
+    border-radius: 12px !important;
+  }
+
+  .corp-step-num {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 0.82rem !important;
+    margin-bottom: 8px !important;
+  }
+
+  .corp-step-title {
+    font-size: 0.8rem !important;
+    margin-bottom: 4px !important;
+  }
+
+  .corp-step-desc {
+    font-size: 0.68rem !important;
+    line-height: 1.35 !important;
+  }
+}
+
