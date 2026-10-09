@@ -651,5 +651,49 @@
   }
 }
 
+/* ==========================================================================
+   About Page: Quality Commitment 2x2 Responsive Grid
+   ========================================================================== */
+.quality-commitment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .quality-commitment-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .quality-commitment-grid {
+    grid-template-columns: repeat(2, 1fr) !important; /* 2x2 card style on mobile */
+    gap: 12px !important;
+  }
+
+  .quality-commitment-card {
+    padding: 16px 12px !important;
+    border-radius: 14px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .quality-card-title {
+    font-size: 0.9rem !important;
+    line-height: 1.25 !important;
+    margin-bottom: 6px !important;
+  }
+
+  .quality-card-desc {
+    font-size: 0.74rem !important;
+    line-height: 1.35 !important;
+    color: #64748B !important;
+  }
+}
+
+
 
 

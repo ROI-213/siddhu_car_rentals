@@ -612,47 +612,47 @@ export const About = ({ onReserveClick }) => {
             align="center"
           />
 
-          <div className="grid-showcase">
-            <GlassCard variant="interactive">
-              <div style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
+          <div className="quality-commitment-grid">
+            <GlassCard variant="interactive" className="quality-commitment-card">
+              <div className="quality-card-title" style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
                 👮‍♂️ Police-Verified Uniformed Drivers
               </div>
-              <p className="text-small">Every driver undergoes background verification, medical eye tests, and defensive driving certification.</p>
+              <p className="text-small quality-card-desc">Every driver undergoes background verification, medical eye tests, and defensive driving certification.</p>
             </GlassCard>
 
-            <GlassCard variant="interactive">
-              <div style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
+            <GlassCard variant="interactive" className="quality-commitment-card">
+              <div className="quality-card-title" style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
                 🧼 Daily Interior Sanitisation
               </div>
-              <p className="text-small">Cabins are deep vacuumed, leather seats conditioned, and surfaces disinfected before every client pickup.</p>
+              <p className="text-small quality-card-desc">Cabins are deep vacuumed, leather seats conditioned, and surfaces disinfected before every client pickup.</p>
             </GlassCard>
 
-            <GlassCard variant="interactive">
-              <div style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
+            <GlassCard variant="interactive" className="quality-commitment-card">
+              <div className="quality-card-title" style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
                 ⏱️ Punctuality Guarantee
               </div>
-              <p className="text-small">Chauffeurs arrive 15 minutes before the scheduled time. Flight arrival tracking avoids delay penalties.</p>
+              <p className="text-small quality-card-desc">Chauffeurs arrive 15 minutes before the scheduled time. Flight arrival tracking avoids delay penalties.</p>
             </GlassCard>
 
-            <GlassCard variant="interactive">
-              <div style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
+            <GlassCard variant="interactive" className="quality-commitment-card">
+              <div className="quality-card-title" style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
                 📡 Live GPS Speed Monitoring
               </div>
-              <p className="text-small">Real-time telematics track speed limits and route progress for highway safety across outstation journeys.</p>
+              <p className="text-small quality-card-desc">Real-time telematics track speed limits and route progress for highway safety across outstation journeys.</p>
             </GlassCard>
 
-            <GlassCard variant="interactive">
-              <div style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
+            <GlassCard variant="interactive" className="quality-commitment-card">
+              <div className="quality-card-title" style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
                 💳 Transparent GST Tariffs
               </div>
-              <p className="text-small">Clear itemised billing with zero surge pricing, zero hidden charges, and official corporate GST invoices.</p>
+              <p className="text-small quality-card-desc">Clear itemised billing with zero surge pricing, zero hidden charges, and official corporate GST invoices.</p>
             </GlassCard>
 
-            <GlassCard variant="interactive">
-              <div style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
+            <GlassCard variant="interactive" className="quality-commitment-card">
+              <div className="quality-card-title" style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--color-charcoal-900)', marginBottom: '8px' }}>
                 📞 24/7 Dispatch Desk Support
               </div>
-              <p className="text-small">Human concierge assistance available round-the-clock for flight changes, route tweaks, or instant fleet dispatch.</p>
+              <p className="text-small quality-card-desc">Human concierge assistance available round-the-clock for flight changes, route tweaks, or instant fleet dispatch.</p>
             </GlassCard>
           </div>
         </div>
