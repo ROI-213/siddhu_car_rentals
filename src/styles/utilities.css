@@ -517,12 +517,16 @@
 @media (max-width: 768px) {
   .about-fleet-slider {
     aspect-ratio: 16 / 10;
-    min-height: 220px;
+    min-height: 240px;
     border-radius: 18px;
   }
 
+  /* Display the image fully inside the card without edge compression */
   .about-slider-img {
-    padding: 8px 24px;
+    padding: 6px 10px !important;
+    object-fit: contain !important;
+    width: 100% !important;
+    height: 100% !important;
   }
 
   .about-slider-badge-fleet {
@@ -541,9 +545,9 @@
   }
 
   .about-slider-nav-btn {
-    width: 30px;
-    height: 30px;
-    background: rgba(15, 23, 42, 0.6);
+    width: 32px;
+    height: 32px;
+    background: rgba(15, 23, 42, 0.7);
   }
 
   .about-slider-nav-prev {
@@ -554,16 +558,13 @@
     right: 6px;
   }
 
+  /* Do not display the text overlay in mobile view so the car image is 100% fully visible */
   .about-slider-overlay {
-    padding: 24px 12px 10px;
-  }
-
-  .about-slider-title {
-    font-size: 0.92rem !important;
+    display: none !important;
   }
 
   .about-slider-dots {
-    bottom: 5px;
+    bottom: 8px;
   }
 }
 
