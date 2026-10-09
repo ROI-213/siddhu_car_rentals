@@ -62,6 +62,14 @@ const SERVICES = [
   }
 ];
 
+const SLIDING_FEATURES = [
+  { id: 'safe', icon: ShieldCheck, text: 'Safe & Secure Travel' },
+  { id: 'avail', icon: Clock, text: '24/7 Availability' },
+  { id: 'driver', icon: User, text: 'Professional Chauffeurs' }
+];
+
+const FEATURE_ITEMS = [...SLIDING_FEATURES, ...SLIDING_FEATURES, ...SLIDING_FEATURES];
+
 export const OurServices = ({ onNavigate, servicesList = null }) => {
   const [selectedServiceId, setSelectedServiceId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -179,21 +187,31 @@ export const OurServices = ({ onNavigate, servicesList = null }) => {
           initialServiceId={selectedServiceId}
         />
 
-        {/* Bottom Features */}
-        <div className="os-features">
-          <div className="os-feature">
-            <ShieldCheck size={22} className="os-feature-icon" />
-            <span>Safe & Secure Travel</span>
-          </div>
-          <div className="os-feature-divider"></div>
-          <div className="os-feature">
-            <Clock size={22} className="os-feature-icon" />
-            <span>24/7 Availability</span>
-          </div>
-          <div className="os-feature-divider"></div>
-          <div className="os-feature">
-            <User size={22} className="os-feature-icon" />
-            <span>Professional Chauffeurs</span>
+        {/* Bottom Features - Continuously Sliding Marquee */}
+        <div className="os-features-wrapper">
+          <div className="os-features-track">
+            <div className="os-features-set">
+              {FEATURE_ITEMS.map((f, i) => (
+                <React.Fragment key={`f1-${i}`}>
+                  <div className="os-feature">
+                    <f.icon size={20} className="os-feature-icon" />
+                    <span>{f.text}</span>
+                  </div>
+                  <div className="os-feature-divider"></div>
+                </React.Fragment>
+              ))}
+            </div>
+            <div className="os-features-set" aria-hidden="true">
+              {FEATURE_ITEMS.map((f, i) => (
+                <React.Fragment key={`f2-${i}`}>
+                  <div className="os-feature">
+                    <f.icon size={20} className="os-feature-icon" />
+                    <span>{f.text}</span>
+                  </div>
+                  <div className="os-feature-divider"></div>
+                </React.Fragment>
+              ))}
+            </div>
           </div>
         </div>
 

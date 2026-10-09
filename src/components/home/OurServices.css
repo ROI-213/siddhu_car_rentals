@@ -243,34 +243,68 @@
   color: #11141D;
 }
 
-.os-features {
+/* Continuously Sliding Features Marquee */
+.os-features-wrapper {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  padding: 26px 0 10px 0;
+  margin-top: 26px;
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+}
+
+.os-features-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  animation: osFeaturesSlide 24s linear infinite;
+  will-change: transform;
+}
+
+.os-features-track:hover {
+  animation-play-state: paused;
+}
+
+.os-features-set {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 40px;
-  border-top: 1px solid rgba(0,0,0,0.06);
-  padding-top: 35px;
-  max-width: 800px;
-  margin: 20px auto 0 auto;
+  gap: 32px;
+  padding-right: 32px;
 }
 
 .os-feature {
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: #2C1E16;
+  gap: 10px;
+  color: #1E232E;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
+  white-space: nowrap;
 }
 
 .os-feature-icon {
-  color: #4B5563;
+  color: #C5A059;
+  flex-shrink: 0;
 }
 
 .os-feature-divider {
-  width: 1px;
-  height: 28px;
-  background: rgba(0,0,0,0.1);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #C5A059;
+  opacity: 0.65;
+  flex-shrink: 0;
+}
+
+@keyframes osFeaturesSlide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .os-action-text-short {
@@ -441,16 +475,34 @@
     display: inline !important;
   }
 
-  .os-features {
-    gap: 12px;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 20px 10px 0 10px;
+  .os-features-wrapper {
+    padding: 18px 0 6px 0;
+    margin-top: 18px;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
   }
-  .os-feature-divider {
-    display: none;
+
+  .os-features-track {
+    animation-duration: 18s;
   }
+
+  .os-features-set {
+    gap: 20px;
+    padding-right: 20px;
+  }
+
   .os-feature {
-    font-size: 0.80rem;
+    font-size: 0.82rem;
+    gap: 7px;
+  }
+
+  .os-feature-icon {
+    width: 17px;
+    height: 17px;
+  }
+
+  .os-feature-divider {
+    width: 4px;
+    height: 4px;
   }
 }
