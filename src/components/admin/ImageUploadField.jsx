@@ -10,7 +10,7 @@ import { UploadCloud, Image as ImageIcon, X, Check, RefreshCw, Eye } from 'lucid
  * 4. Direct URL / Path fallback
  * 5. Instant preview & Remove
  */
-export const compressImageToDataUrl = (file, maxWidth = 1600, maxHeight = 1600, quality = 0.85) => {
+export const compressImageToDataUrl = (file, maxWidth = 1280, maxHeight = 960, quality = 0.8) => {
   return new Promise((resolve, reject) => {
     if (!file || !file.type.startsWith('image/')) {
       reject(new Error('Please select a valid image file.'));
@@ -37,10 +37,22 @@ export const compressImageToDataUrl = (file, maxWidth = 1600, maxHeight = 1600, 
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
+
+        // Draw background and image
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, width, height);
         ctx.drawImage(img, 0, 0, width, height);
 
-        const mime = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-        resolve(canvas.toDataURL(mime, quality));
+        // Prefer modern lightweight webp format, fallback to jpeg
+        try {
+          const webpData = canvas.toDataURL('image/webp', quality);
+          if (webpData && webpData.startsWith('data:image/webp')) {
+            resolve(webpData);
+            return;
+          }
+        } catch (err) {}
+
+        resolve(canvas.toDataURL('image/jpeg', quality));
       };
       img.onerror = () => reject(new Error('Failed to load image.'));
       img.src = e.target.result;

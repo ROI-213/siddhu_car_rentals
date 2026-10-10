@@ -17,22 +17,32 @@ const ADMIN_USERNAME = (process.env.ADMIN_USERNAME || 'admin@siddhucartentals.co
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'siddhu@2026';
 
 app.use(cors({ origin: true, credentials: true }));
+app.options('*', cors());
 app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
-let isInitialized = false;
+// Ensure incoming requests are prefixed with /api for seamless matching on Vercel
+app.use((req, res, next) => {
+  if (req.url && !req.url.startsWith('/api')) {
+    req.url = '/api' + (req.url.startsWith('/') ? req.url : '/' + req.url);
+  }
+  next();
+});
+
+let lastDbAttempt = 0;
 let isInitializing = false;
 async function ensureDb() {
-  if (!isInitialized && !isInitializing) {
-    isInitializing = true;
-    try {
-      await initDb();
-      isInitialized = true;
-    } catch (err) {
-      console.error('Database connection error in ensureDb:', err);
-      isInitialized = true; // prevent blocking subsequent requests
-    } finally {
-      isInitializing = false;
-    }
+  if (db.isPostgres()) return;
+  const now = Date.now();
+  if (isInitializing || (now - lastDbAttempt < 5000)) return;
+  isInitializing = true;
+  lastDbAttempt = now;
+  try {
+    await initDb();
+  } catch (err) {
+    console.warn('ensureDb connection attempt:', err.message);
+  } finally {
+    isInitializing = false;
   }
 }
 

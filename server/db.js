@@ -131,11 +131,13 @@ export function touchSyncVersion() {
 // PostgreSQL Connection Setup
 let pool = null;
 let usePostgres = false;
-let isAttempted = false;
+let lastInitAttempt = 0;
 
-export async function initDb() {
-  if (isAttempted && (pool || usePostgres)) return;
-  isAttempted = true;
+export async function initDb(force = false) {
+  if (usePostgres && pool && !force) return;
+  const now = Date.now();
+  if (!force && (now - lastInitAttempt < 5000)) return;
+  lastInitAttempt = now;
 
   const isVercelEnv = Boolean(process.env.VERCEL);
   const connectionString =
@@ -162,7 +164,7 @@ export async function initDb() {
         ssl: sslEnabled ? { rejectUnauthorized: false } : false,
         max: parseInt(process.env.DB_POOL_MAX || '10', 10),
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 2500
+        connectionTimeoutMillis: 8000
       }
     : {
         host: process.env.DB_HOST || process.env.PGHOST || '127.0.0.1',
@@ -173,7 +175,7 @@ export async function initDb() {
         ssl: sslEnabled ? { rejectUnauthorized: false } : false,
         max: parseInt(process.env.DB_POOL_MAX || '10', 10),
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 2500
+        connectionTimeoutMillis: 8000
       };
 
   try {
@@ -187,6 +189,8 @@ export async function initDb() {
     const targetHost = poolConfig.host || (connectionString ? 'configured DATABASE_URL' : '127.0.0.1');
     console.log(`✓ Successfully connected to PostgreSQL Database at ${targetHost}`);
     usePostgres = true;
+
+    try {
 
     // Ensure site_content table exists
     await client.query(`
@@ -285,9 +289,10 @@ export async function initDb() {
       }
       console.log('✓ PostgreSQL seed site_content inserted.');
     }
-
+  } finally {
     client.release();
-  } catch (err) {
+  }
+} catch (err) {
     console.warn('⚠️ PostgreSQL connection failed, switching to persistent local storage mode:', err.message);
     usePostgres = false;
   }

@@ -1,7 +1,9 @@
 // Tariff API Service for Siddhu Car Rentals
 // PostgreSQL Express Backend is the Single Source of Truth
 
-const API_BASE = '/api';
+const API_BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) 
+  ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api` 
+  : '/api';
 
 export function getAdminToken() {
   if (typeof window === 'undefined') return 'siddhu@2026';
