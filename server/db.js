@@ -616,8 +616,15 @@ export const db = {
       try {
         const res = await pool.query('SELECT content_data, updated_at FROM site_content WHERE section_key = $1', [key]);
         if (res.rows.length > 0 && res.rows[0]?.content_data !== undefined && res.rows[0]?.content_data !== null) {
-          const val = res.rows[0].content_data;
-          if (typeof val === 'object' && val !== null && !val._updated_at && res.rows[0].updated_at) {
+          let val = res.rows[0].content_data;
+          // If stored as an object with numeric keys ('0', '1', ...), convert back to array
+          if (val && typeof val === 'object' && !Array.isArray(val) && (key === 'fleet' || '0' in val)) {
+            val = Object.keys(val)
+              .filter(k => !isNaN(parseInt(k, 10)))
+              .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+              .map(k => val[k]);
+          }
+          if (typeof val === 'object' && val !== null && !Array.isArray(val) && !val._updated_at && res.rows[0].updated_at) {
             val._updated_at = new Date(res.rows[0].updated_at).toISOString();
           }
           return val;
@@ -627,13 +634,25 @@ export const db = {
       }
     }
     const data = loadLocalData();
-    return (data.site_content && data.site_content[key]) || null;
+    let localVal = (data.site_content && data.site_content[key]) || null;
+    if (localVal && typeof localVal === 'object' && !Array.isArray(localVal) && (key === 'fleet' || '0' in localVal)) {
+      localVal = Object.keys(localVal)
+        .filter(k => !isNaN(parseInt(k, 10)))
+        .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+        .map(k => localVal[k]);
+    }
+    return localVal;
   },
 
   async setContent(key, contentData) {
-    const payload = (typeof contentData === 'object' && contentData !== null)
-      ? { ...contentData, _updated_at: contentData._updated_at || new Date().toISOString() }
-      : contentData;
+    let payload;
+    if (Array.isArray(contentData)) {
+      payload = contentData;
+    } else if (typeof contentData === 'object' && contentData !== null) {
+      payload = { ...contentData, _updated_at: contentData._updated_at || new Date().toISOString() };
+    } else {
+      payload = contentData;
+    }
 
     if (usePostgres) {
       try {
@@ -645,8 +664,14 @@ export const db = {
           RETURNING content_data, updated_at;
         `;
         const res = await pool.query(query, [key, JSON.stringify(payload)]);
-        const ret = res.rows[0]?.content_data || payload;
-        if (typeof ret === 'object' && ret !== null && res.rows[0]?.updated_at) {
+        let ret = res.rows[0]?.content_data || payload;
+        if (ret && typeof ret === 'object' && !Array.isArray(ret) && (key === 'fleet' || '0' in ret)) {
+          ret = Object.keys(ret)
+            .filter(k => !isNaN(parseInt(k, 10)))
+            .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+            .map(k => ret[k]);
+        }
+        if (typeof ret === 'object' && ret !== null && !Array.isArray(ret) && res.rows[0]?.updated_at) {
           ret._updated_at = new Date(res.rows[0].updated_at).toISOString();
         }
         touchSyncVersion();
@@ -687,7 +712,13 @@ export const db = {
 
   // Vehicle-specific CRUD operations backed by PostgreSQL
   async getVehicles() {
-    const fleet = await this.getContent('fleet');
+    let fleet = await this.getContent('fleet');
+    if (fleet && typeof fleet === 'object' && !Array.isArray(fleet)) {
+      fleet = Object.keys(fleet)
+        .filter(k => !isNaN(parseInt(k, 10)))
+        .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+        .map(k => fleet[k]);
+    }
     return Array.isArray(fleet) ? fleet : [];
   },
 

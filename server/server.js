@@ -384,8 +384,15 @@ app.post('/api/content/:key', requireAdmin, handleSaveContent);
 // 8c. Dedicated Fleet Endpoints
 app.get('/api/fleet', async (req, res) => {
   try {
-    const data = await db.getContent('fleet');
-    res.json({ success: true, data: data || [] });
+    let data = await db.getContent('fleet');
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+      data = Object.keys(data)
+        .filter(k => !isNaN(parseInt(k, 10)))
+        .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+        .map(k => data[k]);
+    }
+    const list = Array.isArray(data) ? data : [];
+    res.json({ success: true, count: list.length, data: list });
   } catch (err) {
     console.error('Error fetching fleet:', err);
     res.status(500).json({ success: false, error: 'Failed to fetch fleet.' });
@@ -394,12 +401,19 @@ app.get('/api/fleet', async (req, res) => {
 
 const handleSaveFleet = async (req, res) => {
   try {
-    const fleetList = req.body;
+    let fleetList = Array.isArray(req.body) ? req.body : (req.body?.fleet || req.body?.data || req.body);
+    if (fleetList && typeof fleetList === 'object' && !Array.isArray(fleetList)) {
+      fleetList = Object.keys(fleetList)
+        .filter(k => !isNaN(parseInt(k, 10)))
+        .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+        .map(k => fleetList[k]);
+    }
     if (!Array.isArray(fleetList)) {
       return res.status(400).json({ success: false, error: 'Fleet must be an array of vehicles.' });
     }
     const saved = await db.setContent('fleet', fleetList);
-    res.json({ success: true, message: 'Fleet saved successfully.', data: saved });
+    const resultList = Array.isArray(saved) ? saved : fleetList;
+    res.json({ success: true, message: 'Fleet saved successfully.', data: resultList });
   } catch (err) {
     console.error('Error saving fleet:', err);
     res.status(500).json({ success: false, error: err.message || 'Failed to save fleet.' });

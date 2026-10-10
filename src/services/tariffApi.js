@@ -271,32 +271,61 @@ export const tariffApi = {
       const json = await res.json();
 
       if (json && json.data !== undefined) {
+        let result = json.data;
+        if (result && typeof result === 'object' && !Array.isArray(result) && (key === 'fleet' || '0' in result)) {
+          result = Object.keys(result)
+            .filter(k => !isNaN(parseInt(k, 10)))
+            .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+            .map(k => result[k]);
+        }
         // Cache copy for offline
         try {
           const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
           if (key) {
-            cache[key] = json.data;
-          } else if (typeof json.data === 'object' && json.data !== null) {
-            Object.assign(cache, json.data);
+            cache[key] = result;
+          } else if (typeof result === 'object' && result !== null) {
+            Object.assign(cache, result);
           }
           localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
+          if (key === 'fleet' && Array.isArray(result) && result.length > 0) {
+            localStorage.setItem('scr_fleet_cache', JSON.stringify(result));
+          }
         } catch (e) {}
-        return json.data;
+        return result;
       }
       const localCache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-      return key ? (localCache[key] || null) : localCache;
+      let fallback = key ? (localCache[key] || null) : localCache;
+      if (fallback && typeof fallback === 'object' && !Array.isArray(fallback) && (key === 'fleet' || '0' in fallback)) {
+        fallback = Object.keys(fallback)
+          .filter(k => !isNaN(parseInt(k, 10)))
+          .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+          .map(k => fallback[k]);
+      }
+      return fallback;
     } catch (err) {
       console.warn('API getContent fallback to local cache:', err);
       const localCache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-      return key ? (localCache[key] || null) : localCache;
+      let fallback = key ? (localCache[key] || null) : localCache;
+      if (fallback && typeof fallback === 'object' && !Array.isArray(fallback) && (key === 'fleet' || '0' in fallback)) {
+        fallback = Object.keys(fallback)
+          .filter(k => !isNaN(parseInt(k, 10)))
+          .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+          .map(k => fallback[k]);
+      }
+      return fallback;
     }
   },
 
   // 11. Save Dynamic Site Content (Admin) - Remote PostgreSQL is Single Source of Truth
   async saveContent(key, data) {
-    const payload = (typeof data === 'object' && data !== null)
-      ? { ...data, _updated_at: data._updated_at || new Date().toISOString() }
-      : data;
+    let payload;
+    if (Array.isArray(data)) {
+      payload = data;
+    } else if (typeof data === 'object' && data !== null) {
+      payload = { ...data, _updated_at: data._updated_at || new Date().toISOString() };
+    } else {
+      payload = data;
+    }
 
     const res = await fetch(`${API_BASE}/content/${encodeURIComponent(key)}`, {
       method: 'PUT',
@@ -308,7 +337,14 @@ export const tariffApi = {
       throw new Error((json && json.error) || `Failed to save content for "${key}" to PostgreSQL database (status ${res.status})`);
     }
 
-    const savedData = json.data || payload;
+    let savedData = json.data || payload;
+    if (savedData && typeof savedData === 'object' && !Array.isArray(savedData) && (key === 'fleet' || '0' in savedData)) {
+      savedData = Object.keys(savedData)
+        .filter(k => !isNaN(parseInt(k, 10)))
+        .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+        .map(k => savedData[k]);
+    }
+
     try {
       const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
       cache[key] = savedData;
@@ -336,21 +372,55 @@ export const tariffApi = {
       });
       if (res.ok) {
         const json = await res.json();
-        if (json && json.success && Array.isArray(json.data) && json.data.length > 0) {
+        let list = json?.data;
+        if (list && typeof list === 'object' && !Array.isArray(list)) {
+          list = Object.keys(list)
+            .filter(k => !isNaN(parseInt(k, 10)))
+            .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+            .map(k => list[k]);
+        }
+        if (Array.isArray(list) && list.length > 0) {
           try {
-            localStorage.setItem('scr_fleet_cache', JSON.stringify(json.data));
+            localStorage.setItem('scr_fleet_cache', JSON.stringify(list));
           } catch (e) {}
-          return json.data;
+          return list;
         }
       }
+
+      // Also try /api/vehicles
+      const resVehicles = await fetch(`${API_BASE}/vehicles`, { headers: { 'Cache-Control': 'no-cache' } }).catch(() => null);
+      if (resVehicles && resVehicles.ok) {
+        const jsonV = await resVehicles.json();
+        let listV = jsonV?.data;
+        if (listV && typeof listV === 'object' && !Array.isArray(listV)) {
+          listV = Object.keys(listV)
+            .filter(k => !isNaN(parseInt(k, 10)))
+            .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+            .map(k => listV[k]);
+        }
+        if (Array.isArray(listV) && listV.length > 0) {
+          try {
+            localStorage.setItem('scr_fleet_cache', JSON.stringify(listV));
+          } catch (e) {}
+          return listV;
+        }
+      }
+
       // Fallback to getContent('fleet')
-      const contentFleet = await this.getContent('fleet');
+      let contentFleet = await this.getContent('fleet');
+      if (contentFleet && typeof contentFleet === 'object' && !Array.isArray(contentFleet)) {
+        contentFleet = Object.keys(contentFleet)
+          .filter(k => !isNaN(parseInt(k, 10)))
+          .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+          .map(k => contentFleet[k]);
+      }
       if (Array.isArray(contentFleet) && contentFleet.length > 0) {
         try {
           localStorage.setItem('scr_fleet_cache', JSON.stringify(contentFleet));
         } catch (e) {}
         return contentFleet;
       }
+
       const cached = JSON.parse(localStorage.getItem('scr_fleet_cache') || 'null');
       return (Array.isArray(cached) && cached.length > 0) ? cached : null;
     } catch (err) {
