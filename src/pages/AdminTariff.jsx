@@ -205,15 +205,19 @@ export const AdminTariff = ({ onNavigateToPublicTariff, onExitAdmin }) => {
     }
 
     try {
+      const cleanUsage = (formData.usage_type || activeTab).toLowerCase().includes('outstation') ? 'outstation' : 'disposal';
       if (modalMode === 'add') {
         await tariffApi.createTariff({
           ...formData,
-          usage_type: activeTab,
+          usage_type: cleanUsage,
           display_order: tariffs.length + 1
         });
         showToast(`Vehicle tariff "${formData.vehicle_variant}" created successfully!`);
       } else {
-        await tariffApi.updateTariff(currentEditId, formData);
+        await tariffApi.updateTariff(currentEditId, {
+          ...formData,
+          usage_type: cleanUsage
+        });
         showToast(`Vehicle tariff "${formData.vehicle_variant}" updated successfully!`);
       }
       setIsModalOpen(false);

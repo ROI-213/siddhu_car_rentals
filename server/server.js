@@ -118,6 +118,14 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+function normalizeUsageType(val) {
+  if (!val || typeof val !== 'string') return '';
+  const lower = val.toLowerCase().trim();
+  if (lower.includes('outstation')) return 'outstation';
+  if (lower.includes('disposal') || lower.includes('local')) return 'disposal';
+  return lower;
+}
+
 // Validation helper
 function validateTariffInput(body, isUpdate = false) {
   const errors = [];
@@ -136,18 +144,20 @@ function validateTariffInput(body, isUpdate = false) {
     driver_allowance
   } = body;
 
+  const normUsage = normalizeUsageType(usage_type);
+
   if (!isUpdate) {
     if (!vehicle_variant || typeof vehicle_variant !== 'string' || !vehicle_variant.trim()) {
       errors.push('Vehicle Variant name is required and cannot be empty.');
     }
-    if (!usage_type || !['disposal', 'outstation'].includes(usage_type.toLowerCase())) {
+    if (!normUsage || !['disposal', 'outstation'].includes(normUsage)) {
       errors.push('Usage type must be either "disposal" or "outstation".');
     }
   } else {
     if (vehicle_variant !== undefined && (typeof vehicle_variant !== 'string' || !vehicle_variant.trim())) {
       errors.push('Vehicle Variant name cannot be empty.');
     }
-    if (usage_type !== undefined && !['disposal', 'outstation'].includes(usage_type.toLowerCase())) {
+    if (usage_type !== undefined && !['disposal', 'outstation'].includes(normUsage)) {
       errors.push('Usage type must be either "disposal" or "outstation".');
     }
   }
@@ -182,6 +192,9 @@ function validateTariffInput(body, isUpdate = false) {
 // Clean numeric fields (convert empty strings or null to null, strings to integer)
 function sanitizeTariffInput(body) {
   const clean = { ...body };
+  if (clean.usage_type) {
+    clean.usage_type = normalizeUsageType(clean.usage_type);
+  }
   const numKeys = [
     'four_hours_forty_km',
     'eight_hours_eighty_km',
