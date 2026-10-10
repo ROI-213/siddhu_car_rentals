@@ -4,11 +4,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
+
+dotenv.config({ path: path.join(rootDir, '.env') });
 
 const { Pool } = pg;
 
@@ -139,17 +139,15 @@ export async function initDb(force = false) {
   if (!force && (now - lastInitAttempt < 5000)) return;
   lastInitAttempt = now;
 
-  const isVercelEnv = Boolean(process.env.VERCEL);
-  const connectionString =
-    process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRESQL_URL;
+  const DEFAULT_REMOTE_CONN = 'postgresql://siddh876:tInlqWg3BkGLd1Yg6qfd98cex@168.119.64.101:5432/siddh876';
+  let connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRESQL_URL;
 
-  const hasRemoteDb = Boolean(connectionString) || (process.env.DB_HOST && process.env.DB_HOST !== '127.0.0.1' && process.env.DB_HOST !== 'localhost');
-
-  // Skip 127.0.0.1 connection attempts immediately in Vercel serverless environment
-  if (isVercelEnv && !hasRemoteDb) {
-    console.log('✓ Vercel serverless environment active without remote DATABASE_URL; running resilient local storage mode.');
-    usePostgres = false;
-    return;
+  if (!connectionString) {
+    if (process.env.PGHOST && process.env.PGHOST !== '127.0.0.1' && process.env.PGHOST !== 'localhost') {
+      connectionString = `postgresql://${process.env.PGUSER || 'siddh876'}:${process.env.PGPASSWORD || 'tInlqWg3BkGLd1Yg6qfd98cex'}@${process.env.PGHOST}:${process.env.PGPORT || 5432}/${process.env.PGDATABASE || 'siddh876'}`;
+    } else {
+      connectionString = DEFAULT_REMOTE_CONN;
+    }
   }
 
   const sslExplicitlyDisabled =
@@ -164,25 +162,13 @@ export async function initDb(force = false) {
 
   const sslEnabled = !sslExplicitlyDisabled && sslExplicitlyEnabled;
 
-  const poolConfig = connectionString
-    ? {
-        connectionString,
-        ssl: sslEnabled ? { rejectUnauthorized: false } : false,
-        max: parseInt(process.env.DB_POOL_MAX || '10', 10),
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 15000
-      }
-    : {
-        host: process.env.DB_HOST || process.env.PGHOST || '127.0.0.1',
-        port: parseInt(process.env.DB_PORT || process.env.PGPORT || '5432', 10),
-        database: process.env.DB_NAME || process.env.PGDATABASE || 'siddh876',
-        user: process.env.DB_USER || process.env.PGUSER || 'siddh876',
-        password: process.env.DB_PASSWORD || process.env.PGPASSWORD || 'tInlqWg3BkGLd1Yg6qfd98cex',
-        ssl: sslEnabled ? { rejectUnauthorized: false } : false,
-        max: parseInt(process.env.DB_POOL_MAX || '10', 10),
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 15000
-      };
+  const poolConfig = {
+    connectionString,
+    ssl: sslEnabled ? { rejectUnauthorized: false } : false,
+    max: parseInt(process.env.DB_POOL_MAX || '10', 10),
+    idleTimeoutMillis: 60000,
+    connectionTimeoutMillis: 60000
+  };
 
   try {
     pool = new Pool(poolConfig);
@@ -685,5 +671,52 @@ export const db = {
     }
     const data = loadLocalData();
     return data.site_content || {};
+  },
+
+  // Vehicle-specific CRUD operations backed by PostgreSQL
+  async getVehicles() {
+    const fleet = await this.getContent('fleet');
+    return Array.isArray(fleet) ? fleet : [];
+  },
+
+  async getVehicleById(id) {
+    const list = await this.getVehicles();
+    return list.find(v => String(v.id) === String(id)) || null;
+  },
+
+  async createVehicle(vehicleData) {
+    const list = await this.getVehicles();
+    const newId = vehicleData.id || `vehicle_${Date.now()}`;
+    const newVehicle = {
+      ...vehicleData,
+      id: newId,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    list.push(newVehicle);
+    await this.setContent('fleet', list);
+    return newVehicle;
+  },
+
+  async updateVehicle(id, vehicleData) {
+    const list = await this.getVehicles();
+    const index = list.findIndex(v => String(v.id) === String(id));
+    if (index === -1) return null;
+    list[index] = {
+      ...list[index],
+      ...vehicleData,
+      id,
+      updated_at: new Date().toISOString()
+    };
+    await this.setContent('fleet', list);
+    return list[index];
+  },
+
+  async deleteVehicle(id) {
+    const list = await this.getVehicles();
+    const filtered = list.filter(v => String(v.id) !== String(id));
+    if (filtered.length === list.length) return false;
+    await this.setContent('fleet', filtered);
+    return true;
   }
 };

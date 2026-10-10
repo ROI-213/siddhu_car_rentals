@@ -374,6 +374,60 @@ const handleSaveFleet = async (req, res) => {
 app.put('/api/fleet', requireAdmin, handleSaveFleet);
 app.post('/api/fleet', requireAdmin, handleSaveFleet);
 
+// 8c-2. Dedicated RESTful /api/vehicles endpoints
+app.get('/api/vehicles', async (req, res) => {
+  try {
+    const list = await db.getVehicles();
+    res.json({ success: true, count: list.length, data: list });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/vehicles/:id', async (req, res) => {
+  try {
+    const vehicle = await db.getVehicleById(req.params.id);
+    if (!vehicle) return res.status(404).json({ success: false, error: 'Vehicle not found.' });
+    res.json({ success: true, data: vehicle });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/vehicles', requireAdmin, async (req, res) => {
+  try {
+    if (!req.body || !req.body.name) {
+      return res.status(400).json({ success: false, error: 'Vehicle name is required.' });
+    }
+    const created = await db.createVehicle(req.body);
+    res.status(201).json({ success: true, message: 'Vehicle created successfully.', data: created });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+const handleVehicleUpdateApi = async (req, res) => {
+  try {
+    const updated = await db.updateVehicle(req.params.id, req.body);
+    if (!updated) return res.status(404).json({ success: false, error: 'Vehicle not found.' });
+    res.json({ success: true, message: 'Vehicle updated successfully.', data: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+app.put('/api/vehicles/:id', requireAdmin, handleVehicleUpdateApi);
+app.patch('/api/vehicles/:id', requireAdmin, handleVehicleUpdateApi);
+
+app.delete('/api/vehicles/:id', requireAdmin, async (req, res) => {
+  try {
+    const deleted = await db.deleteVehicle(req.params.id);
+    if (!deleted) return res.status(404).json({ success: false, error: 'Vehicle not found.' });
+    res.json({ success: true, message: 'Vehicle deleted successfully.' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // 8d. Global Synchronization Version Endpoint
 app.get('/api/sync/version', (req, res) => {
   try {
