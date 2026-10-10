@@ -5,7 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { initDb, db } from '../server/db.js';
-import { uploadMiddleware, handleImageUpload } from '../server/uploadHandler.js';
+import { uploadMiddleware, handleImageUpload, uploadDir } from '../server/uploadHandler.js';
 
 dotenv.config();
 
@@ -19,7 +19,6 @@ const ADMIN_USERNAME = (process.env.ADMIN_USERNAME || 'admin@siddhucartentals.co
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'siddhu@2026';
 
 app.use(cors({ origin: true, credentials: true }));
-app.options('*', cors());
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
@@ -466,10 +465,20 @@ app.post('/api/admin/login', (req, res) => {
 // Serve permanent uploaded image files with PostgreSQL on-demand rehydration
 const handleServeVehicleImage = async (req, res) => {
   const filename = path.basename(req.params.filename);
-  const localPath = path.join(rootDir, 'public', 'uploads', 'vehicles', filename);
+  const localPath = path.join(uploadDir, filename);
+  const fallbackPath = path.join(rootDir, 'public', 'uploads', 'vehicles', filename);
 
   if (fs.existsSync(localPath)) {
     return res.sendFile(localPath, {
+      maxAge: '30d',
+      headers: {
+        'Cache-Control': 'public, max-age=2592000, immutable'
+      }
+    });
+  }
+
+  if (fs.existsSync(fallbackPath)) {
+    return res.sendFile(fallbackPath, {
       maxAge: '30d',
       headers: {
         'Cache-Control': 'public, max-age=2592000, immutable'
@@ -485,7 +494,7 @@ const handleServeVehicleImage = async (req, res) => {
         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
         fs.writeFileSync(localPath, img.data);
       } catch (writeErr) {
-        console.warn('Could not cache image to disk:', writeErr.message);
+        // Graceful fallback on read-only environments
       }
       res.setHeader('Content-Type', img.mimetype || 'image/webp');
       res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');

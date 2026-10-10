@@ -5,7 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { initDb, db } from './db.js';
-import { uploadMiddleware, handleImageUpload } from './uploadHandler.js';
+import { uploadMiddleware, handleImageUpload, uploadDir } from './uploadHandler.js';
 
 dotenv.config();
 
@@ -19,17 +19,26 @@ const ADMIN_USERNAME = (process.env.ADMIN_USERNAME || 'admin@siddhucartentals.co
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'siddhu@2026';
 
 app.use(cors());
-app.options('*', cors());
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
 
 // Serve permanent uploaded image files with PostgreSQL on-demand rehydration
 const handleServeVehicleImage = async (req, res) => {
   const filename = path.basename(req.params.filename);
-  const localPath = path.join(rootDir, 'public', 'uploads', 'vehicles', filename);
+  const localPath = path.join(uploadDir, filename);
+  const fallbackPath = path.join(rootDir, 'public', 'uploads', 'vehicles', filename);
 
   if (fs.existsSync(localPath)) {
     return res.sendFile(localPath, {
+      maxAge: '30d',
+      headers: {
+        'Cache-Control': 'public, max-age=2592000, immutable'
+      }
+    });
+  }
+
+  if (fs.existsSync(fallbackPath)) {
+    return res.sendFile(fallbackPath, {
       maxAge: '30d',
       headers: {
         'Cache-Control': 'public, max-age=2592000, immutable'

@@ -4,13 +4,21 @@ import { fileURLToPath } from 'url';
 import multer from 'multer';
 import { db } from './db.js';
 
+import os from 'os';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
-// Persistent upload directory in public/uploads/vehicles
-export const uploadDir = path.join(rootDir, 'public', 'uploads', 'vehicles');
-export const distUploadDir = path.join(rootDir, 'dist', 'uploads', 'vehicles');
+const isVercel = Boolean(process.env.VERCEL);
+
+// Persistent upload directory: on Vercel use /tmp, on traditional server use public/uploads/vehicles
+export const uploadDir = isVercel
+  ? path.join(os.tmpdir(), 'uploads', 'vehicles')
+  : path.join(rootDir, 'public', 'uploads', 'vehicles');
+export const distUploadDir = isVercel
+  ? path.join(os.tmpdir(), 'uploads', 'vehicles')
+  : path.join(rootDir, 'dist', 'uploads', 'vehicles');
 
 function ensureDirectories() {
   try {
@@ -18,11 +26,11 @@ function ensureDirectories() {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
     // Also ensure dist folder has uploads folder if dist exists
-    if (fs.existsSync(path.join(rootDir, 'dist')) && !fs.existsSync(distUploadDir)) {
+    if (!isVercel && fs.existsSync(path.join(rootDir, 'dist')) && !fs.existsSync(distUploadDir)) {
       fs.mkdirSync(distUploadDir, { recursive: true });
     }
   } catch (err) {
-    console.error('Error creating upload directories:', err);
+    // Gracefully handle read-only environments
   }
 }
 
