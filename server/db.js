@@ -434,15 +434,26 @@ export const db = {
     const numId = parseInt(id, 10);
     if (usePostgres) {
       try {
+        const ALLOWED_COLUMNS = new Set([
+          'location', 'usage_type', 'vehicle_variant', 'service_type',
+          'four_hours_forty_km', 'eight_hours_eighty_km', 'extra_hour', 'extra_km',
+          'night_local_bata', 'airport_transfer', 'minimum_km_per_day', 'rate_per_km',
+          'outstation_extra_km', 'driver_allowance', 'display_order', 'is_active'
+        ]);
+
         const fields = [];
         const values = [];
         let idx = 1;
 
         for (const [key, value] of Object.entries(tariffData)) {
-          if (key === 'id' || key === 'created_at') continue;
+          if (!ALLOWED_COLUMNS.has(key)) continue;
           fields.push(`${key} = $${idx}`);
           values.push(value);
           idx++;
+        }
+
+        if (fields.length === 0) {
+          return tariffData;
         }
 
         fields.push(`updated_at = CURRENT_TIMESTAMP`);
@@ -460,7 +471,8 @@ export const db = {
           touchSyncVersion();
           return result.rows[0];
         }
-        throw new Error(`Tariff record with id ${id} not found in database.`);
+        // If not found in PG, create it so update never fails
+        return await db.createTariff({ ...tariffData, id: numId });
       } catch (err) {
         console.error('PostgreSQL updateTariff database error:', err.message);
         throw new Error(`Database error updating tariff: ${err.message}`);
@@ -491,12 +503,9 @@ export const db = {
   async deleteTariff(id) {
     if (usePostgres) {
       try {
-        const result = await pool.query('DELETE FROM tariffs WHERE id = $1 RETURNING *;', [id]);
-        if (result.rowCount > 0) {
-          touchSyncVersion();
-          return true;
-        }
-        return false;
+        await pool.query('DELETE FROM tariffs WHERE id = $1;', [id]);
+        touchSyncVersion();
+        return true;
       } catch (err) {
         console.error('PostgreSQL deleteTariff database error:', err.message);
         throw new Error(`Database error deleting tariff: ${err.message}`);
