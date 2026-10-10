@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
+import { db } from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -85,6 +86,14 @@ export async function handleImageUpload(req, res) {
         console.warn('Could not copy upload to dist:', copyErr.message);
       }
 
+      // Persist permanently into PostgreSQL
+      try {
+        const fileBuf = fs.readFileSync(path.join(uploadDir, filename));
+        await db.saveUploadedImage(filename, req.file.mimetype, fileBuf);
+      } catch (pgErr) {
+        console.warn('PostgreSQL image upload error:', pgErr.message);
+      }
+
       return res.json({
         success: true,
         message: 'Image uploaded successfully.',
@@ -125,6 +134,13 @@ export async function handleImageUpload(req, res) {
           fs.writeFileSync(path.join(distUploadDir, filename), buffer);
         }
       } catch (e) {}
+
+      // Persist permanently into PostgreSQL
+      try {
+        await db.saveUploadedImage(filename, `image/${mimeType}`, buffer);
+      } catch (pgErr) {
+        console.warn('PostgreSQL base64 image save error:', pgErr.message);
+      }
 
       const publicUrl = `/uploads/vehicles/${filename}`;
       return res.json({

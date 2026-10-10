@@ -230,6 +230,18 @@ export async function initDb(force = false) {
       );
     `);
 
+    // Ensure permanent uploaded_images table exists
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS uploaded_images (
+        id SERIAL PRIMARY KEY,
+        filename VARCHAR(255) UNIQUE NOT NULL,
+        mimetype VARCHAR(100) NOT NULL,
+        data BYTEA NOT NULL,
+        size INTEGER NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
     // Check if tariffs table is empty, if so populate from seed
     const countRes = await client.query('SELECT COUNT(*) FROM tariffs');
     if (parseInt(countRes.rows[0].count, 10) === 0) {
@@ -718,5 +730,50 @@ export const db = {
     if (filtered.length === list.length) return false;
     await this.setContent('fleet', filtered);
     return true;
+  },
+
+  // Permanent image storage backed by PostgreSQL BYTEA
+  async saveUploadedImage(filename, mimetype, buffer) {
+    if (usePostgres && pool) {
+      try {
+        const client = await pool.connect();
+        try {
+          await client.query(`
+            INSERT INTO uploaded_images (filename, mimetype, data, size)
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT (filename) DO UPDATE 
+            SET mimetype = EXCLUDED.mimetype, data = EXCLUDED.data, size = EXCLUDED.size, created_at = CURRENT_TIMESTAMP
+          `, [filename, mimetype, buffer, buffer.length]);
+          return true;
+        } finally {
+          client.release();
+        }
+      } catch (err) {
+        console.error('Error saving uploaded image to PostgreSQL:', err.message);
+      }
+    }
+    return false;
+  },
+
+  async getUploadedImage(filename) {
+    if (usePostgres && pool) {
+      try {
+        const client = await pool.connect();
+        try {
+          const res = await client.query(
+            'SELECT filename, mimetype, data, size FROM uploaded_images WHERE filename = $1',
+            [filename]
+          );
+          if (res.rows.length > 0) {
+            return res.rows[0];
+          }
+        } finally {
+          client.release();
+        }
+      } catch (err) {
+        console.error('Error fetching uploaded image from PostgreSQL:', err.message);
+      }
+    }
+    return null;
   }
 };

@@ -1,3 +1,4 @@
+import fs from 'fs';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
@@ -22,9 +23,9 @@ app.options('*', cors());
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
-// Ensure incoming requests are prefixed with /api for seamless matching on Vercel
+// Ensure incoming requests are prefixed with /api for seamless matching on Vercel (excluding /uploads)
 app.use((req, res, next) => {
-  if (req.url && !req.url.startsWith('/api')) {
+  if (req.url && !req.url.startsWith('/api') && !req.url.startsWith('/uploads')) {
     req.url = '/api' + (req.url.startsWith('/') ? req.url : '/' + req.url);
   }
   next();
@@ -462,7 +463,44 @@ app.post('/api/admin/login', (req, res) => {
   }
 });
 
-// Serve permanent uploaded image files
+// Serve permanent uploaded image files with PostgreSQL on-demand rehydration
+const handleServeVehicleImage = async (req, res) => {
+  const filename = path.basename(req.params.filename);
+  const localPath = path.join(rootDir, 'public', 'uploads', 'vehicles', filename);
+
+  if (fs.existsSync(localPath)) {
+    return res.sendFile(localPath, {
+      maxAge: '30d',
+      headers: {
+        'Cache-Control': 'public, max-age=2592000, immutable'
+      }
+    });
+  }
+
+  try {
+    const img = await db.getUploadedImage(filename);
+    if (img && img.data) {
+      try {
+        const dir = path.dirname(localPath);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        fs.writeFileSync(localPath, img.data);
+      } catch (writeErr) {
+        console.warn('Could not cache image to disk:', writeErr.message);
+      }
+      res.setHeader('Content-Type', img.mimetype || 'image/webp');
+      res.setHeader('Cache-Control', 'public, max-age=2592000, immutable');
+      return res.end(img.data);
+    }
+  } catch (dbErr) {
+    console.warn('Error fetching image from DB:', dbErr.message);
+  }
+
+  res.status(404).json({ success: false, error: 'Image not found.' });
+};
+
+app.get('/uploads/vehicles/:filename', handleServeVehicleImage);
+app.get('/api/uploads/vehicles/:filename', handleServeVehicleImage);
+
 app.use('/uploads', express.static(path.join(rootDir, 'public', 'uploads'), {
   maxAge: '30d'
 }));
