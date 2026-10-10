@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { initDb, db } from '../server/db.js';
+import { uploadMiddleware, handleImageUpload } from '../server/uploadHandler.js';
 
 dotenv.config();
 
@@ -406,6 +407,15 @@ app.post('/api/admin/login', (req, res) => {
     res.status(401).json({ success: false, error: 'Invalid admin username or password.' });
   }
 });
+
+// Serve permanent uploaded image files
+app.use('/uploads', express.static(path.join(rootDir, 'public', 'uploads'), {
+  maxAge: '30d'
+}));
+
+// 9b. Image Upload Endpoints (Admin Protected)
+app.post('/api/uploads/images', requireAdmin, uploadMiddleware.single('image'), handleImageUpload);
+app.post('/api/upload', requireAdmin, uploadMiddleware.single('image'), handleImageUpload);
 
 // 10. POST /api/tariffs/reset - Reset to default seed
 app.post('/api/tariffs/reset', requireAdmin, async (req, res) => {

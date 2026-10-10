@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { initDb, db } from './db.js';
+import { uploadMiddleware, handleImageUpload } from './uploadHandler.js';
 
 dotenv.config();
 
@@ -17,8 +18,14 @@ const ADMIN_USERNAME = (process.env.ADMIN_USERNAME || 'admin@siddhucartentals.co
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'siddhu@2026';
 
 app.use(cors());
+app.options('*', cors());
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ limit: '20mb', extended: true }));
+
+// Serve permanent uploaded image files
+app.use('/uploads', express.static(path.join(rootDir, 'public', 'uploads'), {
+  maxAge: '30d'
+}));
 
 // Cache-Control headers for all dynamic API endpoints (prevents stale proxy/browser caching)
 app.use('/api', (req, res, next) => {
@@ -375,6 +382,10 @@ app.post('/api/admin/login', (req, res) => {
     res.status(401).json({ success: false, error: 'Invalid admin username or password.' });
   }
 });
+
+// 9b. Image Upload Endpoints (Admin Protected)
+app.post('/api/uploads/images', requireAdmin, uploadMiddleware.single('image'), handleImageUpload);
+app.post('/api/upload', requireAdmin, uploadMiddleware.single('image'), handleImageUpload);
 
 // 10. POST /api/tariffs/reset - Reset to default seed (Admin)
 app.post('/api/tariffs/reset', requireAdmin, async (req, res) => {

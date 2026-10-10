@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { UploadCloud, Image as ImageIcon, X, Check, RefreshCw, Eye } from 'lucide-react';
+import { tariffApi } from '../../services/tariffApi';
 
 /**
  * Reusable Image Upload Field for Siddhu Car Rentals Admin CMS
@@ -76,15 +77,19 @@ export const ImageUploadField = ({
   const [showUrlInput, setShowUrlInput] = useState(false);
   const fileInputRef = useRef(null);
 
-  // Compress image to fast lightweight web format (max 1600px, 0.85 quality)
+  // Compress image and upload to permanent server storage
   const processFile = async (file) => {
     setProcessing(true);
     try {
+      // 1. Optimize on client canvas for fast upload
       const dataUrl = await compressImageToDataUrl(file);
-      onChange(dataUrl);
+      // 2. Upload to permanent backend storage
+      const permanentUrl = await tariffApi.uploadImage(dataUrl);
+      // 3. Store permanent clean HTTPS URL
+      onChange(permanentUrl);
     } catch (err) {
-      console.error('Image processing error:', err);
-      alert(err.message || 'Failed to process image. Please try another file.');
+      console.error('Image processing/upload error:', err);
+      alert(err.message || 'Failed to upload image. Please try another file.');
     } finally {
       setProcessing(false);
     }

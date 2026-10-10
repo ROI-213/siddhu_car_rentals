@@ -152,11 +152,17 @@ export async function initDb(force = false) {
     return;
   }
 
-  const sslEnabled =
-    process.env.DB_SSL === 'true' ||
+  const sslExplicitlyDisabled =
+    process.env.PGSSL === 'false' ||
+    process.env.DB_SSL === 'false' ||
+    (Boolean(connectionString) && connectionString.includes('sslmode=disable'));
+
+  const sslExplicitlyEnabled =
     process.env.PGSSL === 'true' ||
-    (Boolean(connectionString) && !connectionString.includes('sslmode=disable')) ||
-    isVercelEnv;
+    process.env.DB_SSL === 'true' ||
+    (Boolean(connectionString) && (connectionString.includes('sslmode=require') || connectionString.includes('neon.tech') || connectionString.includes('supabase')));
+
+  const sslEnabled = !sslExplicitlyDisabled && sslExplicitlyEnabled;
 
   const poolConfig = connectionString
     ? {
@@ -164,7 +170,7 @@ export async function initDb(force = false) {
         ssl: sslEnabled ? { rejectUnauthorized: false } : false,
         max: parseInt(process.env.DB_POOL_MAX || '10', 10),
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 8000
+        connectionTimeoutMillis: 15000
       }
     : {
         host: process.env.DB_HOST || process.env.PGHOST || '127.0.0.1',
@@ -175,7 +181,7 @@ export async function initDb(force = false) {
         ssl: sslEnabled ? { rejectUnauthorized: false } : false,
         max: parseInt(process.env.DB_POOL_MAX || '10', 10),
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 8000
+        connectionTimeoutMillis: 15000
       };
 
   try {

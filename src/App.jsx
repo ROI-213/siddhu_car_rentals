@@ -113,6 +113,39 @@ export function App() {
     };
   }, []);
 
+  // Live cross-device synchronization watcher (Requirement B)
+  useEffect(() => {
+    let lastVersion = 0;
+    const checkSync = async () => {
+      try {
+        const res = await fetch('/api/sync/version', { headers: { 'Cache-Control': 'no-cache' } });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.version) {
+            if (lastVersion && data.version > lastVersion) {
+              window.dispatchEvent(new CustomEvent('scr_fleet_updated'));
+              window.dispatchEvent(new CustomEvent('scr_site_content_updated'));
+              window.dispatchEvent(new CustomEvent('scr_tariffs_updated'));
+            }
+            lastVersion = data.version;
+          }
+        }
+      } catch (e) {}
+    };
+
+    checkSync();
+    const interval = setInterval(checkSync, 8000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') checkSync();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, []);
+
   const pageSEOKey = activePage === 'vehicle-detail' && selectedVehicle
     ? 'vehicle-detail'
     : activePage === 'mercedes-s-class' ? 'mercedes-s-class'

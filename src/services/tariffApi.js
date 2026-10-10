@@ -94,94 +94,58 @@ export const tariffApi = {
     }
   },
 
-  // 3. Create Tariff (Admin) - Remote PostgreSQL first with resilient local fallback
+  // 3. Create Tariff (Admin) - Remote PostgreSQL is Single Source of Truth
   async createTariff(tariffData) {
-    try {
-      const res = await fetch(`${API_BASE}/tariffs`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(tariffData)
-      });
-      const data = await res.json().catch(() => null);
-      if (res.ok && data && data.success && data.data) {
-        const finalData = data.data;
-        tariffApi.updateLocalTariff(finalData.id, finalData);
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'create', data: finalData } }));
-        }
-        return finalData;
-      }
-      if (data && data.errors && data.errors.length > 0) {
-        throw new Error(data.errors.join(', '));
-      }
-    } catch (err) {
-      console.warn('Backend createTariff failed, using resilient local storage:', err);
-      if (err.message && !err.message.includes('fetch') && !err.message.includes('HTTP')) {
-        // Validation error, rethrow so form can show it
-        throw err;
-      }
+    const res = await fetch(`${API_BASE}/tariffs`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(tariffData)
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data || !data.success || !data.data) {
+      const errMsg = (data && (data.error || (data.errors && data.errors.join(', ')))) || `Failed to create tariff (status ${res.status})`;
+      throw new Error(errMsg);
     }
 
-    // Resilient fallback: save locally so admin is never blocked
-    const local = tariffApi.createLocalTariff(tariffData);
+    const saved = data.data;
+    tariffApi.updateLocalTariff(saved.id, saved);
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'create', data: local } }));
+      window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'create', data: saved } }));
     }
-    return local;
+    return saved;
   },
 
-  // 4. Update Tariff (Admin) - Remote PostgreSQL first with resilient local fallback
+  // 4. Update Tariff (Admin) - Remote PostgreSQL is Single Source of Truth
   async updateTariff(id, tariffData) {
-    try {
-      const res = await fetch(`${API_BASE}/tariffs/${id}`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(tariffData)
-      });
-      const data = await res.json().catch(() => null);
-      if (res.ok && data && data.success && data.data) {
-        const finalData = data.data;
-        tariffApi.updateLocalTariff(id, finalData);
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'update', id, data: finalData } }));
-        }
-        return finalData;
-      }
-      if (data && data.errors && data.errors.length > 0) {
-        throw new Error(data.errors.join(', '));
-      }
-    } catch (err) {
-      console.warn('Backend updateTariff failed, using resilient local storage:', err);
-      if (err.message && !err.message.includes('fetch') && !err.message.includes('HTTP')) {
-        throw err;
-      }
+    const res = await fetch(`${API_BASE}/tariffs/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(tariffData)
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data || !data.success || !data.data) {
+      const errMsg = (data && (data.error || (data.errors && data.errors.join(', ')))) || `Failed to update tariff (status ${res.status})`;
+      throw new Error(errMsg);
     }
 
-    // Resilient fallback
-    const local = tariffApi.updateLocalTariff(id, tariffData);
+    const saved = data.data;
+    tariffApi.updateLocalTariff(id, saved);
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'update', id, data: local } }));
+      window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'update', id, data: saved } }));
     }
-    return local;
+    return saved;
   },
 
-  // 5. Delete Tariff (Admin) - Remote PostgreSQL first with resilient local fallback
+  // 5. Delete Tariff (Admin) - Remote PostgreSQL is Single Source of Truth
   async deleteTariff(id) {
-    try {
-      const res = await fetch(`${API_BASE}/tariffs/${id}`, {
-        method: 'DELETE',
-        headers: getAuthHeaders()
-      });
-      const data = await res.json().catch(() => null);
-      if (res.ok && data && data.success) {
-        tariffApi.deleteLocalTariff(id);
-        if (typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('scr_tariffs_updated', { detail: { action: 'delete', id } }));
-        }
-        return true;
-      }
-    } catch (err) {
-      console.warn('Backend deleteTariff failed, using resilient local storage:', err);
+    const res = await fetch(`${API_BASE}/tariffs/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok || !data || !data.success) {
+      const errMsg = (data && data.error) || `Failed to delete tariff (status ${res.status})`;
+      throw new Error(errMsg);
     }
 
     tariffApi.deleteLocalTariff(id);
@@ -328,53 +292,40 @@ export const tariffApi = {
     }
   },
 
-  // 11. Save Dynamic Site Content (Admin) - Remote PostgreSQL first with resilient local fallback
+  // 11. Save Dynamic Site Content (Admin) - Remote PostgreSQL is Single Source of Truth
   async saveContent(key, data) {
     const payload = (typeof data === 'object' && data !== null)
       ? { ...data, _updated_at: data._updated_at || new Date().toISOString() }
       : data;
 
-    // Immediately update local cache so admin UI and frontend reflect edits instantly
+    const res = await fetch(`${API_BASE}/content/${encodeURIComponent(key)}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok || !json || !json.success) {
+      throw new Error((json && json.error) || `Failed to save content for "${key}" to PostgreSQL database (status ${res.status})`);
+    }
+
+    const savedData = json.data || payload;
     try {
       const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-      cache[key] = payload;
+      cache[key] = savedData;
       localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
       if (key === 'fleet') {
-        localStorage.setItem('scr_fleet_cache', JSON.stringify(payload));
+        localStorage.setItem('scr_fleet_cache', JSON.stringify(savedData));
       }
     } catch (e) {}
 
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('scr_site_content_updated', { detail: { key, data: payload } }));
+      window.dispatchEvent(new CustomEvent('scr_site_content_updated', { detail: { key, data: savedData } }));
       if (key === 'fleet') {
-        window.dispatchEvent(new CustomEvent('scr_fleet_updated', { detail: payload }));
+        window.dispatchEvent(new CustomEvent('scr_fleet_updated', { detail: savedData }));
       }
     }
 
-    try {
-      const res = await fetch(`${API_BASE}/content/${encodeURIComponent(key)}`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(payload)
-      });
-      const json = await res.json().catch(() => null);
-      if (res.ok && json && json.success) {
-        const savedData = json.data || payload;
-        try {
-          const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-          cache[key] = savedData;
-          localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
-          if (key === 'fleet') {
-            localStorage.setItem('scr_fleet_cache', JSON.stringify(savedData));
-          }
-        } catch (e) {}
-        return savedData;
-      }
-    } catch (err) {
-      console.warn(`Backend saveContent(${key}) error, preserved in local storage:`, err);
-    }
-
-    return payload;
+    return savedData;
   },
 
   // 12. Fetch Dynamic Fleet from PostgreSQL (Single Source of Truth)
@@ -409,39 +360,82 @@ export const tariffApi = {
     }
   },
 
-  // 13. Save Dynamic Fleet (Admin) - Remote PostgreSQL first with resilient local fallback
+  // 13. Save Dynamic Fleet (Admin) - Remote PostgreSQL is Single Source of Truth
   async saveFleet(fleetList) {
+    if (!Array.isArray(fleetList)) {
+      throw new Error('Vehicle fleet must be a list of vehicles.');
+    }
+
+    const res = await fetch(`${API_BASE}/fleet`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(fleetList)
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok || !json || !json.success) {
+      throw new Error((json && json.error) || `Failed to save fleet to PostgreSQL database (status ${res.status})`);
+    }
+
+    const saved = json.data || fleetList;
     try {
-      localStorage.setItem('scr_fleet_cache', JSON.stringify(fleetList));
+      localStorage.setItem('scr_fleet_cache', JSON.stringify(saved));
       const cache = JSON.parse(localStorage.getItem('scr_site_content_cache') || '{}');
-      cache['fleet'] = fleetList;
+      cache['fleet'] = saved;
       localStorage.setItem('scr_site_content_cache', JSON.stringify(cache));
     } catch (e) {}
 
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('scr_fleet_updated', { detail: fleetList }));
-      window.dispatchEvent(new CustomEvent('scr_site_content_updated', { detail: { key: 'fleet', data: fleetList } }));
+      window.dispatchEvent(new CustomEvent('scr_fleet_updated', { detail: saved }));
+      window.dispatchEvent(new CustomEvent('scr_site_content_updated', { detail: { key: 'fleet', data: saved } }));
     }
 
-    try {
-      const res = await fetch(`${API_BASE}/fleet`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(fleetList)
+    return saved;
+  },
+
+  // 14. Upload Vehicle Image to Permanent Storage
+  async uploadImage(fileOrDataUrl) {
+    if (!fileOrDataUrl) throw new Error('No image provided.');
+
+    // If already a clean URL (/images/... or /uploads/... or http://...), no upload needed
+    if (typeof fileOrDataUrl === 'string' && !fileOrDataUrl.startsWith('data:image/')) {
+      return fileOrDataUrl;
+    }
+
+    // Handle File (multipart/form-data)
+    if (typeof File !== 'undefined' && fileOrDataUrl instanceof File) {
+      const formData = new FormData();
+      formData.append('image', fileOrDataUrl);
+      const res = await fetch(`${API_BASE}/uploads/images`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${getAdminToken()}`,
+          'x-admin-token': getAdminToken(),
+          'x-admin-auth': 'true'
+        },
+        body: formData
       });
-      const json = await res.json().catch(() => null);
-      if (res.ok && json && json.success) {
-        const saved = json.data || fleetList;
-        try {
-          localStorage.setItem('scr_fleet_cache', JSON.stringify(saved));
-        } catch (e) {}
-        return saved;
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data || !data.success || !data.url) {
+        throw new Error((data && data.error) || 'Failed to upload image to permanent server storage.');
       }
-    } catch (err) {
-      console.warn('Backend saveFleet error, preserved in local storage:', err);
+      return data.url;
     }
 
-    return fleetList;
+    // Handle Base64 Data URL (JSON)
+    if (typeof fileOrDataUrl === 'string' && fileOrDataUrl.startsWith('data:image/')) {
+      const res = await fetch(`${API_BASE}/uploads/images`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ image: fileOrDataUrl })
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data || !data.success || !data.url) {
+        throw new Error((data && data.error) || 'Failed to convert image to permanent server storage.');
+      }
+      return data.url;
+    }
+
+    return fileOrDataUrl;
   },
 
   // --- LOCAL FALLBACK HELPERS ---
