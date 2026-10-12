@@ -180,6 +180,28 @@ export const Footer = ({ onNavigate }) => {
             © 2026 Siddhu Car Rentals. All Rights Reserved. Executive Chauffeur Brand Bengaluru.
           </div>
 
+          <div>
+            <a
+              href="https://wa.me/919945379333"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                transition: 'all 0.2s ease',
+                fontWeight: '500',
+                fontSize: '0.84rem'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = '#C5A059'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'; }}
+            >
+              <span>Developed By <strong style={{ color: '#C5A059', fontWeight: '700' }}>ROI Infotech</strong></span>
+            </a>
+          </div>
+
           <div style={{ display: 'flex', gap: '20px' }}>
             <button
               onClick={() => setLegalModalType('privacy')}
