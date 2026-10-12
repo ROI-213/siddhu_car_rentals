@@ -1250,11 +1250,12 @@ export const AdminHomeContent = ({ activeSubTab, onSubTabChange, showToast }) =>
                             if (file) {
                               try {
                                 const dataUrl = await compressImageToDataUrl(file);
+                                const permUrl = await tariffApi.uploadImage(dataUrl);
                                 const updated = [...servicesForm];
-                                updated[idx] = { ...updated[idx], image: dataUrl };
+                                updated[idx] = { ...updated[idx], image: permUrl };
                                 setServicesForm(updated);
                               } catch (err) {
-                                alert(err.message);
+                                alert(err.message || 'Failed to upload service image');
                               }
                             }
                           }}

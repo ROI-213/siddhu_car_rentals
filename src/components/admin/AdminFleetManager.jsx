@@ -1027,12 +1027,13 @@ export const AdminFleetManager = ({ showToast }) => {
                             if (file) {
                               try {
                                 const dataUrl = await compressImageToDataUrl(file);
+                                const permUrl = await tariffApi.uploadImage(dataUrl);
                                 setFormData(prev => ({
                                   ...prev,
-                                  gallery: [...(Array.isArray(prev.gallery) ? prev.gallery : []), dataUrl]
+                                  gallery: [...(Array.isArray(prev.gallery) ? prev.gallery : []), permUrl]
                                 }));
                               } catch (err) {
-                                alert(err.message);
+                                alert(err.message || 'Failed to upload gallery image');
                               }
                             }
                           }}
@@ -1095,9 +1096,10 @@ export const AdminFleetManager = ({ showToast }) => {
                                 if (file) {
                                   try {
                                     const dataUrl = await compressImageToDataUrl(file);
-                                    handleGalleryItemChange(gIdx, dataUrl);
+                                    const permUrl = await tariffApi.uploadImage(dataUrl);
+                                    handleGalleryItemChange(gIdx, permUrl);
                                   } catch (err) {
-                                    alert(err.message);
+                                    alert(err.message || 'Failed to upload photo');
                                   }
                                 }
                               }}

@@ -363,6 +363,16 @@ app.get('/api/content', async (req, res) => {
   }
 });
 
+app.get('/api/content/:key', async (req, res) => {
+  try {
+    const data = await db.getContent(req.params.key);
+    res.json({ success: true, data });
+  } catch (err) {
+    console.error(`Error fetching content for ${req.params.key}:`, err);
+    res.status(500).json({ success: false, error: 'Failed to fetch content from database.' });
+  }
+});
+
 const handleSaveContent = async (req, res) => {
   try {
     const { key } = req.params;
