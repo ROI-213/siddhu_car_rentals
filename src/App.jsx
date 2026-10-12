@@ -19,6 +19,7 @@ import { ToyotaVellfirePage } from './pages/vehicles/ToyotaVellfirePage';
 import { DesignSystemShowcase } from './components/showcase/DesignSystemShowcase';
 import { useSEO } from './hooks/useSEO';
 import { getVehicleSEOConfig } from './hooks/useSEO';
+import { safeFetch, API_BASE } from './services/tariffApi';
 
 // ── Global Error Boundary ─────────────────────────────────────────────────────
 class ErrorBoundary extends Component {
@@ -118,7 +119,7 @@ export function App() {
     let lastVersion = 0;
     const checkSync = async () => {
       try {
-        const res = await fetch('/api/sync/version', { headers: { 'Cache-Control': 'no-cache' } });
+        const res = await safeFetch(`${API_BASE}/sync/version`, { headers: { 'Cache-Control': 'no-cache' } });
         if (res.ok) {
           const data = await res.json();
           if (data && data.version) {

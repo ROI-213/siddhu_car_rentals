@@ -1,9 +1,100 @@
 // Tariff API Service for Siddhu Car Rentals
-// PostgreSQL Express Backend is the Single Source of Truth
+// Centralized PostgreSQL Backend is the Single Source of Truth
 
-const API_BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) 
-  ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api` 
-  : '/api';
+export const CENTRAL_PROD_API = 'https://siddhu-car-rentals.vercel.app/api';
+
+export function resolveApiBase() {
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) {
+    return `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api`;
+  }
+  if (typeof window === 'undefined') return CENTRAL_PROD_API;
+  
+  const host = window.location.hostname;
+  // Local development (Vite proxy points to local node backend)
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return '/api';
+  }
+  // Vercel deployment
+  if (host.includes('vercel.app')) {
+    return '/api';
+  }
+  // Live custom domains (siddhucar.roiclients.co.in, siddhucarrentals.com, etc.)
+  // Always route to centralized production backend connected directly to PostgreSQL
+  return CENTRAL_PROD_API;
+}
+
+export let API_BASE = resolveApiBase();
+
+/**
+ * Normalizes vehicle image URLs so they are accessible from all devices and browsers
+ */
+export function getVehicleImageUrl(url) {
+  if (!url) return '/images/sclass_front.png';
+  if (url.startsWith('data:')) return url;
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  if (url.startsWith('/uploads/')) {
+    if (typeof window !== 'undefined') {
+      const host = window.location.hostname;
+      if (host !== 'localhost' && host !== '127.0.0.1' && !host.includes('vercel.app')) {
+        return `https://siddhu-car-rentals.vercel.app${url}`;
+      }
+    }
+  }
+  return url;
+}
+
+/**
+ * Resilient fetch wrapper: handles relative and absolute API routes,
+ * and automatically fails over to the central PostgreSQL production backend
+ * if a local Apache proxy collision (e.g. rogue Python port) or network error occurs.
+ */
+export async function safeFetch(urlOrPath, options = {}) {
+  let url = urlOrPath;
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    const base = API_BASE.replace(/\/$/, '');
+    const path = urlOrPath.startsWith('/') ? urlOrPath : `/${urlOrPath}`;
+    url = `${base}${path}`;
+  }
+
+  try {
+    const res = await fetch(url, options);
+
+    // If local proxy returned an error (e.g., Python Werkzeug 401 {"error":"unauthorized"} or 502/503/404)
+    if (!res.ok && !url.startsWith(CENTRAL_PROD_API)) {
+      const isUnauthorized = res.status === 401;
+      const isProxyError = res.status === 502 || res.status === 503 || res.status === 404;
+
+      if (isUnauthorized || isProxyError) {
+        try {
+          const clone = res.clone();
+          const json = await clone.json().catch(() => null);
+          if ((json && json.error === 'unauthorized') || isProxyError) {
+            console.warn(`[API Failover] Detected proxy collision (${res.status}) on ${url}. Auto-redirecting to central PostgreSQL API...`);
+            API_BASE = CENTRAL_PROD_API;
+            const pathOnly = urlOrPath.startsWith('http')
+              ? new URL(urlOrPath).pathname.replace(/^\/api/, '')
+              : (urlOrPath.startsWith('/api') ? urlOrPath.replace(/^\/api/, '') : urlOrPath);
+            const cleanPath = pathOnly.startsWith('/') ? pathOnly : `/${pathOnly}`;
+            return await fetch(`${CENTRAL_PROD_API}${cleanPath}`, options);
+          }
+        } catch (e) {}
+      }
+    }
+
+    return res;
+  } catch (netErr) {
+    if (!url.startsWith(CENTRAL_PROD_API)) {
+      console.warn(`[API Failover] Network error on ${url}. Auto-redirecting to central PostgreSQL API...`, netErr);
+      API_BASE = CENTRAL_PROD_API;
+      const pathOnly = urlOrPath.startsWith('http')
+        ? new URL(urlOrPath).pathname.replace(/^\/api/, '')
+        : (urlOrPath.startsWith('/api') ? urlOrPath.replace(/^\/api/, '') : urlOrPath);
+      const cleanPath = pathOnly.startsWith('/') ? pathOnly : `/${pathOnly}`;
+      return await fetch(`${CENTRAL_PROD_API}${cleanPath}`, options);
+    }
+    throw netErr;
+  }
+}
 
 export function getAdminToken() {
   if (typeof window === 'undefined') return 'siddhu@2026';
@@ -39,7 +130,7 @@ export const tariffApi = {
       if (search) params.append('search', search);
       if (all) params.append('all', 'true');
 
-      const res = await fetch(`${API_BASE}/tariffs?${params.toString()}`, {
+      const res = await safeFetch(`${API_BASE}/tariffs?${params.toString()}`, {
         headers: { 'Cache-Control': 'no-cache' }
       });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -81,7 +172,7 @@ export const tariffApi = {
   // 2. Fetch Single Tariff
   async getTariffById(id) {
     try {
-      const res = await fetch(`${API_BASE}/tariffs/${id}`, {
+      const res = await safeFetch(`${API_BASE}/tariffs/${id}`, {
         headers: { 'Cache-Control': 'no-cache' }
       });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -96,7 +187,7 @@ export const tariffApi = {
 
   // 3. Create Tariff (Admin) - Remote PostgreSQL is Single Source of Truth
   async createTariff(tariffData) {
-    const res = await fetch(`${API_BASE}/tariffs`, {
+    const res = await safeFetch(`${API_BASE}/tariffs`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(tariffData)
@@ -117,7 +208,7 @@ export const tariffApi = {
 
   // 4. Update Tariff (Admin) - Remote PostgreSQL is Single Source of Truth
   async updateTariff(id, tariffData) {
-    const res = await fetch(`${API_BASE}/tariffs/${id}`, {
+    const res = await safeFetch(`${API_BASE}/tariffs/${id}`, {
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify(tariffData)
@@ -138,7 +229,7 @@ export const tariffApi = {
 
   // 5. Delete Tariff (Admin) - Remote PostgreSQL is Single Source of Truth
   async deleteTariff(id) {
-    const res = await fetch(`${API_BASE}/tariffs/${id}`, {
+    const res = await safeFetch(`${API_BASE}/tariffs/${id}`, {
       method: 'DELETE',
       headers: getAuthHeaders()
     });
@@ -158,7 +249,7 @@ export const tariffApi = {
   // 6. Batch Reorder (Admin)
   async reorderTariffs(orderList) {
     try {
-      const res = await fetch(`${API_BASE}/tariffs-reorder`, {
+      const res = await safeFetch(`${API_BASE}/tariffs-reorder`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify({ orderList })
@@ -183,7 +274,7 @@ export const tariffApi = {
   // 7. Fetch Terms & Conditions
   async getTerms() {
     try {
-      const res = await fetch(`${API_BASE}/terms`, {
+      const res = await safeFetch(`${API_BASE}/terms`, {
         headers: { 'Cache-Control': 'no-cache' }
       });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -202,7 +293,7 @@ export const tariffApi = {
     const cleanPass = (password || '').trim();
 
     try {
-      const res = await fetch(`${API_BASE}/admin/login`, {
+      const res = await safeFetch(`${API_BASE}/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: cleanUser, password: cleanPass })
@@ -243,7 +334,7 @@ export const tariffApi = {
 
   // 9. Reset to default rate card
   async resetToSeed() {
-    const res = await fetch(`${API_BASE}/tariffs/reset`, {
+    const res = await safeFetch(`${API_BASE}/tariffs/reset`, {
       method: 'POST',
       headers: getAuthHeaders()
     });
@@ -262,7 +353,7 @@ export const tariffApi = {
   async getContent(key = null) {
     try {
       const url = key ? `${API_BASE}/content?key=${encodeURIComponent(key)}` : `${API_BASE}/content`;
-      const res = await fetch(url, {
+      const res = await safeFetch(url, {
         headers: { 'Cache-Control': 'no-cache' }
       });
       if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -327,7 +418,7 @@ export const tariffApi = {
       payload = data;
     }
 
-    const res = await fetch(`${API_BASE}/content/${encodeURIComponent(key)}`, {
+    const res = await safeFetch(`${API_BASE}/content/${encodeURIComponent(key)}`, {
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify(payload)
@@ -367,7 +458,7 @@ export const tariffApi = {
   // 12. Fetch Dynamic Fleet from PostgreSQL (Single Source of Truth)
   async getFleet() {
     try {
-      const res = await fetch(`${API_BASE}/fleet`, {
+      const res = await safeFetch(`${API_BASE}/fleet`, {
         headers: { 'Cache-Control': 'no-cache' }
       });
       if (res.ok) {
@@ -388,7 +479,7 @@ export const tariffApi = {
       }
 
       // Also try /api/vehicles
-      const resVehicles = await fetch(`${API_BASE}/vehicles`, { headers: { 'Cache-Control': 'no-cache' } }).catch(() => null);
+      const resVehicles = await safeFetch(`${API_BASE}/vehicles`, { headers: { 'Cache-Control': 'no-cache' } }).catch(() => null);
       if (resVehicles && resVehicles.ok) {
         const jsonV = await resVehicles.json();
         let listV = jsonV?.data;
@@ -436,7 +527,7 @@ export const tariffApi = {
       throw new Error('Vehicle fleet must be a list of vehicles.');
     }
 
-    const res = await fetch(`${API_BASE}/fleet`, {
+    const res = await safeFetch(`${API_BASE}/fleet`, {
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify(fleetList)
@@ -468,14 +559,14 @@ export const tariffApi = {
 
     // If already a clean URL (/images/... or /uploads/... or http://...), no upload needed
     if (typeof fileOrDataUrl === 'string' && !fileOrDataUrl.startsWith('data:image/')) {
-      return fileOrDataUrl;
+      return getVehicleImageUrl(fileOrDataUrl);
     }
 
     // Handle File (multipart/form-data)
     if (typeof File !== 'undefined' && fileOrDataUrl instanceof File) {
       const formData = new FormData();
       formData.append('image', fileOrDataUrl);
-      const res = await fetch(`${API_BASE}/uploads/images`, {
+      const res = await safeFetch(`${API_BASE}/uploads/images`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${getAdminToken()}`,
@@ -486,23 +577,23 @@ export const tariffApi = {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || !data || !data.success || !data.url) {
-        throw new Error((data && data.error) || 'Failed to upload image to permanent server storage.');
+        throw new Error((data && (data.error || data.message)) || 'Failed to upload image to permanent server storage.');
       }
-      return data.url;
+      return getVehicleImageUrl(data.url);
     }
 
     // Handle Base64 Data URL (JSON)
     if (typeof fileOrDataUrl === 'string' && fileOrDataUrl.startsWith('data:image/')) {
-      const res = await fetch(`${API_BASE}/uploads/images`, {
+      const res = await safeFetch(`${API_BASE}/uploads/images`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify({ image: fileOrDataUrl })
       });
       const data = await res.json().catch(() => null);
       if (!res.ok || !data || !data.success || !data.url) {
-        throw new Error((data && data.error) || 'Failed to convert image to permanent server storage.');
+        throw new Error((data && (data.error || data.message)) || 'Failed to convert image to permanent server storage.');
       }
-      return data.url;
+      return getVehicleImageUrl(data.url);
     }
 
     return fileOrDataUrl;

@@ -79,7 +79,13 @@ export async function handleImageUpload(req, res) {
     // 1. If uploaded via multer multipart/form-data
     if (req.file) {
       const filename = req.file.filename;
-      const publicUrl = `/uploads/vehicles/${filename}`;
+      const host = req.get('x-forwarded-host') || req.get('host') || '';
+      let publicUrl = `/uploads/vehicles/${filename}`;
+      if (host && (host.includes('vercel.app') || isVercel)) {
+        publicUrl = `https://${host}/uploads/vehicles/${filename}`;
+      } else if (process.env.PUBLIC_URL) {
+        publicUrl = `${process.env.PUBLIC_URL.replace(/\/$/, '')}/uploads/vehicles/${filename}`;
+      }
 
       // Sync copy to dist if dist exists
       try {
@@ -150,7 +156,13 @@ export async function handleImageUpload(req, res) {
         console.warn('PostgreSQL base64 image save error:', pgErr.message);
       }
 
-      const publicUrl = `/uploads/vehicles/${filename}`;
+      const host = req.get('x-forwarded-host') || req.get('host') || '';
+      let publicUrl = `/uploads/vehicles/${filename}`;
+      if (host && (host.includes('vercel.app') || isVercel)) {
+        publicUrl = `https://${host}/uploads/vehicles/${filename}`;
+      } else if (process.env.PUBLIC_URL) {
+        publicUrl = `${process.env.PUBLIC_URL.replace(/\/$/, '')}/uploads/vehicles/${filename}`;
+      }
       return res.json({
         success: true,
         message: 'Image uploaded and converted to permanent URL successfully.',

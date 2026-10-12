@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 5050;
 const ADMIN_USERNAME = (process.env.ADMIN_USERNAME || 'admin@siddhucartentals.com').trim().toLowerCase();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'siddhu@2026';
 
@@ -534,12 +534,26 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// Start Server
+// Start Server with resilient port fallback
 async function start() {
   await initDb();
-  app.listen(PORT, () => {
-    console.log(` Siddhu Car Rentals Backend running at http://localhost:${PORT}`);
-  });
+
+  function listenWithFallback(port) {
+    const server = app.listen(port, () => {
+      console.log(` Siddhu Car Rentals Backend running at http://localhost:${port}`);
+    });
+
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.warn(`[Port Conflict] Port ${port} is already in use by another service, auto-switching to port ${port + 1}...`);
+        listenWithFallback(port + 1);
+      } else {
+        console.error('Server error:', err);
+      }
+    });
+  }
+
+  listenWithFallback(DEFAULT_PORT);
 }
 
 start();

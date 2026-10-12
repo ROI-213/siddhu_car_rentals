@@ -2,6 +2,8 @@
 // Polls /api/sync/version every 20s and on tab focus/visibility to automatically
 // synchronize changes across all visitors, devices, and sessions without full page reload.
 
+import { safeFetch, API_BASE } from './tariffApi';
+
 class SyncService {
   constructor() {
     this.currentVersion = null;
@@ -14,7 +16,7 @@ class SyncService {
     if (typeof window === 'undefined') return;
 
     try {
-      const res = await fetch('/api/sync/version', {
+      const res = await safeFetch(`${API_BASE}/sync/version`, {
         headers: { 'Cache-Control': 'no-cache' }
       });
       if (!res.ok) return;
